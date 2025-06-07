@@ -6,6 +6,6 @@ import FilesComponent from '@/modules/files/FilesComponent.vue'
 <template>
   <div class="flex p-4">
     <FilesComponent class="p-2 w-50 grow" />
-    <OutputComponent class="p-2 w-50 grow" />
+    <OutputComponent class="w-50 grow" />
   </div>
 </template>

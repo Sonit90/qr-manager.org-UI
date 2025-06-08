@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/userStore.ts'
+import { storeToRefs } from 'pinia'
 
 const router = useRouter()
 const registerForm = ref(null)
@@ -40,18 +42,20 @@ const confirmPasswordRules = [
   (v) => v === form.password || 'Passwords do not match',
 ]
 
+const userStore = useUserStore()
+const { isLoading } = storeToRefs(userStore)
+
 const handleRegister = async () => {
   const { valid } = await registerForm.value.validate()
-  if (valid) {
-    loading.value = true
-    // Simulate API call
-    setTimeout(() => {
-      loading.value = false
-      console.log('Registration attempt:', form)
-      // Handle successful registration here
-      router.push('/login')
-    }, 2000)
+
+  if (!valid) {
+    return
   }
+  await userStore.register({
+    email: form.email,
+    password: form.password,
+    confirm_password: form.confirmPassword,
+  })
 }
 </script>
 <template>
@@ -132,7 +136,7 @@ const handleRegister = async () => {
           </template>
         </v-checkbox>
 
-        <v-btn type="submit" class="btn-primary" color="primary" :loading="loading" block>
+        <v-btn type="submit" class="btn-primary" color="primary" :loading="isLoading" block>
           Create Account
         </v-btn>
       </v-form>

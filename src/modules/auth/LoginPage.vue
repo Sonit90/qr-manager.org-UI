@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/userStore.ts'
+import { storeToRefs } from 'pinia'
 
-const router = useRouter()
 const loginForm = ref(null)
 const showPassword = ref(false)
-const loading = ref(false)
 
 const form = reactive({
   email: '',
@@ -22,18 +21,16 @@ const passwordRules = [
   (v) => !!v || 'Password is required',
   (v) => (v && v.length >= 6) || 'Password must be at least 6 characters',
 ]
+const userStore = useUserStore()
+const { isLoading } = storeToRefs(userStore)
 
 const handleLogin = async () => {
   const { valid } = await loginForm.value.validate()
-  if (valid) {
-    loading.value = true
-    // Simulate API call
-    setTimeout(() => {
-      loading.value = false
-      console.log('Login attempt:', form)
-      // Handle successful login here
-    }, 2000)
+  if (!valid) {
+    return
   }
+
+  await userStore.login({ username: form.email, password: form.password })
 }
 </script>
 <template>
@@ -77,7 +74,7 @@ const handleLogin = async () => {
           </v-col>
         </v-row>
 
-        <v-btn type="submit" class="btn-primary" color="primary" :loading="loading" block>
+        <v-btn type="submit" class="btn-primary" color="primary" :loading="isLoading" block>
           Sign In
         </v-btn>
       </v-form>

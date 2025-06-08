@@ -1,14 +1,11 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/userStore.ts'
 import { storeToRefs } from 'pinia'
 
-const router = useRouter()
 const registerForm = ref(null)
 const showPassword = ref(false)
 const showConfirmPassword = ref(false)
-const loading = ref(false)
 
 const form = reactive({
   firstName: '',

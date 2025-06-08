@@ -1,59 +1,4 @@
-<template>
-  <div>
-    <div class="auth-header">
-      <h1 class="auth-title">Reset Password</h1>
-      <p class="auth-subtitle">Enter your email to receive reset instructions</p>
-    </div>
-
-    <div class="auth-form">
-      <v-form @submit.prevent="handleResetPassword" ref="resetForm" v-if="!emailSent">
-        <div class="form-field">
-          <v-text-field
-            v-model="form.email"
-            :rules="emailRules"
-            label="Email"
-            prepend-inner-icon="mdi-email"
-            variant="outlined"
-            color="primary"
-            required
-          />
-        </div>
-
-        <v-btn type="submit" class="auth-button" color="primary" :loading="loading" block>
-          Send Reset Link
-        </v-btn>
-      </v-form>
-
-      <!-- Success Message -->
-      <div v-else class="success-message">
-        <v-icon size="64" color="success" class="mb-4">mdi-check-circle</v-icon>
-        <h3 class="mb-3">Check Your Email</h3>
-        <p class="mb-4">
-          We've sent password reset instructions to <strong>{{ form.email }}</strong>
-        </p>
-        <v-btn @click="emailSent = false" variant="outlined" color="primary" class="mb-3" block>
-          Send Another Email
-        </v-btn>
-      </div>
-
-      <div class="divider-text">
-        <span>or</span>
-      </div>
-
-      <div class="text-center">
-        <span>Remember your password? </span>
-        <router-link to="/login" class="link-button"> Sign in </router-link>
-      </div>
-
-      <div class="text-center mt-3">
-        <span>Don't have an account? </span>
-        <router-link to="/register" class="link-button"> Sign up </router-link>
-      </div>
-    </div>
-  </div>
-</template>
-
-<script setup>
+<script setup lang="ts">
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -86,93 +31,59 @@ const handleResetPassword = async () => {
 }
 </script>
 
-<style scoped>
-.auth-header {
-  text-align: center;
-  padding: 40px 0 20px;
-}
+<template>
+  <div>
+    <div class="text-center py-4">
+      <h1 class="text-3xl font-light text-gray-800 mb-2">Reset Password</h1>
+      <p class="text-gray-600 text-sm">Enter your email to receive reset instructions</p>
+    </div>
 
-.auth-title {
-  font-size: 2rem;
-  font-weight: 300;
-  color: #333;
-  margin-bottom: 8px;
-}
+    <div class="py-4">
+      <v-form @submit.prevent="handleResetPassword" ref="resetForm" v-if="!emailSent">
+        <div class="mb-2">
+          <v-text-field
+            v-model="form.email"
+            :rules="emailRules"
+            label="Email"
+            prepend-inner-icon="mdi-email"
+            variant="outlined"
+            color="primary"
+            required
+          />
+        </div>
 
-.auth-subtitle {
-  color: #666;
-  font-size: 0.9rem;
-}
+        <v-btn type="submit" class="btn-primary" color="primary" :loading="loading" block>
+          Send Reset Link
+        </v-btn>
+      </v-form>
 
-.auth-form {
-  padding: 0 40px 40px;
-}
+      <!-- Success Message -->
+      <div v-else class="text-center py-4">
+        <v-icon size="64" color="success" class="mb-4">mdi-check-circle</v-icon>
+        <h3 class="mb-3 text-gray-800 font-normal">Check Your Email</h3>
+        <p class="mb-4 text-gray-600 leading-relaxed">
+          We've sent password reset instructions to <strong>{{ form.email }}</strong>
+        </p>
+        <v-btn @click="emailSent = false" variant="outlined" color="primary" class="mb-3" block>
+          Send Another Email
+        </v-btn>
+      </div>
 
-.form-field {
-  margin-bottom: 20px;
-}
+      <div
+        class="text-center my-4 relative text-gray-500 before:content-[''] before:absolute before:top-1/2 before:left-0 before:right-0 before:h-px before:bg-gray-300"
+      >
+        <span class="bg-white/95 px-5">or</span>
+      </div>
 
-.auth-button {
-  height: 50px;
-  border-radius: 12px;
-  font-size: 1rem;
-  font-weight: 500;
-  text-transform: none;
-  box-shadow: 0 4px 15px rgba(103, 126, 234, 0.3);
-  transition: all 0.3s ease;
-}
+      <div class="text-center">
+        <span>Remember your password? </span>
+        <router-link to="/login" class="link-styled"> Sign in </router-link>
+      </div>
 
-.auth-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(103, 126, 234, 0.4);
-}
-
-.link-button {
-  color: #667eea;
-  text-decoration: none;
-  font-weight: 500;
-  transition: color 0.3s ease;
-}
-
-.link-button:hover {
-  color: #764ba2;
-  text-decoration: underline;
-}
-
-.divider-text {
-  text-align: center;
-  margin: 30px 0;
-  position: relative;
-  color: #999;
-}
-
-.divider-text::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: #e0e0e0;
-}
-
-.divider-text span {
-  background: rgba(255, 255, 255, 0.95);
-  padding: 0 20px;
-}
-
-.success-message {
-  text-align: center;
-  padding: 20px 0;
-}
-
-.success-message h3 {
-  color: #333;
-  font-weight: 400;
-}
-
-.success-message p {
-  color: #666;
-  line-height: 1.5;
-}
-</style>
+      <div class="text-center mt-3">
+        <span>Don't have an account? </span>
+        <router-link to="/register" class="link-styled"> Sign up </router-link>
+      </div>
+    </div>
+  </div>
+</template>

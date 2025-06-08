@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -38,145 +38,60 @@ const handleLogin = async () => {
 </script>
 <template>
   <div>
-    <div class="auth-header">
-      <h1 class="auth-title">Welcome Back</h1>
-      <p class="auth-subtitle">Sign in to your account</p>
+    <div class="text-center py-10 pb-5">
+      <h1 class="text-3xl font-light text-gray-800 mb-2">Welcome Back</h1>
+      <p class="text-gray-600 text-sm">Sign in to your account</p>
     </div>
 
-    <div class="auth-form">
-      <v-form @submit.prevent="handleLogin" ref="loginForm">
-        <div class="form-field">
-          <v-text-field
-            v-model="form.email"
-            :rules="emailRules"
-            label="Email"
-            prepend-inner-icon="mdi-email"
-            variant="outlined"
-            color="primary"
-            required
-          />
-        </div>
+    <div class="px-10 pb-10">
+      <v-form class="gap-4" @submit.prevent="handleLogin" ref="loginForm">
+        <v-text-field
+          v-model="form.email"
+          :rules="emailRules"
+          label="Email"
+          prepend-inner-icon="mdi-email"
+          variant="outlined"
+          color="primary"
+          required
+        />
 
-        <div class="form-field">
-          <v-text-field
-            v-model="form.password"
-            :rules="passwordRules"
-            :type="showPassword ? 'text' : 'password'"
-            label="Password"
-            prepend-inner-icon="mdi-lock"
-            :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-            @click:append-inner="showPassword = !showPassword"
-            variant="outlined"
-            color="primary"
-            required
-          />
-        </div>
+        <v-text-field
+          v-model="form.password"
+          :rules="passwordRules"
+          :type="showPassword ? 'text' : 'password'"
+          label="Password"
+          prepend-inner-icon="mdi-lock"
+          :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+          @click:append-inner="showPassword = !showPassword"
+          variant="outlined"
+          color="primary"
+          required
+        />
 
-        <div class="form-field">
-          <v-row align="center" justify="space-between">
-            <v-col cols="auto">
-              <v-checkbox
-                v-model="form.remember"
-                label="Remember me"
-                color="primary"
-                hide-details
-              />
-            </v-col>
-            <v-col cols="auto">
-              <router-link to="/reset-password" class="link-button"> Forgot password? </router-link>
-            </v-col>
-          </v-row>
-        </div>
+        <v-row align="center" justify="space-between">
+          <v-col cols="auto">
+            <v-checkbox v-model="form.remember" label="Remember me" color="primary" hide-details />
+          </v-col>
+          <v-col cols="auto">
+            <router-link to="/reset-password" class="link-styled"> Forgot password? </router-link>
+          </v-col>
+        </v-row>
 
-        <v-btn type="submit" class="auth-button" color="primary" :loading="loading" block>
+        <v-btn type="submit" class="btn-primary" color="primary" :loading="loading" block>
           Sign In
         </v-btn>
       </v-form>
 
-      <div class="divider-text">
-        <span>or</span>
+      <div
+        class="text-center my-8 relative text-gray-500 before:content-[''] before:absolute before:top-1/2 before:left-0 before:right-0 before:h-px before:bg-gray-300"
+      >
+        <span class="bg-white/95 px-5">or</span>
       </div>
 
       <div class="text-center">
         <span>Don't have an account? </span>
-        <router-link to="/register" class="link-button"> Sign up </router-link>
+        <router-link to="/register" class="link-styled"> Sign up </router-link>
       </div>
     </div>
   </div>
 </template>
-
-<style scoped>
-.auth-header {
-  text-align: center;
-  padding: 40px 0 20px;
-}
-
-.auth-title {
-  font-size: 2rem;
-  font-weight: 300;
-  color: #333;
-  margin-bottom: 8px;
-}
-
-.auth-subtitle {
-  color: #666;
-  font-size: 0.9rem;
-}
-
-.auth-form {
-  padding: 0 40px 40px;
-}
-
-.form-field {
-  margin-bottom: 20px;
-}
-
-.auth-button {
-  height: 50px;
-  border-radius: 12px;
-  font-size: 1rem;
-  font-weight: 500;
-  text-transform: none;
-  box-shadow: 0 4px 15px rgba(103, 126, 234, 0.3);
-  transition: all 0.3s ease;
-}
-
-.auth-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(103, 126, 234, 0.4);
-}
-
-.link-button {
-  color: #667eea;
-  text-decoration: none;
-  font-weight: 500;
-  transition: color 0.3s ease;
-}
-
-.link-button:hover {
-  color: #764ba2;
-  text-decoration: underline;
-}
-
-.divider-text {
-  text-align: center;
-  margin: 30px 0;
-  position: relative;
-  color: #999;
-}
-
-.divider-text::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: #e0e0e0;
-}
-
-.divider-text span {
-  background: rgba(255, 255, 255, 0.95);
-  padding: 0 20px;
-}
-</style>

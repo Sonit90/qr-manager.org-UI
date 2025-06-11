@@ -1,9 +1,18 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, type Ref } from 'vue'
 import { useUserStore } from '@/stores/userStore.ts'
 import { storeToRefs } from 'pinia'
+import {
+  hasLowercase,
+  hasMinLength,
+  hasNumber,
+  hasUppercase,
+  isRequired,
+  isValidEmail,
+  matchesPassword,
+} from '@/helpers/validations/validations.ts'
 
-const registerForm = ref(null)
+const registerForm = ref<Ref | null>(null)
 const showPassword = ref(false)
 const showConfirmPassword = ref(false)
 
@@ -16,33 +25,28 @@ const form = reactive({
   agreeToTerms: false,
 })
 
-const nameRules = [
-  (v) => !!v || 'Name is required',
-  (v) => (v && v.length >= 2) || 'Name must be at least 2 characters',
-]
+const nameRules = [isRequired('Name'), hasMinLength(2)]
 
-const emailRules = [
-  (v) => !!v || 'E-mail is required',
-  (v) => /.+@.+\..+/.test(v) || 'E-mail must be valid',
-]
+const emailRules = [isRequired('E-mail'), isValidEmail]
 
 const passwordRules = [
-  (v) => !!v || 'Password is required',
-  (v) => (v && v.length >= 8) || 'Password must be at least 8 characters',
-  (v) => /(?=.*[a-z])/.test(v) || 'Password must contain at least one lowercase letter',
-  (v) => /(?=.*[A-Z])/.test(v) || 'Password must contain at least one uppercase letter',
-  (v) => /(?=.*\d)/.test(v) || 'Password must contain at least one number',
+  isRequired('Password'),
+  hasMinLength(8),
+  hasLowercase,
+  hasUppercase,
+  hasNumber,
 ]
 
 const confirmPasswordRules = [
-  (v) => !!v || 'Please confirm your password',
-  (v) => v === form.password || 'Passwords do not match',
+  isRequired('Please confirm your password'),
+  matchesPassword(form.password),
 ]
 
 const userStore = useUserStore()
 const { isLoading } = storeToRefs(userStore)
 
 const handleRegister = async () => {
+  if (!registerForm.value) return
   const { valid } = await registerForm.value.validate()
 
   if (!valid) {

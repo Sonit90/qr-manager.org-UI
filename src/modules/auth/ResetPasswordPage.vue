@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, type Ref } from 'vue'
+import { isRequired, isValidEmail } from '@/helpers/validations/validations.ts'
 
-const resetForm = ref(null)
+const resetForm = ref<Ref | null>(null)
 const loading = ref(false)
 const emailSent = ref(false)
 
@@ -9,12 +10,10 @@ const form = reactive({
   email: '',
 })
 
-const emailRules = [
-  (v) => !!v || 'E-mail is required',
-  (v) => /.+@.+\..+/.test(v) || 'E-mail must be valid',
-]
+const emailRules = [isRequired('E-mail'), isValidEmail]
 
 const handleResetPassword = async () => {
+  if (!resetForm.value) return
   const { valid } = await resetForm.value.validate()
   if (valid) {
     loading.value = true

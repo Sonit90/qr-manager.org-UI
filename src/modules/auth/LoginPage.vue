@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, type Ref } from 'vue'
 import { useUserStore } from '@/stores/userStore.ts'
 import { storeToRefs } from 'pinia'
+import { hasMinLength, isRequired, isValidEmail } from '@/helpers/validations/validations.ts'
 
-const loginForm = ref(null)
+const loginForm = ref<Ref | null>(null)
 const showPassword = ref(false)
 
 const form = reactive({
@@ -12,19 +13,14 @@ const form = reactive({
   remember: false,
 })
 
-const emailRules = [
-  (v) => !!v || 'E-mail is required',
-  (v) => /.+@.+\..+/.test(v) || 'E-mail must be valid',
-]
+const emailRules = [isRequired('E-mail'), isValidEmail]
 
-const passwordRules = [
-  (v) => !!v || 'Password is required',
-  (v) => (v && v.length >= 6) || 'Password must be at least 6 characters',
-]
+const passwordRules = [isRequired('Password'), hasMinLength(6)]
 const userStore = useUserStore()
 const { isLoading } = storeToRefs(userStore)
 
 const handleLogin = async () => {
+  if (!loginForm.value) return
   const { valid } = await loginForm.value.validate()
   if (!valid) {
     return

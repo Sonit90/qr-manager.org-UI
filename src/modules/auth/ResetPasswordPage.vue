@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
 
-const router = useRouter()
 const resetForm = ref(null)
 const loading = ref(false)
 const emailSent = ref(false)
@@ -24,7 +22,6 @@ const handleResetPassword = async () => {
     setTimeout(() => {
       loading.value = false
       emailSent.value = true
-      console.log('Password reset request:', form)
       // Handle password reset here
     }, 2000)
   }
@@ -38,7 +35,7 @@ const handleResetPassword = async () => {
       <p class="text-gray-600 text-sm">Enter your email to receive reset instructions</p>
     </div>
 
-    <div class="py-4">
+    <div class="pa-4">
       <v-form @submit.prevent="handleResetPassword" ref="resetForm" v-if="!emailSent">
         <div class="mb-2">
           <v-text-field
@@ -72,7 +69,7 @@ const handleResetPassword = async () => {
       <div
         class="text-center my-4 relative text-gray-500 before:content-[''] before:absolute before:top-1/2 before:left-0 before:right-0 before:h-px before:bg-gray-300"
       >
-        <span class="bg-white/95 px-5">or</span>
+        <span>or</span>
       </div>
 
       <div class="text-center">

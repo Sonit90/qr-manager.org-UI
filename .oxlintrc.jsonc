@@ -1,0 +1,57 @@
+{
+  // Enable all rules in the `correctness` and `suspicious` categories
+  "categories": {
+    "correctness": "error",
+    "restriction": "error",
+    "suspicious": "warn",
+    "perf": "warn",
+    "nursery": "warn",
+    "pedantic": "warn"
+  },
+  "plugins": ["unicorn", "typescript", "oxc", "vitest"],
+  "rules": {
+    "unicorn/no-empty-file": "off",
+    "typescript/explicit-function-return-type": "off",
+    "oxc/no-rest-spread-properties": "off",
+    "oxc/no-async-await": "off",
+    "oxc/no-optional-chaining": "off",
+    "eslint/no-console": ["error", { "allow": ["warn", "error"] }],
+    "jest/expect-expect": "off",
+    "eslint/max-nested-callbacks": ["error", 2],
+    "eslint/max-depth": [
+      "error",
+      {
+        "max": 2
+      }
+    ],
+    "eslint/max-lines-per-function": ["error", {
+      "max": 100,
+      "skipBlankLines": false,
+      "skipComments": false,
+      "IIFEs": false
+    }]
+  },
+  "ignorePatterns": [
+    "tests/vue-testing-library/jsdom/setup.ts",
+    "tests/vue-testing-library/happy-dom/setup.ts"
+  ],
+  "globals": {
+    "__dirname": "readonly",
+    "__filename": "readonly",
+    "test": "readonly",
+    "expect": "readonly",
+    "describe": "readonly",
+    "beforeEach": "readonly",
+    "afterEach": "readonly",
+    "vi": "readonly",
+    "defineModel": "readonly",
+    "defineProps": "readonly",
+    "setTimeout": "readonly",
+    "clearTimeout": "readonly",
+    "setInterval": "readonly",
+    "console": "readonly",
+    "clearInterval": "readonly",
+    "window": "readonly",
+    "document": "readonly"
+  }
+}

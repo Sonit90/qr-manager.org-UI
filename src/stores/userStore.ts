@@ -1,10 +1,10 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { ApiClientV1 } from '@/api/v1/ApiClientV1.ts'
-import {
-  type TypeBodyAuthenticationLoginV1,
-  type TypeUserPublicV1,
-  type TypeUserRegisterV1,
+import type {
+  TypeBodyAuthenticationLoginV1,
+  TypeUserPublicV1,
+  TypeUserRegisterV1,
 } from '@/api/__generated__/v1/data-contracts.ts'
 
 export const useUserStore = defineStore('user', () => {
@@ -23,7 +23,7 @@ export const useUserStore = defineStore('user', () => {
       refresh_token.value = response.refresh_token
       token_type.value = response.token_type
     } catch {
-      console.log('Error while login user')
+      console.error('Error while login user')
     } finally {
       isLoading.value = false
     }
@@ -34,7 +34,7 @@ export const useUserStore = defineStore('user', () => {
       isLoading.value = true
       user.value = await ApiClientV1.authenticationRegisterUser(params)
     } catch {
-      console.log('Error while registering user')
+      console.error('Error while registering user')
     } finally {
       isLoading.value = false
     }

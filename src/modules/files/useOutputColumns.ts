@@ -19,7 +19,7 @@ export function useOutputColumns(fileColumns?: Ref<FileColumn[] | undefined>) {
     const currentColumns = fileColumns.value?.map((col) => col.mapInformation?.targetName)
     return outputColumns.value
       .filter((e) => !currentColumns?.includes(e.name))
-      .map((col, index) => ({ ...col, index }))
+      .map((col, index) => Object.assign(col, { index }))
   })
   return {
     availableColumns,

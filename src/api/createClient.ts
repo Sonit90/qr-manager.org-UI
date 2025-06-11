@@ -1,5 +1,5 @@
-type Constructor<T> = new (...args: any[]) => T
+type TypedConstructor<T> = new () => T
 
-export function createClient<T>(api: Constructor<T>) {
+export function createClient<T>(api: TypedConstructor<T>): T {
   return new api()
 }

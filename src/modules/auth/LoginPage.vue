@@ -37,7 +37,7 @@ const handleLogin = async () => {
     </div>
 
     <div class="px-10 pb-10">
-      <v-form class="gap-4" @submit.prevent="handleLogin" ref="loginForm">
+      <v-form class="ga-4" @submit.prevent="handleLogin" ref="loginForm">
         <v-text-field
           v-model="form.email"
           :rules="emailRules"

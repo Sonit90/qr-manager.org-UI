@@ -66,7 +66,7 @@ const handleRegister = async () => {
     </div>
 
     <div class="px-10 pb-10">
-      <v-form class="gap-4" @submit.prevent="handleRegister" ref="registerForm">
+      <v-form class="ga-4" @submit.prevent="handleRegister" ref="registerForm">
         <v-text-field
           v-model="form.firstName"
           :rules="nameRules"

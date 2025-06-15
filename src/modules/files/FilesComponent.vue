@@ -68,8 +68,8 @@ const files = ref<FileInput[]>([
 </script>
 
 <template>
-  <div class="d-flex gap-2 flex-col">
-    <div class="flex align-center">Input Files</div>
+  <div class="d-flex ga-2 flex-column">
+    <div class="d-flex align-center">Input Files</div>
     <FileComponent
       v-for="file in files"
       :key="file.id"

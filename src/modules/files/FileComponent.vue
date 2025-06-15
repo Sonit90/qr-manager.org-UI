@@ -28,8 +28,8 @@ const isExpanded = ref(false)
 </script>
 
 <template>
-  <v-card v-if="modelColumns && modelFilters" class="pa-2 d-flex gap-2 flex-col">
-    <v-card-title class="d-flex px-0 gap-2">
+  <v-card v-if="modelColumns && modelFilters" class="pa-2 d-flex ga-2 flex-column">
+    <v-card-title class="d-flex px-0 ga-2">
       <span>
         {{ name }}
       </span>
@@ -45,10 +45,10 @@ const isExpanded = ref(false)
         @click="isExpanded = !isExpanded"
       ></v-btn
     ></v-card-title>
-    <div class="flex align-center gap-2" v-for="(col, index) in modelColumns" :key="col.name">
+    <div class="d-flex align-center ga-2" v-for="(col, index) in modelColumns" :key="col.name">
       {{ col.name }}
       <v-select
-        class="ml-auto max-w-xs"
+        class="ml-auto file-select"
         label="Map to"
         @update:modelValue="onSelect(index, $event)"
         hide-details
@@ -60,3 +60,9 @@ const isExpanded = ref(false)
     <FileFilters v-if="isExpanded" v-model="modelFilters" :columns="modelColumns" />
   </v-card>
 </template>
+
+<style scoped>
+.file-select {
+  max-width: 20rem;
+}
+</style>

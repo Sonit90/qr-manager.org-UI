@@ -27,7 +27,7 @@ function textFieldType(filterType: FilterType) {
 </script>
 
 <template>
-  <div v-for="(filter, index) in model" :key="index" class="d-flex gap-2 align-center">
+  <div v-for="(filter, index) in model" :key="index" class="d-flex ga-2 align-center">
     <v-select
       density="compact"
       class="w-30"

@@ -15,11 +15,11 @@ const outputMetaInformation: OutputMetaInformation = reactive({
 </script>
 
 <template>
-  <div class="pa-2 flex flex-col gap-2">
+  <div class="pa-2 d-flex flex-column ga-2">
     Output Configuration
     <v-card>
       <v-card-title> Output </v-card-title>
-      <div class="d-flex gap-2 px-2">
+      <div class="d-flex ga-2 px-2">
         <v-text-field v-model="outputMetaInformation.name" label="Name" required></v-text-field>
         <v-select label="Format" v-model="outputMetaInformation.format" :items="formatOptions" />
       </div>

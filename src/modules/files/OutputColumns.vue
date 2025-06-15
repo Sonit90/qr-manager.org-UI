@@ -14,13 +14,13 @@ function removeColumn(index: number) {
 <template>
   <v-card>
     <v-card-title>
-      <div class="flex">
+      <div class="d-flex">
         Output Columns
         <v-btn class="ml-auto" density="compact" icon="mdi-plus" @click="addColumn()" />
       </div>
     </v-card-title>
     <div
-      class="flex gap-2 px-4 py-2 align-center"
+      class="d-flex ga-2 px-4 py-2 align-center"
       v-for="(col, index) in outputColumns"
       :key="index"
     >

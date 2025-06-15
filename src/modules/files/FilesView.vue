@@ -4,8 +4,8 @@ import FilesComponent from '@/modules/files/FilesComponent.vue'
 </script>
 
 <template>
-  <div class="flex p-4">
-    <FilesComponent class="p-2 w-50 grow" />
-    <OutputComponent class="w-50 grow" />
+  <div class="d-flex pa-4">
+    <FilesComponent class="pa-2 w-50" />
+    <OutputComponent class="w-50" />
   </div>
 </template>

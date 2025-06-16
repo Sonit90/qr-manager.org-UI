@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "run-s generate serve",
     "serve": "vite",
+    "build-only": "vite build",
     "build-typecheck": "run-p type-check \"build-only {@}\" --",
     "build": "run-s generate build-typecheck",
     "generate-api-v1": "node ./src/api/v1/generateApiV1.js",
@@ -19,7 +20,6 @@
     "test:vitest": "vitest run",
     "test": "run-p test:bun test:vitest",
     "test:watch": "vitest watch",
-    "build-only": "vite build",
     "type-check": "vue-tsc --build",
     "lint:oxlint": "oxlint --fix --fix-suggestions -c .oxlintrc.jsonc --tsconfig tsconfig.json",
     "lint:eslint": "eslint . --fix",

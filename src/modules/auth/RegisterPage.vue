@@ -11,6 +11,7 @@ import {
   isValidEmail,
   matchesPassword,
 } from '@/helpers/validations/validations.ts'
+import AuthForm from '@/modules/auth/components/AuthForm.vue'
 
 const registerForm = ref<Ref | null>(null)
 const showPassword = ref(false)
@@ -60,98 +61,86 @@ const handleRegister = async () => {
 }
 </script>
 <template>
-  <div>
-    <div class="text-center pt-10 pb-5">
-      <h1 class="text-3xl font-light text-gray-800 mb-2">Create Account</h1>
-    </div>
+  <AuthForm title="Create Account">
+    <v-form class="ga-4" @submit.prevent="handleRegister" ref="registerForm">
+      <v-text-field
+        v-model="form.firstName"
+        :rules="nameRules"
+        label="First Name"
+        prepend-inner-icon="mdi-account"
+        variant="outlined"
+        color="primary"
+        required
+      />
 
-    <div class="px-10 pb-10">
-      <v-form class="ga-4" @submit.prevent="handleRegister" ref="registerForm">
-        <v-text-field
-          v-model="form.firstName"
-          :rules="nameRules"
-          label="First Name"
-          prepend-inner-icon="mdi-account"
-          variant="outlined"
-          color="primary"
-          required
-        />
+      <v-text-field
+        v-model="form.lastName"
+        :rules="nameRules"
+        label="Last Name"
+        prepend-inner-icon="mdi-account"
+        variant="outlined"
+        color="primary"
+        required
+      />
 
-        <v-text-field
-          v-model="form.lastName"
-          :rules="nameRules"
-          label="Last Name"
-          prepend-inner-icon="mdi-account"
-          variant="outlined"
-          color="primary"
-          required
-        />
+      <v-text-field
+        v-model="form.email"
+        :rules="emailRules"
+        label="Email"
+        prepend-inner-icon="mdi-email"
+        variant="outlined"
+        color="primary"
+        required
+      />
 
-        <v-text-field
-          v-model="form.email"
-          :rules="emailRules"
-          label="Email"
-          prepend-inner-icon="mdi-email"
-          variant="outlined"
-          color="primary"
-          required
-        />
+      <v-text-field
+        v-model="form.password"
+        :rules="passwordRules"
+        :type="showPassword ? 'text' : 'password'"
+        label="Password"
+        prepend-inner-icon="mdi-lock"
+        :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+        @click:append-inner="showPassword = !showPassword"
+        variant="outlined"
+        color="primary"
+        required
+      />
 
-        <v-text-field
-          v-model="form.password"
-          :rules="passwordRules"
-          :type="showPassword ? 'text' : 'password'"
-          label="Password"
-          prepend-inner-icon="mdi-lock"
-          :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-          @click:append-inner="showPassword = !showPassword"
-          variant="outlined"
-          color="primary"
-          required
-        />
+      <v-text-field
+        v-model="form.confirmPassword"
+        :rules="confirmPasswordRules"
+        :type="showConfirmPassword ? 'text' : 'password'"
+        label="Confirm Password"
+        prepend-inner-icon="mdi-lock-check"
+        :append-inner-icon="showConfirmPassword ? 'mdi-eye' : 'mdi-eye-off'"
+        @click:append-inner="showConfirmPassword = !showConfirmPassword"
+        variant="outlined"
+        color="primary"
+        required
+      />
 
-        <v-text-field
-          v-model="form.confirmPassword"
-          :rules="confirmPasswordRules"
-          :type="showConfirmPassword ? 'text' : 'password'"
-          label="Confirm Password"
-          prepend-inner-icon="mdi-lock-check"
-          :append-inner-icon="showConfirmPassword ? 'mdi-eye' : 'mdi-eye-off'"
-          @click:append-inner="showConfirmPassword = !showConfirmPassword"
-          variant="outlined"
-          color="primary"
-          required
-        />
-
-        <v-checkbox
-          v-model="form.agreeToTerms"
-          :rules="[(v) => !!v || 'You must agree to the terms and conditions']"
-          color="primary"
-          required
-        >
-          <template v-slot:label>
-            <span>
-              I agree to the
-              <a href="#" class="link-styled"> Terms and Conditions </a>
-            </span>
-          </template>
-        </v-checkbox>
-
-        <v-btn type="submit" class="btn-primary" color="primary" :loading="isLoading" block>
-          Create Account
-        </v-btn>
-      </v-form>
-
-      <div
-        class="text-center my-8 relative text-gray-500 before:content-[''] before:absolute before:top-1/2 before:left-0 before:right-0 before:h-px before:bg-gray-300"
+      <v-checkbox
+        v-model="form.agreeToTerms"
+        :rules="[(v) => !!v || 'You must agree to the terms and conditions']"
+        color="primary"
+        required
       >
-        <span>or</span>
-      </div>
+        <template v-slot:label>
+          <span>
+            I agree to the
+            <a href="#" class="link-styled"> Terms and Conditions </a>
+          </span>
+        </template>
+      </v-checkbox>
 
-      <div class="text-center">
-        <span>Already have an account? </span>
-        <router-link to="/login" class="link-styled"> Sign in </router-link>
-      </div>
-    </div>
-  </div>
+      <v-btn type="submit" class="btn-primary" color="primary" :loading="isLoading" block>
+        Create Account
+      </v-btn>
+    </v-form>
+
+    <template #append>
+      <span>Already have an account? </span>
+      <router-link to="/login" class="link-styled"> Sign in </router-link>
+    </template>
+  </AuthForm>
 </template>

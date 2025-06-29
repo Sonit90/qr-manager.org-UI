@@ -20,11 +20,11 @@ function removeColumn(index: number) {
       </div>
     </v-card-title>
     <div
-      class="d-flex ga-2 px-4 py-2 align-center"
       v-for="(col, index) in outputColumns"
       :key="index"
+      class="d-flex ga-2 px-4 py-2 align-center"
     >
-      <v-text-field hide-details v-model="col.name" />
+      <v-text-field v-model="col.name" hide-details />
       <v-btn density="compact" variant="plain" icon="mdi-trash-can" @click="removeColumn(index)" />
     </div>
   </v-card>

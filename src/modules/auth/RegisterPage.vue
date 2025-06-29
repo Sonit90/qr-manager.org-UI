@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import { ref, reactive, type Ref } from 'vue'
+import { ref, reactive, type Ref, computed } from 'vue'
 import { useUserStore } from '@/stores/userStore.ts'
 import { storeToRefs } from 'pinia'
 import {
-  hasLowercase,
   hasMinLength,
   hasNumber,
-  hasUppercase,
   isRequired,
   isValidEmail,
   matchesPassword,
@@ -30,18 +28,12 @@ const nameRules = [isRequired('Name'), hasMinLength(2)]
 
 const emailRules = [isRequired('E-mail'), isValidEmail]
 
-const passwordRules = [
-  isRequired('Password'),
-  hasMinLength(8),
-  hasLowercase,
-  hasUppercase,
-  hasNumber,
-]
+const passwordRules = [isRequired('Password'), hasMinLength(8), hasNumber]
 
-const confirmPasswordRules = [
+const confirmPasswordRules = computed(() => [
   isRequired('Please confirm your password'),
   matchesPassword(form.password),
-]
+])
 
 const userStore = useUserStore()
 const { isLoading } = storeToRefs(userStore)
@@ -54,15 +46,15 @@ const handleRegister = async () => {
     return
   }
   await userStore.register({
+    full_name: [form.firstName, form.lastName].filter(Boolean).join(' '),
     email: form.email,
     password: form.password,
-    confirm_password: form.confirmPassword,
   })
 }
 </script>
 <template>
   <AuthForm title="Create Account">
-    <v-form class="ga-4" @submit.prevent="handleRegister" ref="registerForm">
+    <v-form ref="registerForm" class="ga-4" @submit.prevent="handleRegister">
       <v-text-field
         v-model="form.firstName"
         :rules="nameRules"
@@ -100,10 +92,10 @@ const handleRegister = async () => {
         label="Password"
         prepend-inner-icon="mdi-lock"
         :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-        @click:append-inner="showPassword = !showPassword"
         variant="outlined"
         color="primary"
         required
+        @click:append-inner="showPassword = !showPassword"
       />
 
       <v-text-field
@@ -113,10 +105,10 @@ const handleRegister = async () => {
         label="Confirm Password"
         prepend-inner-icon="mdi-lock-check"
         :append-inner-icon="showConfirmPassword ? 'mdi-eye' : 'mdi-eye-off'"
-        @click:append-inner="showConfirmPassword = !showConfirmPassword"
         variant="outlined"
         color="primary"
         required
+        @click:append-inner="showConfirmPassword = !showConfirmPassword"
       />
 
       <v-checkbox
@@ -125,7 +117,7 @@ const handleRegister = async () => {
         color="primary"
         required
       >
-        <template v-slot:label>
+        <template #label>
           <span>
             I agree to the
             <a href="#" class="link-styled"> Terms and Conditions </a>

@@ -29,34 +29,34 @@ function textFieldType(filterType: FilterType) {
 <template>
   <div v-for="(filter, index) in model" :key="index" class="d-flex ga-2 align-center">
     <v-select
+      v-model="filter.sourceIndex"
       density="compact"
       class="w-30"
       hide-details
       :items="columnOptions"
-      v-model="filter.sourceIndex"
     />
     <v-select
+      v-model="filter.type"
       class="w-15"
       density="compact"
       :items="Object.values(FilterType)"
       hide-details
-      v-model="filter.type"
-      @update:modelValue="onTypeChange($event, index)"
+      @update:model-value="onTypeChange($event, index)"
     />
     <v-select
+      v-model="filter.operator"
       class="w-10"
       density="compact"
       hide-details
       :items="filterOperators[filter.type]"
-      v-model="filter.operator"
     />
     <v-text-field
+      v-model="filter.value"
       density="compact"
       :type="textFieldType(filter.type)"
       class="w-10"
       hide-details
       label="Value"
-      v-model="filter.value"
     />
     <v-btn class="ml-auto" density="compact" icon="mdi-plus" @click="addFilter()" />
   </div>

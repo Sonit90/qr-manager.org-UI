@@ -4,14 +4,17 @@ import { useUserStore } from '@/stores/userStore.ts'
 import { storeToRefs } from 'pinia'
 import { hasMinLength, isRequired, isValidEmail } from '@/helpers/validations/validations.ts'
 import AuthForm from '@/modules/auth/components/AuthForm.vue'
+import { useRouter } from 'vue-router'
+import { notify } from '@kyvg/vue3-notification'
+import { handleApiError } from '@/api/helpers/handleApiError.ts'
 
+const router = useRouter()
 const loginForm = ref<Ref | null>(null)
 const showPassword = ref(false)
 
 const form = reactive({
   email: '',
   password: '',
-  remember: false,
 })
 
 const emailRules = [isRequired('E-mail'), isValidEmail]
@@ -26,13 +29,22 @@ const handleLogin = async () => {
   if (!valid) {
     return
   }
-
-  await userStore.login({ username: form.email, password: form.password })
+  try {
+    await userStore.login({ username: form.email, password: form.password })
+    notify({
+      title: 'Authorization',
+      text: 'You have been logged in!',
+      type: 'success',
+    })
+    await router.push('/user')
+  } catch (e) {
+    handleApiError(e, { title: 'Authorization' })
+  }
 }
 </script>
 <template>
   <AuthForm title="Welcome Back" subtitle="Sign in to your account">
-    <v-form class="ga-4" @submit.prevent="handleLogin" ref="loginForm">
+    <v-form ref="loginForm" class="ga-4" @submit.prevent="handleLogin">
       <v-text-field
         v-model="form.email"
         :rules="emailRules"
@@ -50,26 +62,21 @@ const handleLogin = async () => {
         label="Password"
         prepend-inner-icon="mdi-lock"
         :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-        @click:append-inner="showPassword = !showPassword"
         variant="outlined"
         color="primary"
         required
+        @click:append-inner="showPassword = !showPassword"
       />
-      <v-row align="center" justify="space-between">
-        <v-col cols="auto">
-          <v-checkbox v-model="form.remember" label="Remember me" color="primary" hide-details />
-        </v-col>
-        <v-col cols="auto">
-          <router-link to="/reset-password" class="link-styled"> Forgot password? </router-link>
-        </v-col>
-      </v-row>
+      <div class="mb-4 d-flex justify-end">
+        <router-link to="/reset-password" class="link-styled"> Forgot password? </router-link>
+      </div>
       <v-btn type="submit" class="btn-primary" color="primary" :loading="isLoading" block>
         Sign In
       </v-btn>
     </v-form>
     <template #append>
-      <span>Don't have an account? </span>
-      <router-link to="/register" class="link-styled"> Sign up </router-link>
+      <span class="mr-2">Don't have an account?</span>
+      <router-link to="/register" class="link-styled">Sign up</router-link>
     </template>
   </AuthForm>
 </template>

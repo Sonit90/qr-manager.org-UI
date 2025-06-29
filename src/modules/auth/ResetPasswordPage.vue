@@ -2,9 +2,11 @@
 import { ref, reactive, type Ref } from 'vue'
 import { isRequired, isValidEmail } from '@/helpers/validations/validations.ts'
 import AuthForm from '@/modules/auth/components/AuthForm.vue'
+import { handleApiError } from '@/api/helpers/handleApiError.ts'
+import { ApiClientV1 } from '@/api/v1/ApiClientV1.ts'
 
 const resetForm = ref<Ref | null>(null)
-const loading = ref(false)
+const isLoading = ref(false)
 const emailSent = ref(false)
 
 const form = reactive({
@@ -16,21 +18,27 @@ const emailRules = [isRequired('E-mail'), isValidEmail]
 const handleResetPassword = async () => {
   if (!resetForm.value) return
   const { valid } = await resetForm.value.validate()
-  if (valid) {
-    loading.value = true
-    // Simulate API call
-    setTimeout(() => {
-      loading.value = false
-      emailSent.value = true
-      // Handle password reset here
-    }, 2000)
+  if (!valid) {
+    return
+  }
+  try {
+    isLoading.value = true
+    await ApiClientV1.authenticationRequestPasswordReset({ email: form.email })
+    emailSent.value = true
+  } catch (e) {
+    handleApiError(e, { title: 'Password reset' })
+  } finally {
+    isLoading.value = false
   }
 }
 </script>
 
 <template>
-  <AuthForm title="Reset Password" subtitle="Enter your email to receive reset instructions">
-    <v-form @submit.prevent="handleResetPassword" ref="resetForm" v-if="!emailSent">
+  <AuthForm
+    title="Reset Password"
+    :subtitle="emailSent ? '' : 'Enter your email to receive reset instructions'"
+  >
+    <v-form v-if="!emailSent" ref="resetForm" @submit.prevent="handleResetPassword">
       <div class="mb-2">
         <v-text-field
           v-model="form.email"
@@ -43,7 +51,7 @@ const handleResetPassword = async () => {
         />
       </div>
 
-      <v-btn type="submit" class="btn-primary" color="primary" :loading="loading" block>
+      <v-btn type="submit" class="btn-primary" color="primary" :is-loading="isLoading" block>
         Send Reset Link
       </v-btn>
     </v-form>
@@ -54,7 +62,7 @@ const handleResetPassword = async () => {
       <p class="mb-4 text-gray-600 leading-relaxed">
         We've sent password reset instructions to <strong>{{ form.email }}</strong>
       </p>
-      <v-btn @click="emailSent = false" variant="outlined" color="primary" class="mb-3" block>
+      <v-btn variant="outlined" color="primary" class="mb-3" block @click="emailSent = false">
         Send Another Email
       </v-btn>
     </div>
@@ -65,7 +73,7 @@ const handleResetPassword = async () => {
       </div>
 
       <div class="text-center mt-3">
-        <span>Don't have an account? </span>
+        <span class="mr-2">Don't have an account? </span>
         <router-link to="/register" class="link-styled"> Sign up </router-link>
       </div>
     </template>

@@ -45,16 +45,16 @@ const isExpanded = ref(false)
         @click="isExpanded = !isExpanded"
       ></v-btn
     ></v-card-title>
-    <div class="d-flex align-center ga-2" v-for="(col, index) in modelColumns" :key="col.name">
+    <div v-for="(col, index) in modelColumns" :key="col.name" class="d-flex align-center ga-2">
       {{ col.name }}
       <v-select
         class="ml-auto file-select"
         label="Map to"
-        @update:modelValue="onSelect(index, $event)"
         hide-details
         :items="mapOptions"
         item-title="name"
         item-value="name"
+        @update:model-value="onSelect(index, $event)"
       />
     </div>
     <FileFilters v-if="isExpanded" v-model="modelFilters" :columns="modelColumns" />

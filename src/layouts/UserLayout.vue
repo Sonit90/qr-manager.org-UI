@@ -1,0 +1,142 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+import { useUserStore } from '@/stores/userStore.ts'
+import { storeToRefs } from 'pinia'
+import { useRouter } from 'vue-router'
+import { notify } from '@kyvg/vue3-notification'
+import { handleApiError } from '@/api/helpers/handleApiError.ts'
+
+const navigationItems = [
+  { title: 'Dashboard', icon: 'mdi-view-dashboard', to: '/dashboard' },
+  { title: 'Users', icon: 'mdi-account-group', to: '/users' },
+  { title: 'Projects', icon: 'mdi-folder-multiple', to: '/projects' },
+  { title: 'Analytics', icon: 'mdi-chart-line', to: '/analytics' },
+  { title: 'Reports', icon: 'mdi-file-chart', to: '/reports' },
+  { title: 'Messages', icon: 'mdi-message', to: '/messages' },
+]
+const drawer = ref(true)
+const rail = ref(false)
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+
+const router = useRouter()
+async function logout() {
+  try {
+    await userStore.logout()
+    await router.push('/login')
+    notify({
+      type: 'success',
+      title: 'Logout',
+      text: 'You have been logged out!',
+    })
+  } catch (e) {
+    handleApiError(e, { title: 'Logout' })
+  }
+}
+</script>
+
+<template>
+  <v-app-bar color="primary" dark elevation="1" app>
+    <v-app-bar-nav-icon @click="drawer = !drawer" />
+
+    <!-- Logo -->
+    <div class="d-flex align-center flex-grow-1">
+      <v-img src="/logo.svg" alt="Logo" max-height="32" max-width="32" class="me-3" />
+      <v-toolbar-title class="text-h6 font-weight-bold flex-grow-1"> MyApp </v-toolbar-title>
+    </div>
+
+    <v-spacer />
+
+    <!-- User Menu -->
+    <v-menu offset-y>
+      <template #activator="{ props }">
+        <v-btn v-bind="props" class="me-2">
+          {{ user?.email }}
+          <v-avatar size="32">
+            <v-icon>mdi-account</v-icon>
+          </v-avatar>
+        </v-btn>
+      </template>
+
+      <v-list>
+        <!--        <v-list-item>-->
+        <!--          <v-list-item-title class="font-weight-medium">-->
+        <!--            {{ user?.email }}-->
+        <!--          </v-list-item-title>-->
+        <!--        </v-list-item>-->
+
+        <v-divider />
+
+        <v-list-item to="/user">
+          <template #prepend>
+            <v-icon>mdi-account-circle</v-icon>
+          </template>
+          <v-list-item-title>Profile</v-list-item-title>
+        </v-list-item>
+
+        <!--        <v-list-item to="/settings">-->
+        <!--          <template #prepend>-->
+        <!--            <v-icon>mdi-cog</v-icon>-->
+        <!--          </template>-->
+        <!--          <v-list-item-title>Settings</v-list-item-title>-->
+        <!--        </v-list-item>-->
+
+        <v-divider />
+
+        <v-list-item @click="logout()">
+          <template #prepend>
+            <v-icon color="error">mdi-logout</v-icon>
+          </template>
+          <v-list-item-title>Logout</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-menu>
+  </v-app-bar>
+
+  <!-- Navigation Drawer -->
+  <v-navigation-drawer v-model="drawer" :rail="rail" permanent app>
+    <v-btn
+      class="rail-btn"
+      variant="elevated"
+      :icon="rail ? 'mdi-chevron-right' : 'mdi-chevron-left'"
+      size="small"
+      @click.stop="rail = !rail"
+    />
+
+    <!-- Navigation Items -->
+    <v-list density="compact" nav>
+      <v-list-item
+        v-for="item in navigationItems"
+        :key="item.title"
+        :to="item.to"
+        :prepend-icon="item.icon"
+        :title="item.title"
+        :value="item.title"
+        color="primary"
+      />
+    </v-list>
+
+    <!-- Bottom Section -->
+    <template #append>
+      <v-divider />
+      <v-list density="compact" nav>
+        <v-list-item prepend-icon="mdi-help-circle" title="Help & Support" @click="$emit('help')" />
+        <v-list-item prepend-icon="mdi-information" title="About" @click="$emit('about')" />
+      </v-list>
+    </template>
+  </v-navigation-drawer>
+
+  <v-container class="pa-6">
+    <router-view />
+  </v-container>
+</template>
+<style scoped>
+.rail-btn {
+  position: absolute;
+  right: 0;
+  transform: translateX(50%);
+  top: 135px;
+  z-index: 1;
+}
+</style>

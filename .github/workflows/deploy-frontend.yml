@@ -82,6 +82,11 @@ jobs:
           echo "📋 Copying project files to $RELEASE_DIR..."
           rsync -av --exclude='.git' --exclude='.github' --exclude='node_modules' --exclude='.venv' --exclude='current' --exclude='releases' $GITHUB_WORKSPACE/ $RELEASE_DIR/
           echo "✅ Project copied to $RELEASE_DIR"
+          
+          # Ensure proper ownership for deployment
+          echo "🔧 Setting proper ownership..."
+          chown -R $(id -u):$(id -g) "$RELEASE_DIR"
+          echo "✅ Ownership set correctly"
       
       - name: Copy .env file to release directory
         run: |
@@ -125,15 +130,21 @@ jobs:
           
           # Clear current directory
           echo "🧹 Clearing current directory..."
-          # Try normal removal first, then with sudo if needed
-          if ! rm -rf current/* 2>/dev/null; then
-            echo "⚠️  Permission denied, trying with sudo..."
-            sudo rm -rf current/*
+          # Remove dist directory first if it exists and has wrong permissions
+          if [ -d "current/dist" ]; then
+            echo "🗑️  Removing dist directory with wrong permissions..."
+            rm -rf current/dist
           fi
+          rm -rf current/*
           
           # Copy new release to current
           echo "📋 Deploying new release to current..."
           rsync -av --exclude='current' --exclude='backups' --exclude='releases' "$RELEASE_DIR/" current/
+          
+          # Ensure all files have correct ownership
+          echo "🔧 Fixing file ownership..."
+          chown -R $(id -u):$(id -g) current/
+          echo "✅ File ownership fixed"
           
           # Build and start services
           echo "🔨 Building Docker images..."

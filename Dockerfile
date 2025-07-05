@@ -16,6 +16,14 @@ RUN bun install --frozen-lockfile
 # Копируем исходный код
 COPY . .
 
+# Принимаем переменные окружения как аргументы сборки
+ARG VITE_FRONTEND_PORT
+ARG VITE_API_URL
+
+# Устанавливаем переменные окружения для сборки
+ENV VITE_FRONTEND_PORT=$VITE_FRONTEND_PORT
+ENV VITE_API_URL=$VITE_API_URL
+
 # Собираем приложение
 RUN npm run build
 

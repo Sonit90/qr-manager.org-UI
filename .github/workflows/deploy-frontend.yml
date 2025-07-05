@@ -98,8 +98,10 @@ jobs:
             cp .env "$RELEASE_DIR/"
             echo "✅ .env file copied to $RELEASE_DIR"
           else
-            echo "❌ Error: .env file not found in $DEPLOY_DIR"
-            exit 1
+            echo "⚠️  .env file not found in $DEPLOY_DIR, creating default one..."
+            echo "VITE_FRONTEND_PORT=5195" > "$RELEASE_DIR/.env"
+            echo "VITE_API_URL=http://localhost:8000/api" >> "$RELEASE_DIR/.env"
+            echo "✅ Default .env file created in $RELEASE_DIR"
           fi
       
       - name: Verify .env file exists in release directory
@@ -117,12 +119,20 @@ jobs:
           if [ -d "current" ] && [ -f "current/docker-compose.yml" ]; then
             echo "🛑 Stopping current services..."
             cd current
+            # Stop with both possible project names to ensure cleanup
             docker compose -f docker-compose.yml --project-name frontend-production down --volumes --remove-orphans || true
+            docker compose -f docker-compose.yml down --volumes --remove-orphans || true
             cd ..
             echo "✅ Current services stopped"
           else
             echo "ℹ️  No current services to stop"
           fi
+          
+          # Additional cleanup: kill any processes using port 5195
+          echo "🧹 Cleaning up port 5195..."
+          docker ps -q --filter "publish=5195" | xargs -r docker kill || true
+          docker ps -aq --filter "publish=5195" | xargs -r docker rm || true
+          echo "✅ Port 5195 cleaned up"
       
       - name: Clean up current directory
         run: |
@@ -156,6 +166,11 @@ jobs:
           # Build and start services
           echo "🔨 Building Docker images..."
           cd current
+          # Load environment variables from .env file for build
+          if [ -f ".env" ]; then
+            export $(cat .env | grep -v '^#' | xargs)
+            echo "✅ Environment variables loaded from .env"
+          fi
           docker compose -f docker-compose.yml --project-name frontend-production build
           
           echo "🚀 Starting services..."

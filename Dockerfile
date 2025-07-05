@@ -20,4 +20,4 @@ COPY . .
 EXPOSE 5195
 
 # Запускаем приложение через npm
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "build"]

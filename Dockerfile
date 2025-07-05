@@ -22,8 +22,9 @@ RUN npm run build
 # Production stage
 FROM nginx:alpine
 
-# Изменяем существующего пользователя nginx на UID 1000
-RUN usermod -u 1000 nginx && \
+# Устанавливаем shadow для управления пользователями и изменяем nginx на UID 1000
+RUN apk add --no-cache shadow && \
+    usermod -u 1000 nginx && \
     groupmod -g 1000 nginx
 
 # Копируем собранные файлы из build stage

@@ -24,11 +24,11 @@ ARG VITE_API_URL
 ENV VITE_FRONTEND_PORT=$VITE_FRONTEND_PORT
 ENV VITE_API_URL=$VITE_API_URL
 
-# Запускаем тесты
-RUN npm run test
-
 # Собираем приложение
 RUN bun run build
+
+# Запускаем тесты
+RUN npm run test
 
 # Production stage
 FROM nginx:alpine

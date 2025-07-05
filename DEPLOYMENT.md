@@ -13,7 +13,7 @@ sudo chown $USER:$USER /opt/front
 ```env
 # Frontend Environment Variables
 VITE_API_URL=http://localhost:8000
-VITE_FRONTEND_PORT=5195
+VITE_FRONTEND_PORT=5195 // This is hardcoded in Dockerfile
 
 # Docker Compose Project Name
 COMPOSE_PROJECT_NAME=frontend-production

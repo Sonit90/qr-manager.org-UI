@@ -38,7 +38,9 @@ RUN chown -R nginx:nginx /usr/share/nginx/html && \
     chown -R nginx:nginx /var/log/nginx && \
     chown -R nginx:nginx /etc/nginx/conf.d && \
     touch /var/run/nginx.pid && \
-    chown -R nginx:nginx /var/run/nginx.pid
+    chown -R nginx:nginx /var/run/nginx.pid && \
+    chmod -R 755 /usr/share/nginx/html && \
+    chmod -R 777 /usr/share/nginx/html
 
 # Открываем порт
 EXPOSE 5195

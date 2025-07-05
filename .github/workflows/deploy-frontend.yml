@@ -117,25 +117,32 @@ jobs:
           if [ -d "current" ] && [ -f "current/docker-compose.yml" ]; then
             echo "🛑 Stopping current services..."
             cd current
-            docker compose -f docker-compose.yml --project-name frontend-production down || true
+            docker compose -f docker-compose.yml --project-name frontend-production down --volumes --remove-orphans || true
             cd ..
             echo "✅ Current services stopped"
           else
             echo "ℹ️  No current services to stop"
           fi
       
-      - name: Deploy new release
+      - name: Clean up current directory
         run: |
           cd $DEPLOY_DIR
           
-          # Clear current directory
-          echo "🧹 Clearing current directory..."
-          # Remove dist directory first if it exists and has wrong permissions
-          if [ -d "current/dist" ]; then
-            echo "🗑️  Removing dist directory with wrong permissions..."
-            rm -rf current/dist
+          # Use Docker to clean up files as root, then change ownership
+          echo "🧹 Cleaning up current directory..."
+          if [ -d "current" ]; then
+            echo "🔧 Using Docker to clean up files..."
+            # Use alpine container to remove files as root
+            docker run --rm -v "$(pwd)/current:/cleanup" alpine:latest sh -c "
+              rm -rf /cleanup/*
+              chown -R 1000:1000 /cleanup
+            " || true
+            echo "✅ Current directory cleaned up"
           fi
-          rm -rf current/*
+      
+      - name: Deploy new release
+        run: |
+          cd $DEPLOY_DIR
           
           # Copy new release to current
           echo "📋 Deploying new release to current..."
@@ -143,7 +150,7 @@ jobs:
           
           # Ensure all files have correct ownership
           echo "🔧 Fixing file ownership..."
-          chown -R $(id -u):$(id -g) current/
+          chown -R 1000:1000 current/
           echo "✅ File ownership fixed"
           
           # Build and start services

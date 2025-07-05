@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5195:5195"
+    environment:
+      - VITE_API_URL=http://localhost:8000
+      - VITE_FRONTEND_PORT=5195
+    volumes:
+      - .:/app
+      - /app/node_modules
+    stdin_open: true
+    tty: true
+    networks:
+      - frontend-network
+
+networks:
+  frontend-network:
+    driver: bridge 

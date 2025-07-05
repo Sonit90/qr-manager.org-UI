@@ -17,6 +17,10 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       port: Number(env.VITE_FRONTEND_PORT) || 5173, // fallback default
+      host: '0.0.0.0', // Важно для работы в Docker
+      watch: {
+        usePolling: true, // Для работы в Docker на некоторых системах
+      },
     },
   }
 })

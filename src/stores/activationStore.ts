@@ -16,6 +16,7 @@ export const useActivationStore = defineStore('activation', () => {
     try {
       isLoading.value = true
       await ApiClientV1.authenticationActivateUser(token)
+      activationStatus.value = ActivationStatus.SUCCESS
     } catch (e) {
       const { message } = handleApiError(e, { title: 'Activation Error' })
       activationStatus.value = ActivationStatus.ERROR

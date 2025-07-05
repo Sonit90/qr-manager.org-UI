@@ -1,7 +1,12 @@
 <script setup lang="ts">
-const emit = defineEmits({
-  'go-to-login': null,
-})
+withDefaults(
+  defineProps<{
+    loginUrl?: string
+  }>(),
+  {
+    loginUrl: '/login',
+  },
+)
 </script>
 
 <template>
@@ -17,7 +22,7 @@ const emit = defineEmits({
         variant="elevated"
         size="large"
         prepend-icon="mdi-login"
-        @click="emit('go-to-login')"
+        :to="{ path: loginUrl }"
       >
         Sign In
       </v-btn>

@@ -33,7 +33,9 @@
   },
   "ignorePatterns": [
     "tests/vue-testing-library/jsdom/setup.ts",
-    "tests/vue-testing-library/happy-dom/setup.ts"
+    "tests/vue-testing-library/happy-dom/setup.ts",
+    "src/api/*",
+    "src/api/*"
   ],
   "globals": {
     "__dirname": "readonly",
@@ -46,12 +48,17 @@
     "vi": "readonly",
     "defineModel": "readonly",
     "defineProps": "readonly",
+    "defineEmits": "readonly",
+    "defineExpose": "readonly",
+    "withDefaults": "readonly",
+    "defineSlots": "readonly",
     "setTimeout": "readonly",
     "clearTimeout": "readonly",
     "setInterval": "readonly",
     "console": "readonly",
     "clearInterval": "readonly",
     "window": "readonly",
-    "document": "readonly"
+    "document": "readonly",
+    "process": "readonly"
   }
 }

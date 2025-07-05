@@ -102,7 +102,7 @@ async function handleApply() {
       />
     </v-card-title>
 
-    <v-card-text v-if="cloned" class="pa-0">
+    <v-card-text v-if="user && cloned" class="pa-0">
       <v-list density="compact" class="pa-0">
         <EditableUserField v-model="cloned.email" icon="mdi-email" label="Email" />
         <EditableUserField

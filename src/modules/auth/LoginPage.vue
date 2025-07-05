@@ -46,7 +46,7 @@ const handleLogin = async () => {
   <AuthForm title="Welcome Back" subtitle="Sign in to your account">
     <v-form ref="loginForm" class="ga-4" @submit.prevent="handleLogin">
       <v-text-field
-        v-model="form.email"
+        v-model.trim="form.email"
         :rules="emailRules"
         label="Email"
         prepend-inner-icon="mdi-email"
@@ -56,7 +56,7 @@ const handleLogin = async () => {
       />
 
       <v-text-field
-        v-model="form.password"
+        v-model.trim="form.password"
         :rules="passwordRules"
         :type="showPassword ? 'text' : 'password'"
         label="Password"

@@ -4548,10 +4548,10 @@ vue-tsc@^2.2.10:
     "@volar/typescript" "~2.4.11"
     "@vue/language-core" "2.2.10"
 
-vuetify@^3.0.0, vuetify@^3.8.10:
-  version "3.8.10"
-  resolved "https://registry.npmjs.org/vuetify/-/vuetify-3.8.10.tgz"
-  integrity sha512-3BETdCGh3eB1cV5+dA+L5CYi62Q/Jb09H512GImeYzMHd2R+LntO0F5pNCqVB4KoxymQ4Jej3Q0J6AYmf0KD8w==
+vuetify@3.8.12, vuetify@^3.0.0:
+  version "3.8.12"
+  resolved "https://registry.npmjs.org/vuetify/-/vuetify-3.8.12.tgz"
+  integrity sha512-XRX/yRel/V5rlas12ovujVCo8RDb/NwICyef/DVYzybqbYz/UGHZd23sN5q1zw0h9jUN8httXI6ytWN7OFugmA==
 
 w3c-xmlserializer@^5.0.0:
   version "5.0.0"

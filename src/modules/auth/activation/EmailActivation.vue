@@ -69,7 +69,7 @@ const resendActivationEmail = async () => {
 
 // Handle activation on component mount
 onMounted(async () => {
-  const token = params.token
+  const token = params.token as string
 
   if (!token) {
     activationStatus.value = ActivationStatus.INVALID_LINK

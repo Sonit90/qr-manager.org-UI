@@ -10,6 +10,7 @@ import {
   matchesPassword,
 } from '@/helpers/validations/validations.ts'
 import AuthForm from '@/modules/auth/components/AuthForm.vue'
+import { handleApiError } from '@/api/helpers/handleApiError.ts'
 
 const registerForm = ref<Ref | null>(null)
 const showPassword = ref(false)
@@ -38,6 +39,8 @@ const confirmPasswordRules = computed(() => [
 const userStore = useUserStore()
 const { isLoading } = storeToRefs(userStore)
 
+const requestSent = ref(false)
+
 const handleRegister = async () => {
   if (!registerForm.value) return
   const { valid } = await registerForm.value.validate()
@@ -45,18 +48,24 @@ const handleRegister = async () => {
   if (!valid) {
     return
   }
-  await userStore.register({
-    full_name: [form.firstName, form.lastName].filter(Boolean).join(' '),
-    email: form.email,
-    password: form.password,
-  })
+  try {
+    await userStore.register({
+      full_name: [form.firstName, form.lastName].filter(Boolean).join(' '),
+      email: form.email,
+      password: form.password,
+    })
+    requestSent.value = true
+  } catch (e) {
+    handleApiError(e, { title: 'Registration' })
+    requestSent.value = false
+  }
 }
 </script>
 <template>
   <AuthForm title="Create Account">
-    <v-form ref="registerForm" class="ga-4" @submit.prevent="handleRegister">
+    <v-form v-if="!requestSent" ref="registerForm" class="ga-4" @submit.prevent="handleRegister">
       <v-text-field
-        v-model="form.firstName"
+        v-model.trim="form.firstName"
         :rules="nameRules"
         label="First Name"
         prepend-inner-icon="mdi-account"
@@ -66,7 +75,7 @@ const handleRegister = async () => {
       />
 
       <v-text-field
-        v-model="form.lastName"
+        v-model.trim="form.lastName"
         :rules="nameRules"
         label="Last Name"
         prepend-inner-icon="mdi-account"
@@ -76,7 +85,7 @@ const handleRegister = async () => {
       />
 
       <v-text-field
-        v-model="form.email"
+        v-model.trim="form.email"
         :rules="emailRules"
         label="Email"
         prepend-inner-icon="mdi-email"
@@ -86,7 +95,7 @@ const handleRegister = async () => {
       />
 
       <v-text-field
-        v-model="form.password"
+        v-model.trim="form.password"
         :rules="passwordRules"
         :type="showPassword ? 'text' : 'password'"
         label="Password"
@@ -99,7 +108,7 @@ const handleRegister = async () => {
       />
 
       <v-text-field
-        v-model="form.confirmPassword"
+        v-model.trim="form.confirmPassword"
         :rules="confirmPasswordRules"
         :type="showConfirmPassword ? 'text' : 'password'"
         label="Confirm Password"
@@ -129,6 +138,14 @@ const handleRegister = async () => {
         Create Account
       </v-btn>
     </v-form>
+    <div v-else class="text-center">
+      <v-icon color="success" size="64" class="mb-4"> mdi-check-circle </v-icon>
+      <v-card-title class="justify-center text-success"> Registrered Successfully! </v-card-title>
+      <v-card-text class="text-center">
+        Please check your e-mail for activation link. You can now sign in and start using our
+        platform.
+      </v-card-text>
+    </div>
 
     <template #append>
       <span>Already have an account? </span>

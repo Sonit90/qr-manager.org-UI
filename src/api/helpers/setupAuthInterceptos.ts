@@ -40,8 +40,8 @@ export function setupAuthInterceptors(
       if ((error.response?.status === 401 || error.response?.status === 403) && !isRefreshing) {
         isRefreshing = true
 
-        if (!refresh_token) {
-          await userStore.clearTokens()
+        if (!refresh_token.value) {
+          userStore.clearTokens()
           isRefreshing = false
           return Promise.reject(error)
         }

@@ -5,6 +5,7 @@ import type {
   TypeBodyAuthenticationLoginV1,
   TypeUserPublicV1,
   TypeUserRegisterV1,
+  TypeUserUpdateMeV1,
 } from '@/api/__generated__/v1/data-contracts.ts'
 import { useStorage } from '@vueuse/core'
 
@@ -48,11 +49,14 @@ export const useUserStore = defineStore('user', () => {
   }
 
   async function refreshUser() {
-    const response = await ApiClientV1.userRefreshUserToken()
-    console.log(response)
-    // access_token.value = response.access_token
-    // refresh_token.value = response.refresh_token
-    // token_type.value = response.token_type
+    const response = await ApiClientV1.authenticationRefreshToken({
+      headers: {
+        Authorization: `Bearer ${refresh_token}`,
+      },
+    })
+    access_token.value = response.access_token
+    refresh_token.value = response.refresh_token
+    token_type.value = response.token_type
   }
 
   function clearTokens() {
@@ -62,8 +66,12 @@ export const useUserStore = defineStore('user', () => {
   }
 
   async function logout() {
-    await ApiClientV1.userLogoutUser()
+    await ApiClientV1.authenticationLogout()
     clearTokens()
+  }
+
+  async function editUser(data: TypeUserUpdateMeV1) {
+    user.value = await ApiClientV1.userUpdateCurrentUser(data)
   }
 
   return {
@@ -71,6 +79,7 @@ export const useUserStore = defineStore('user', () => {
     logout,
     register,
     fetchUser,
+    editUser,
     clearTokens,
     refreshUser,
     isAuthenticated,

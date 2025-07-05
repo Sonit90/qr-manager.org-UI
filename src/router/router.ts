@@ -16,10 +16,6 @@ router.beforeEach((to, from, next) => {
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
   const disallowAuthenticated = to.matched.some((record) => record.meta.disallowAuthenticated)
 
-  if (to.meta.title) {
-    document.title = to.meta.title
-  }
-
   if (requiresAuth && !isAuthenticated.value) {
     notify({
       title: 'Auth required',

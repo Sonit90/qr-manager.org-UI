@@ -18,7 +18,7 @@
     "test:vtl-happy-dom": "vitest run --project=vtl-happy-dom",
     "test:bun": "bun --bun test test/bun",
     "test:vitest": "vitest run",
-    "test": "run-p test:bun test:vitest",
+    "test": "run-p test:vitest test:bun",
     "test:watch": "vitest watch",
     "type-check": "vue-tsc --build",
     "lint:oxlint": "oxlint --fix --fix-suggestions -c .oxlintrc.jsonc --tsconfig tsconfig.json",
@@ -65,7 +65,7 @@
     "vite-plugin-vuetify": "^2.1.1",
     "vitest": "^3.2.4",
     "vue-tsc": "^2.2.10",
-    "vuetify": "^3.8.10"
+    "vuetify": "3.8.12"
   },
   "module": "index.ts"
 }

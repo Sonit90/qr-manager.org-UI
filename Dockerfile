@@ -1,5 +1,5 @@
-# Используем Node.js образ с bun
-FROM oven/bun:1.2.2-alpine
+# Build stage
+FROM oven/bun:1.2.2-alpine AS build
 
 # Устанавливаем Node.js и npm
 RUN apk add --no-cache nodejs npm
@@ -16,8 +16,20 @@ RUN bun install --frozen-lockfile
 # Копируем исходный код
 COPY . .
 
+# Собираем приложение
+RUN npm run build
+
+# Production stage
+FROM nginx:alpine
+
+# Копируем собранные файлы из build stage
+COPY --from=build /app/dist /usr/share/nginx/html
+
+# Копируем конфигурацию nginx
+COPY nginx.conf /etc/nginx/nginx.conf
+
 # Открываем порт
 EXPOSE 5195
 
-# Запускаем приложение через npm
-CMD ["npm", "run", "build"]
+# Запускаем nginx
+CMD ["nginx", "-g", "daemon off;"]

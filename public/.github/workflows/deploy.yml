@@ -17,13 +17,13 @@ jobs:
       
       - name: Determine deployment directory
         run: |
-          # Try to use /opt/excel first, fallback to home directory
-          if mkdir -p /opt/excel 2>/dev/null; then
-            export DEPLOY_DIR="/opt/excel"
-            echo "✅ Using /opt/excel as deployment directory"
+          # Try to use /opt/front first, fallback to home directory
+          if mkdir -p /opt/front 2>/dev/null; then
+            export DEPLOY_DIR="/opt/front"
+            echo "✅ Using /opt/front as deployment directory"
           else
-            export DEPLOY_DIR="$HOME/excel"
-            echo "⚠️  Cannot access /opt, using $HOME/excel as deployment directory"
+            export DEPLOY_DIR="$HOME/front"
+            echo "⚠️  Cannot access /opt, using $HOME/front as deployment directory"
           fi
           echo "DEPLOY_DIR=$DEPLOY_DIR" >> $GITHUB_ENV
       
@@ -148,8 +148,8 @@ jobs:
           
           echo "🔍 Health check..."
           sleep 30  # Wait for services to start
-          if curl -f http://localhost:8000/api/v1/utils/health-check/; then
-            echo "✅ Health check passed"
+          if curl -f -L http://localhost:5195/; then
+            echo "✅ Health check passed - frontend is accessible"
           else
             echo "⚠️  Health check failed - check logs with: cd $DEPLOY_DIR/current && docker compose -f docker-compose.yml --project-name production logs"
           fi

@@ -125,7 +125,11 @@ jobs:
           
           # Clear current directory
           echo "🧹 Clearing current directory..."
-          rm -rf current/*
+          # Try normal removal first, then with sudo if needed
+          if ! rm -rf current/* 2>/dev/null; then
+            echo "⚠️  Permission denied, trying with sudo..."
+            sudo rm -rf current/*
+          fi
           
           # Copy new release to current
           echo "📋 Deploying new release to current..."
@@ -146,8 +150,8 @@ jobs:
           
           echo "🔍 Health check..."
           sleep 30  # Wait for services to start
-          if curl -f http://localhost:5195/; then
-            echo "✅ Health check passed"
+          if curl -f http://localhost:5195/health; then
+            echo "✅ Health check passed - frontend is accessible"
           else
             echo "⚠️  Health check failed - check logs with: cd $DEPLOY_DIR/current && docker compose -f docker-compose.yml --project-name frontend-production logs"
           fi

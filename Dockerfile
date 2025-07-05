@@ -22,9 +22,9 @@ RUN npm run build
 # Production stage
 FROM nginx:alpine
 
-# Создаем пользователя nginx с UID 1000 (соответствует GitHub Actions runner)
-RUN addgroup -g 1000 nginx && \
-    adduser -D -s /bin/sh -u 1000 -G nginx nginx
+# Изменяем существующего пользователя nginx на UID 1000
+RUN usermod -u 1000 nginx && \
+    groupmod -g 1000 nginx
 
 # Копируем собранные файлы из build stage
 COPY --from=build /app/dist /usr/share/nginx/html

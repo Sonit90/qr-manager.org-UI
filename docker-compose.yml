@@ -9,7 +9,7 @@ services:
       - "5195:5195"
     environment:
       - NODE_ENV=production
-    user: "1000:1000"
+    # user: "1000:1000"  # nginx user already has UID 1000
     networks:
       - frontend-network
 

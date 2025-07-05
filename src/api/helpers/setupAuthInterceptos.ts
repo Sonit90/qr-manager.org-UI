@@ -43,7 +43,7 @@ export function setupAuthInterceptors(
         if (!refresh_token.value) {
           userStore.clearTokens()
           isRefreshing = false
-          return Promise.reject(error)
+          throw error;
         }
 
         try {
@@ -53,7 +53,7 @@ export function setupAuthInterceptors(
           originalRequest.headers[headerName] = `${tokenPrefix} ${access_token.value}`
           return apiClient.instance(originalRequest)
         } catch (refreshError) {
-          console.log('refresh error')
+          
           await userStore.clearTokens()
           return Promise.reject(refreshError)
         } finally {
@@ -61,7 +61,7 @@ export function setupAuthInterceptors(
         }
       }
 
-      return Promise.reject(error)
+      throw error;
     },
   )
 

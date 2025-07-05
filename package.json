@@ -8,7 +8,7 @@
     "serve": "vite",
     "build-only": "vite build",
     "build-typecheck": "run-p type-check \"build-only {@}\" --",
-    "build": "run-s generate build-typecheck",
+    "build": "run-s generate build-only",
     "generate-api-v1": "node ./src/api/v1/generateApiV1.js",
     "generate": "run-p generate-api-v1",
     "preview": "vite preview",

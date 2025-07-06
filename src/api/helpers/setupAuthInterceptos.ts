@@ -1,6 +1,7 @@
 import type { AxiosInstance } from 'axios'
 import { useUserStore } from '@/stores/userStore.ts'
 import { storeToRefs } from 'pinia'
+import { useRouter } from 'vue-router'
 
 interface SetupInterceptorsOptions {
   tokenPrefix?: string
@@ -43,7 +44,7 @@ export function setupAuthInterceptors(
         if (!refresh_token.value) {
           userStore.clearTokens()
           isRefreshing = false
-          throw error;
+          throw error
         }
 
         try {
@@ -53,15 +54,16 @@ export function setupAuthInterceptors(
           originalRequest.headers[headerName] = `${tokenPrefix} ${access_token.value}`
           return apiClient.instance(originalRequest)
         } catch (refreshError) {
-          
           await userStore.clearTokens()
+          const router = useRouter()
+          await router.push('/login')
           return Promise.reject(refreshError)
         } finally {
           isRefreshing = false
         }
       }
 
-      throw error;
+      throw error
     },
   )
 

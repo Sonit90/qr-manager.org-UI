@@ -4,11 +4,23 @@ import { createRouter, createWebHistory } from 'vue-router'
 import MockApp from '../__mocks__/MockApp.vue'
 import { setActivePinia } from 'pinia'
 import { createTestingPinia } from '@pinia/testing'
-import { routes } from '@/router'
+import { routes } from '@/router/index.ts'
 import { createVuetify } from 'vuetify'
 
 interface VisitOptions extends Omit<RenderOptions<typeof MockApp>, 'global'> {
   stubActions?: boolean
+}
+
+export async function createTestRouter(initialPath = '/') {
+  const router = createRouter({
+    history: createWebHistory(),
+    routes,
+  })
+
+  // set the initial route
+  await router.push(initialPath)
+  await router.isReady()
+  return router
 }
 
 export async function visitRoute(url: string, options: VisitOptions = {}) {
@@ -17,18 +29,11 @@ export async function visitRoute(url: string, options: VisitOptions = {}) {
   // Initialize user-event
   const user = userEvent.setup()
 
-  // Create router instance
-  const router = createRouter({
-    history: createWebHistory(),
-    routes,
-  })
+  // Create a router instance
+  const router = await createTestRouter(url)
 
   const pinia = createTestingPinia({ stubActions })
   setActivePinia(pinia)
-
-  // Set initial URL
-  await router.push(url)
-  await router.isReady()
 
   const vuetify = createVuetify()
 
@@ -44,16 +49,6 @@ export async function visitRoute(url: string, options: VisitOptions = {}) {
         return key
       },
     },
-    stubs: {
-      'router-link': {
-        template: '<a :href="to"><slot /></a>',
-        props: ['to'],
-      },
-      'router-view': {
-        template: '<div class="router-view"><component :is="component" /></div>',
-        props: ['component'],
-      },
-    },
   }
 
   // Render the MockApp component
@@ -63,9 +58,6 @@ export async function visitRoute(url: string, options: VisitOptions = {}) {
     },
     ...renderOptions,
   })
-
-  // Wait for any pending navigation
-  await router.isReady()
 
   return {
     user,

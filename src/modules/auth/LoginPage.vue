@@ -19,7 +19,7 @@ const form = reactive({
 
 const emailRules = [isRequired('E-mail'), isValidEmail]
 
-const passwordRules = [isRequired('Password'), hasMinLength(6)]
+const passwordRules = [isRequired('Password'), hasMinLength(8)]
 const userStore = useUserStore()
 const { isLoading } = storeToRefs(userStore)
 
@@ -68,7 +68,7 @@ const handleLogin = async () => {
         @click:append-inner="showPassword = !showPassword"
       />
       <div class="mb-4 d-flex justify-end">
-        <router-link to="/reset-password" class="link-styled"> Forgot password? </router-link>
+        <router-link to="/forgot-password" class="link-styled">Forgot password?</router-link>
       </div>
       <v-btn type="submit" class="btn-primary" color="primary" :loading="isLoading" block>
         Sign In

@@ -1,5 +1,5 @@
 export const isRequired = (fieldName: string) => (v: string) => !!v || `${fieldName} is required`
-export const isValidEmail = (v: string) => /.+@.+\..+/.test(v) || 'E-mail must be valid'
+export const isValidEmail = (v: string) => /.+@.+\..+/.test(v) || 'Invalid email format'
 export const hasMinLength = (minLength: number) => (v: string) =>
   (v && v.length >= minLength) || `Must be at least ${minLength} characters`
 

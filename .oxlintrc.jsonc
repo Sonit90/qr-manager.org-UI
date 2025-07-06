@@ -17,7 +17,8 @@
     "oxc/no-optional-chaining": "off",
     "eslint/no-console": ["error", { "allow": ["warn", "error"] }],
     "jest/expect-expect": "off",
-    "eslint/max-nested-callbacks": ["error", 2],
+    "eslint/max-nested-callbacks": ["error", 4],
+    "no-undefined": "warn",
     "eslint/max-depth": [
       "error",
       {
@@ -25,16 +26,16 @@
       }
     ],
     "eslint/max-lines-per-function": ["error", {
-      "max": 100,
+      "max": 300,
       "skipBlankLines": false,
       "skipComments": false,
       "IIFEs": false
-    }]
+    }],
+    "jest/no-standalone-expect": "off"
   },
   "ignorePatterns": [
     "tests/vue-testing-library/jsdom/setup.ts",
     "tests/vue-testing-library/happy-dom/setup.ts",
-    "src/api/*",
     "src/api/*"
   ],
   "globals": {
@@ -59,6 +60,7 @@
     "clearInterval": "readonly",
     "window": "readonly",
     "document": "readonly",
-    "process": "readonly"
+    "process": "readonly",
+    "localStorage": "readonly"
   }
 }

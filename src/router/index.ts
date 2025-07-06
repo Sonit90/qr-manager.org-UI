@@ -24,11 +24,15 @@ export const routes = [
         },
       },
       {
-        path: 'reset-password',
-        component: () => import('@/modules/auth/ResetPasswordPage.vue'),
+        path: 'forgot-password',
+        component: () => import('@/modules/auth/forgot-password/ForgotPasswordRequestPage.vue'),
         meta: {
           disallowAuthenticated: true,
         },
+      },
+      {
+        path: 'reset-password',
+        component: () => import('@/modules/auth/forgot-password/ResetPasswordWithToken.vue'),
       },
     ],
   },
@@ -36,7 +40,7 @@ export const routes = [
     path: '/activate',
     component: () => import('@/modules/auth/activation/EmailActivation.vue'),
     meta: {
-      title: 'Activate Account',
+      disallowAuthenticated: true,
     },
   },
   {

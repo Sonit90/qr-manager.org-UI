@@ -62,9 +62,6 @@ const handleResetPassword = async () => {
       <p class="mb-4 text-gray-600 leading-relaxed">
         We've sent password reset instructions to <strong>{{ form.email }}</strong>
       </p>
-      <v-btn variant="outlined" color="primary" class="mb-3" block @click="emailSent = false">
-        Send Another Email
-      </v-btn>
     </div>
     <template #append>
       <div class="text-center">

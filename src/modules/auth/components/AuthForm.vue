@@ -11,7 +11,7 @@ defineProps<{
       <h1 class="mb-2">{{ title }}</h1>
       <p v-if="subtitle" class="text-sm">{{ subtitle }}</p>
     </div>
-    <div class="pa-10">
+    <div class="pa-4">
       <slot />
       <div v-if="$slots.append" class="my-4 text-center">
         <span>or</span>

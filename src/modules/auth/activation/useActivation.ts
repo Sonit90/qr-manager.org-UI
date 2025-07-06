@@ -1,11 +1,10 @@
 import { ref } from 'vue'
-import { defineStore } from 'pinia'
 import { ApiClientV1 } from '@/api/v1/ApiClientV1.ts'
 import { useUrlSearchParams } from '@vueuse/core'
 import { ActivationStatus } from '@/modules/auth/activation/types.ts'
 import { handleApiError } from '@/api/helpers/handleApiError.ts'
 
-export const useActivationStore = defineStore('activation', () => {
+export function useActivation() {
   const isLoading = ref(true)
   const isResending = ref(false)
   const activationStatus = ref(ActivationStatus.LOADING)
@@ -34,4 +33,4 @@ export const useActivationStore = defineStore('activation', () => {
     isResending,
     params,
   }
-})
+}

@@ -11,7 +11,6 @@ import {
   generateInvalidEmailCredentials,
   generateShortPasswordCredentials,
 } from '../../__apiMocks__/mockData'
-import { flushPromises } from '@vue/test-utils'
 import { mockUser } from '../../__apiMocks__/user/mockUser.ts'
 
 describe('LoginPage Integration Tests', () => {
@@ -115,7 +114,6 @@ describe('LoginPage Integration Tests', () => {
   })
 
   test('should handle unauthorized login error', async () => {
-    // Mock unauthorized error
     const { mockedLogin } = mockLoginUnauthorizedError()
     const credentials = generateInvalidLoginCredentials()
 
@@ -132,8 +130,6 @@ describe('LoginPage Integration Tests', () => {
     await user.click(submitButton)
 
     expect(mockedLogin).toHaveBeenCalledWith(credentials)
-
-    await flushPromises()
 
     view.getByText('Incorrect email or password')
   })
@@ -184,28 +180,34 @@ describe('LoginPage Integration Tests', () => {
     expect(mockedLogin).toHaveBeenCalledWith(credentials)
   })
 
-  test.skip('should navigate to register page when clicking sign up link', async () => {
+  test('should navigate to register page when clicking sign up link', async () => {
     const { view, user } = await visitRoute('/login')
 
     const signUpLink = view.getByText(/sign up/i)
 
-    // Click sign up link
+    // Verify the link has the correct href
     await user.click(signUpLink)
-    await flushPromises()
 
-    // Check if href is correct
-    expect(window.location.pathname).toBe('/register')
+    // Check if navigation occurred
+    await waitFor(() => {
+      expect(window.location.pathname).toBe('/register')
+    })
   })
 
-  test.skip('should navigate to reset password page when clicking forgot password link', async () => {
+  test('should navigate to reset password page when clicking forgot password link', async () => {
     const { view, user } = await visitRoute('/login')
 
     const forgotPasswordLink = view.getByRole('link', { name: /forgot password/i })
 
+    // Verify the link has the correct href
+    expect(forgotPasswordLink).toHaveAttribute('href', '/forgot-password')
+
     // Click forgot password link
     await user.click(forgotPasswordLink)
-    await flushPromises()
-    // Check if href is correct
-    expect(window.location.pathname).toBe('/forgot-password')
+
+    // Check if navigation occurred
+    await waitFor(() => {
+      expect(window.location.pathname).toBe('/forgot-password')
+    })
   })
 })

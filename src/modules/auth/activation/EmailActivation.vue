@@ -3,6 +3,7 @@ import { onMounted, computed } from 'vue'
 import { ActivationStatus } from '@/modules/auth/activation/types.ts'
 import { useActivation } from '@/modules/auth/activation/useActivation.ts'
 import GenericState from '@/components/GenericState.vue'
+import type { GenericStateProps } from '@/components/GenericStateProps.ts'
 
 const { activationStatus, errorMessage, isResending, isLoading, params, activateUser } =
   useActivation()
@@ -11,11 +12,7 @@ const componentMap: Record<
   ActivationStatus,
   {
     component: typeof GenericState
-    props: {
-      title: string
-      subtitle: string
-      state: 'error' | 'warning' | 'info' | 'success' | 'loading'
-    }
+    props: GenericStateProps
   }
 > = {
   [ActivationStatus.LOADING]: {
@@ -33,6 +30,10 @@ const componentMap: Record<
       title: 'Account Activated Successfully!',
       subtitle:
         'Your account has been successfully activated. You can now sign in and start using our platform.',
+      buttonProps: {
+        path: '/sign-in',
+        label: 'Sign in',
+      },
     },
   },
   [ActivationStatus.ERROR]: {
@@ -49,6 +50,10 @@ const componentMap: Record<
       state: 'info',
       title: 'Account Already Activated',
       subtitle: 'This account has already been activated. You can sign in using your credentials.',
+      buttonProps: {
+        path: '/sign-in',
+        label: 'Sign in',
+      },
     },
   },
   [ActivationStatus.INVALID_LINK]: {

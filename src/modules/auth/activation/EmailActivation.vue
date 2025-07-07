@@ -31,7 +31,7 @@ const componentMap: Record<
       subtitle:
         'Your account has been successfully activated. You can now sign in and start using our platform.',
       buttonProps: {
-        path: '/sign-in',
+        path: '/login',
         label: 'Sign in',
       },
     },
@@ -42,6 +42,11 @@ const componentMap: Record<
       state: 'error',
       title: 'Activation Failed',
       subtitle: 'An error occurred during activation.',
+      buttonProps: {
+        path: '/forgot-password',
+        icon: 'mdi-lock-reset',
+        label: 'Reset Password',
+      },
     },
   },
   [ActivationStatus.ALREADY_ACTIVATED]: {
@@ -51,7 +56,7 @@ const componentMap: Record<
       title: 'Account Already Activated',
       subtitle: 'This account has already been activated. You can sign in using your credentials.',
       buttonProps: {
-        path: '/sign-in',
+        path: '/login',
         label: 'Sign in',
       },
     },

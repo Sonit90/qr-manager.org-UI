@@ -13,7 +13,7 @@ Don't check values inside pinia store.
 
 Don't access pinia store at all
 
-If API is gettign called, check that API is getting called with the parameters
+If API is getting called, check that API is getting called with the parameters
 Prefer functions over constants
 
 For Typescript don’t use Any types, instead use actual API response types
@@ -26,3 +26,12 @@ view.container.querySelector('.mdi-link-off') should be enough, because it fails
 
 If you want to check link's url, use similar code:
 expect(view.getByRole('link', { name: 'Sign in' })).toHaveAttribute('href', 'sign-in')
+
+If you want to mock data, use following approach:
+vi.mock('@/api/v1/ApiClientV1.ts', () => ({
+ApiClientV1: {
+authenticationActivateUser: vi.fn(),
+},
+}))
+
+vi.mocked(ApiClientV1.authenticationActivateUser).mockImplementation(mockedActivation)

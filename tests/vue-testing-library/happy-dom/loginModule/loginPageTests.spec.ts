@@ -16,7 +16,6 @@ import { mockUser } from '../../__apiMocks__/user/mockUser.ts'
 describe('LoginPage Integration Tests', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    localStorage.clear()
   })
 
   afterEach(() => {

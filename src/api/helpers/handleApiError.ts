@@ -16,7 +16,7 @@ export function handleApiError(error: unknown, { title, text }: { title?: string
     notification.text = error.message || 'Something went wrong'
   } else if (isAxiosError(error)) {
     const { response } = error
-    notification.text = response?.data?.detail || notification.text
+    notification.text = response?.data?.detail || response?.data?.message || notification.text
   }
 
   notify(notification)

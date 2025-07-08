@@ -61,6 +61,7 @@
     "window": "readonly",
     "document": "readonly",
     "process": "readonly",
-    "localStorage": "readonly"
+    "localStorage": "readonly",
+    "URLSearchParams": "readonly",
   }
 }

@@ -92,7 +92,7 @@ if (!token) {
 const passwordRules = [isRequired('Password'), hasMinLength(8), hasNumber]
 
 const confirmPasswordRules = computed(() => [
-  isRequired('Please confirm your password'),
+  isRequired('Password Confirmation'),
   matchesPassword(password.value),
 ])
 </script>

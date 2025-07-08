@@ -26,7 +26,6 @@ vi.mock('@/api/v1/ApiClientV1.ts', () => ({
 describe('EmailActivation Integration Tests', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    localStorage.clear()
   })
 
   afterEach(() => {

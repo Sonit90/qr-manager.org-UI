@@ -12,14 +12,6 @@ import { generateValidEmail, generateInvalidEmail } from '../../__testData__/moc
 import { mockWithDelay } from '../../../helpers/mockWithDelay.ts'
 
 describe('ForgotPasswordRequestPage Integration Tests', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-  })
-
-  afterEach(() => {
-    vi.restoreAllMocks()
-  })
-
   test('should render forgot password request form with email field', async () => {
     const { view } = await visitRoute('/forgot-password')
 

@@ -43,6 +43,7 @@ export const routes = [
       disallowAuthenticated: true,
     },
   },
+
   {
     path: '/user',
     component: () => import('@/layouts/UserLayout.vue'),
@@ -54,6 +55,17 @@ export const routes = [
         },
         component: () => import('@/modules/user/UserPage.vue'),
       },
+      {
+        path: '/my-files',
+        name: 'my-files',
+        component: () => import('@/modules/files/userFiles/UserFilesPage.vue'),
+        meta: {
+          requiresAuth: true,
+        },
+      },
     ],
+    meta: {
+      requiresAuth: true,
+    },
   },
 ]

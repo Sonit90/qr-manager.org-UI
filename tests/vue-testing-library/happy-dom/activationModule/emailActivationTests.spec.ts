@@ -24,14 +24,6 @@ vi.mock('@/api/v1/ApiClientV1.ts', () => ({
 }))
 
 describe('EmailActivation Integration Tests', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-  })
-
-  afterEach(() => {
-    vi.restoreAllMocks()
-  })
-
   test('should show loading state initially when token is present', async () => {
     const token = generateValidActivationToken()
     const activationUrl = generateActivationUrl(token)

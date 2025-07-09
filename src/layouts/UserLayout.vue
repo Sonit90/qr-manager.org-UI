@@ -8,6 +8,7 @@ import { handleApiError } from '@/api/helpers/handleApiError.ts'
 
 const navigationItems = [
   { title: 'Dashboard', icon: 'mdi-view-dashboard', to: '/dashboard' },
+  { title: 'My Files', icon: 'mdi-file-multiple', to: '/my-files' },
   { title: 'Users', icon: 'mdi-account-group', to: '/users' },
   { title: 'Projects', icon: 'mdi-folder-multiple', to: '/projects' },
   { title: 'Analytics', icon: 'mdi-chart-line', to: '/analytics' },

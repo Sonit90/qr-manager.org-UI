@@ -14,14 +14,6 @@ import {
 import { mockUser } from '../../__apiMocks__/user/mockUser.ts'
 
 describe('LoginPage Integration Tests', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-  })
-
-  afterEach(() => {
-    vi.restoreAllMocks()
-  })
-
   test('should render login form with all required fields', async () => {
     const { view } = await visitRoute('/login')
 

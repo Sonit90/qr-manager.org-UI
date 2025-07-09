@@ -1,6 +1,6 @@
 import { ApiClientV1 } from '@/api/v1/ApiClientV1.ts'
-import { createAxiosError } from '../../helpers/createAxiosError.ts'
 import type { AxiosError } from 'axios'
+import { createAxiosError } from '@tests/helpers/createAxiosError.ts'
 
 export function mockLoginError(error: AxiosError | Error) {
   const mockedLogin = vi.fn().mockRejectedValue(error)

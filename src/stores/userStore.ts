@@ -49,11 +49,7 @@ export const useUserStore = defineStore('user', () => {
   }
 
   async function refreshUser() {
-    const response = await ApiClientV1.authenticationRefreshToken({
-      headers: {
-        Authorization: `Bearer ${refresh_token}`,
-      },
-    })
+    const response = await ApiClientV1.authenticationRefreshToken()
     access_token.value = response.access_token
     refresh_token.value = response.refresh_token
     token_type.value = response.token_type

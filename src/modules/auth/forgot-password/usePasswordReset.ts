@@ -5,6 +5,7 @@ import { handleApiError } from '@/api/helpers/handleApiError.ts'
 import { ResetPasswordStatus } from '@/modules/auth/forgot-password/types.ts'
 import { useRouter } from 'vue-router'
 import { notify } from '@kyvg/vue3-notification'
+import type { VForm } from 'vuetify/components'
 
 export function usePasswordReset() {
   const isLoading = ref(false)
@@ -12,7 +13,7 @@ export function usePasswordReset() {
   const errorMessage = ref('')
   const params = useUrlSearchParams('history')
 
-  const form = ref(null)
+  const form = ref<VForm | null>(null)
   const valid = ref(false)
   const password = ref('')
   const confirmPassword = ref('')

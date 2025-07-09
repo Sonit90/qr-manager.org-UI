@@ -27,4 +27,9 @@ export default defineConfigWithVueTs(
   },
   ...pluginOxlint.configs['flat/recommended'],
   skipFormatting,
+  {
+    rules: {
+      'vue/valid-v-slot': 'off',
+    },
+  },
 )

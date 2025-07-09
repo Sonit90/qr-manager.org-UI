@@ -10,7 +10,6 @@ const files = ref<FileInput[]>([
     columns: [
       {
         name: 'Price Original',
-
         transformations: [],
         mapInformation: null,
       },
@@ -40,7 +39,6 @@ const files = ref<FileInput[]>([
     columns: [
       {
         name: 'Price',
-
         transformations: [],
         mapInformation: null,
       },
@@ -65,17 +63,41 @@ const files = ref<FileInput[]>([
     ],
   },
 ])
+
+const isLoading = ref(false)
 </script>
 
 <template>
-  <div class="d-flex ga-2 flex-column">
-    <div class="d-flex align-center">Input Files</div>
-    <FileComponent
-      v-for="file in files"
-      :key="file.id"
-      v-model:columns="file.columns"
-      v-model:filters="file.filters"
-      :name="file.name"
-    />
+  <div v-if="isLoading" class="d-flex justify-center align-center" style="height: 200px">
+    <v-progress-circular indeterminate color="primary" size="48" />
   </div>
+  <v-card v-else class="files-widget" max-width="400" elevation="2">
+    <v-card-title class="d-flex align-center">
+      <v-avatar color="primary" class="me-3">
+        <v-icon color="white">mdi-file-multiple</v-icon>
+      </v-avatar>
+      <div>
+        <div class="text-h6">Input Files</div>
+        <div class="text-caption text-medium-emphasis">{{ files.length }} files available</div>
+      </div>
+    </v-card-title>
+
+    <v-card-text class="pa-0">
+      <v-list density="compact" class="pa-0">
+        <FileComponent
+          v-for="file in files"
+          :key="file.id"
+          v-model:columns="file.columns"
+          v-model:filters="file.filters"
+          :name="file.name"
+        />
+      </v-list>
+    </v-card-text>
+  </v-card>
 </template>
+
+<style scoped>
+.files-widget {
+  border-radius: 12px;
+}
+</style>

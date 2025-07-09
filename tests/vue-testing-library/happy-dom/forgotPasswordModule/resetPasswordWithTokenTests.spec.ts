@@ -8,14 +8,6 @@ import {
 } from '../../__testData__/mockForgotPasswordData'
 
 describe('ResetPasswordWithToken Integration Tests', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-  })
-
-  afterEach(() => {
-    vi.restoreAllMocks()
-  })
-
   test('should render password reset form with valid token', async () => {
     const token = generateValidResetToken()
     const params = generateResetUrlParams(token)

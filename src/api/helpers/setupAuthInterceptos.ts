@@ -1,27 +1,60 @@
-import type { AxiosInstance } from 'axios'
+import type { AxiosInstance, AxiosRequestConfig } from 'axios'
 import { useUserStore } from '@/stores/userStore.ts'
 import { storeToRefs } from 'pinia'
-import { useRouter } from 'vue-router'
+import { router } from '@/router/router.ts'
 
 interface SetupInterceptorsOptions {
   tokenPrefix?: string
   headerName?: string
+  refreshEndpoint?: string
+  loginRoute?: string
+}
+
+interface RequestQueueItem {
+  resolve: (value: any) => void
+  reject: (error: any) => void
+  config: AxiosRequestConfig
 }
 
 export function setupAuthInterceptors(
   apiClient: { instance: AxiosInstance },
   options: SetupInterceptorsOptions = {},
 ) {
+  const {
+    tokenPrefix = 'Bearer',
+    headerName = 'Authorization',
+    refreshEndpoint = '/api/v1/auth/refresh',
+    loginRoute = '/login',
+  } = options
+
   let isRefreshing = false
-  const { tokenPrefix = 'Bearer', headerName = 'Authorization' } = options
+  let refreshPromise: Promise<void> | null = null
+  const requestQueue: RequestQueueItem[] = []
+
+  // Helper function to process queued requests
+  const processQueue = (error: any = null) => {
+    requestQueue.forEach(({ resolve, reject, config }) => {
+      if (error) {
+        reject(error)
+      } else {
+        resolve(apiClient.instance(config))
+      }
+    })
+    requestQueue.length = 0
+  }
 
   // Request interceptor - adds auth header
   const requestInterceptor = apiClient.instance.interceptors.request.use(
     (config) => {
-      const { access_token } = useUserStore()
+      const userStore = useUserStore()
+      const { access_token, refresh_token } = storeToRefs(userStore)
 
-      if (access_token) {
-        config.headers[headerName] = `${tokenPrefix} ${access_token}`
+      // Determine which token to use based on endpoint
+      const token = config.url === refreshEndpoint ? refresh_token.value : access_token.value
+
+      if (token) {
+        config.headers = config.headers || {}
+        config.headers[headerName] = `${tokenPrefix} ${token}`
       }
 
       return config
@@ -29,7 +62,7 @@ export function setupAuthInterceptors(
     (error) => Promise.reject(error),
   )
 
-  // Response interceptor - handles token refresh
+  // Response interceptor - handles token refresh with request queuing
   const responseInterceptor = apiClient.instance.interceptors.response.use(
     (response) => response,
     async (error) => {
@@ -37,33 +70,70 @@ export function setupAuthInterceptors(
       const { access_token, refresh_token } = storeToRefs(userStore)
       const originalRequest = error.config
 
-      // Check if it's a 401 and we haven't yet tried to refresh
-      if ((error.response?.status === 401 || error.response?.status === 403) && !isRefreshing) {
-        isRefreshing = true
+      // Only handle 401 errors that aren't from the refresh endpoint
+      if (
+        error.response?.status === 401 &&
+        originalRequest.url !== refreshEndpoint &&
+        !originalRequest._retry // Prevent infinite loops
+      ) {
+        originalRequest._retry = true
 
         if (!refresh_token.value) {
           userStore.clearTokens()
-          isRefreshing = false
-          throw error
+          await router.push(loginRoute)
+          return Promise.reject(error)
         }
 
-        try {
-          await userStore.refreshUser()
+        // If already refreshing, queue the request
+        if (isRefreshing && refreshPromise) {
+          return new Promise((resolve, reject) => {
+            requestQueue.push({
+              resolve,
+              reject,
+              config: {
+                ...originalRequest,
+                headers: {
+                  ...originalRequest.headers,
+                  [headerName]: `${tokenPrefix} ${access_token.value}`,
+                },
+              },
+            })
+          })
+        }
 
-          // Retry original request with new token
+        isRefreshing = true
+
+        try {
+          // Create or reuse the refresh promise
+          if (!refreshPromise) {
+            refreshPromise = userStore.refreshUser()
+          }
+
+          await refreshPromise
+
+          // Update the original request with the new token
+          originalRequest.headers = originalRequest.headers || {}
           originalRequest.headers[headerName] = `${tokenPrefix} ${access_token.value}`
+
+          // Process any queued requests
+          processQueue()
+
+          // Retry the original request
           return apiClient.instance(originalRequest)
         } catch (refreshError) {
-          await userStore.clearTokens()
-          const router = useRouter()
-          await router.push('/login')
+          // Clear tokens and redirect on refresh failure
+          userStore.clearTokens()
+          processQueue(refreshError)
+
+          await router.push(loginRoute)
           return Promise.reject(refreshError)
         } finally {
           isRefreshing = false
+          refreshPromise = null
         }
       }
 
-      throw error
+      return Promise.reject(error)
     },
   )
 
@@ -71,5 +141,10 @@ export function setupAuthInterceptors(
   return () => {
     apiClient.instance.interceptors.request.eject(requestInterceptor)
     apiClient.instance.interceptors.response.eject(responseInterceptor)
+
+    // Clean up any pending state
+    isRefreshing = false
+    refreshPromise = null
+    requestQueue.length = 0
   }
 }

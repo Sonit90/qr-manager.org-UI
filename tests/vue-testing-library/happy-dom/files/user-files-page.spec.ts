@@ -7,7 +7,7 @@ import { mockFileReadFiles, mockFileReadFilesError } from '../../__apiMocks__/mo
 import { buildTypeFileV1Array, buildDownloadUrlResponse } from '../../__testData__/fileBuilders.ts'
 
 const testFiles = buildTypeFileV1Array(2, [
-  { id: 1, status: 'ready' },
+  { id: 1, status: 'processed' },
   { id: 2, status: 'pending' },
 ])
 
@@ -88,7 +88,7 @@ describe('UserFilesPage', () => {
     await userEvent.click(downloadButtons[0])
 
     // Verify the download function was called with the correct file ID
-    expect(mockedGetDownloadUrl).toHaveBeenCalledWith({ fileId: testFiles[0].id })
+    expect(mockedGetDownloadUrl).toHaveBeenCalledWith(testFiles[0].id)
 
     // Verify window.open was called with the download URL
     await waitFor(() => {

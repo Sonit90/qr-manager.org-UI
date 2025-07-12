@@ -14,12 +14,15 @@ export function buildTypeFileV1(overrides: Partial<TypeFileV1> = {}): TypeFileV1
   }
 }
 
-export function buildTypeFileV1Array(count = 2, overrides: Partial<TypeFileV1>[] = []): TypeFileV1[] {
+export function buildTypeFileV1Array(
+  count = 2,
+  overrides: Partial<TypeFileV1>[] = [],
+): TypeFileV1[] {
   return Array.from({ length: count }, (_, index) => {
     return buildTypeFileV1(overrides[index] || {})
   })
 }
 
-export function buildDownloadUrlResponse(url = faker.internet.url()) {
-  return { data: { url } }
+export function buildDownloadUrlResponse(download_url = faker.internet.url()) {
+  return { download_url }
 }

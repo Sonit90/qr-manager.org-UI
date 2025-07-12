@@ -43,8 +43,8 @@ const isExpanded = ref(false)
         icon="mdi-chevron-right"
         density="compact"
         @click="isExpanded = !isExpanded"
-      ></v-btn
-    ></v-card-title>
+      />
+    </v-card-title>
     <div v-for="(col, index) in modelColumns" :key="col.name" class="d-flex align-center ga-2">
       {{ col.name }}
       <v-select

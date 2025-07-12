@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
 import { useFiles } from '@/modules/files/userFiles/composables/useFiles.ts'
 import FileLoadingState from '@/modules/files/userFiles/components/FileLoadingState.vue'
 import FileEmptyState from '@/modules/files/userFiles/components/FileEmptyState.vue'
@@ -7,20 +6,23 @@ import FileErrorState from '@/modules/files/userFiles/components/FileErrorState.
 import FileTable from '@/modules/files/userFiles/components/FileTable.vue'
 import FileCardHeader from '@/modules/files/userFiles/components/FileCardHeader.vue'
 
-const { files, loading, error, downloadingFileId, fetchFiles, downloadFile } = useFiles()
+const { files, loading, error, deleting, downloadingFileId, fetchFiles, downloadFile, deleteFile } =
+  useFiles()
 
-onMounted(() => {
-  fetchFiles()
-})
+fetchFiles()
 
 function handleDownload(fileId: number) {
   downloadFile(fileId)
+}
+
+function handleDelete(fileId: number) {
+  deleteFile(fileId)
 }
 </script>
 
 <template>
   <div>
-    <h1 class="text-h4 mb-4">My Files</h1>
+    <h1 class="text-h4">My Files</h1>
 
     <v-card class="mb-4">
       <FileCardHeader :loading="loading" @refresh="fetchFiles" />
@@ -36,7 +38,9 @@ function handleDownload(fileId: number) {
           v-else
           :files="files"
           :downloading-file-id="downloadingFileId"
+          :deleting="deleting"
           @download="handleDownload"
+          @delete="handleDelete"
         />
       </v-card-text>
     </v-card>

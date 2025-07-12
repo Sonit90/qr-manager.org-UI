@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import FileUploadDialog from './FileUploadDialog.vue'
 defineProps<{
   loading: boolean
 }>()
@@ -16,7 +17,8 @@ function onRefresh() {
   <v-card-title class="d-flex align-center">
     <v-icon class="me-2">mdi-file-multiple</v-icon>
     Files
-    <v-spacer></v-spacer>
+    <v-spacer />
+    <FileUploadDialog />
     <v-btn
       color="primary"
       prepend-icon="mdi-refresh"
@@ -27,6 +29,5 @@ function onRefresh() {
       Refresh
     </v-btn>
   </v-card-title>
-
-  <v-divider></v-divider>
+  <v-divider />
 </template>

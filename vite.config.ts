@@ -1,7 +1,6 @@
 import path from 'node:path'
 import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import vueDevTools from 'vite-plugin-vue-devtools'
 import vuetify from 'vite-plugin-vuetify'
 
 export default defineConfig(({ mode }) => {
@@ -9,7 +8,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd())
 
   return {
-    plugins: [vue(), vueDevTools(), vuetify({ autoImport: true })],
+    plugins: [vue(), vuetify({ autoImport: true })],
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),

@@ -4,16 +4,25 @@ import type { TypeFileV1 } from '@/api/__generated__/v1/data-contracts.ts'
 defineProps<{
   files: TypeFileV1[]
   downloadingFileId: number | null
+  deleting: boolean
 }>()
 
 const emit = defineEmits<{
   download: [fileId: number]
+  delete: [fileId: number]
 }>()
 
 function onDownload(fileId?: number) {
   if (!fileId) return
-
   emit('download', fileId)
+}
+
+function onDelete(item: TypeFileV1) {
+  if (!item.id) return
+
+  if (confirm(`Are you sure you want to delete ${item.original_name} file?`)) {
+    emit('delete', item.id)
+  }
 }
 
 const headers = [
@@ -47,18 +56,29 @@ const headers = [
     </template>
 
     <template #item.actions="{ item }">
-      <v-btn
-        v-if="item.status === 'ready'"
-        variant="text"
-        color="primary"
-        size="small"
-        title="Download"
-        :loading="downloadingFileId === item.id"
-        :disabled="downloadingFileId !== null"
-        @click="onDownload(item.id)"
-      >
-        <v-icon>mdi-download</v-icon>
-      </v-btn>
+      <div class="d-flex gap-2">
+        <v-btn
+          v-if="item.status === 'processed'"
+          variant="text"
+          color="primary"
+          size="small"
+          title="Download"
+          icon="mdi-download"
+          :loading="downloadingFileId === item.id"
+          :disabled="downloadingFileId !== null"
+          @click="onDownload(item.id)"
+        />
+
+        <v-btn
+          variant="text"
+          color="error"
+          size="small"
+          title="Delete"
+          icon="mdi-delete"
+          :disabled="downloadingFileId !== null"
+          @click="onDelete(item)"
+        />
+      </div>
     </template>
   </v-data-table>
 </template>

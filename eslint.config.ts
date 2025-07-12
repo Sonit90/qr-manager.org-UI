@@ -30,6 +30,7 @@ export default defineConfigWithVueTs(
   {
     rules: {
       'vue/valid-v-slot': 'off',
+      'vue/html-self-closing': 'error',
     },
   },
 )

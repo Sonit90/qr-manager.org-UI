@@ -7,13 +7,13 @@ import {
   mockActivationInvalidTokenError,
   mockActivationAlreadyActivatedError,
   mockActivationNetworkError,
-} from '../../__apiMocks__/mockActivation'
+} from '@tests/__apiMocks__/activation/mockActivation.ts'
 import {
   generateValidActivationToken,
   generateInvalidActivationToken,
   generateActivationUrl,
   generateActivationUrlWithoutToken,
-} from '../../__apiMocks__/mockActivationData'
+} from '@tests/__apiMocks__/activation/generateActivationData.ts'
 import { flushPromises } from '@vue/test-utils'
 
 // Mock the API client

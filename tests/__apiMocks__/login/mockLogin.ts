@@ -1,7 +1,7 @@
 import { vi } from 'vitest'
 import { ApiClientV1 } from '@/api/v1/ApiClientV1.ts'
 import type { TypeTokenV1 } from '@/api/__generated__/v1/data-contracts.ts'
-import { generateMockTokenResponse } from './mockData'
+import { generateMockTokenResponse } from '@tests/__apiMocks__/login/generateLoginData.ts'
 
 export function mockLogin(response?: TypeTokenV1) {
   const tokenResponse = response || generateMockTokenResponse()

@@ -21,7 +21,7 @@ function handleDelete(fileId: number) {
 </script>
 
 <template>
-  <div>
+  <div data-testid="user-files-page">
     <h1 class="text-h4">My Files</h1>
 
     <v-card class="mb-4">

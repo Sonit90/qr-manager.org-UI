@@ -18,7 +18,8 @@
     "eslint/no-console": ["error", { "allow": ["warn", "error"] }],
     "jest/expect-expect": "off",
     "eslint/max-nested-callbacks": ["error", 4],
-    "no-undefined": "warn",
+    "no-undefined": "off",
+    "no-undef": "off",
     "eslint/max-depth": [
       "error",
       {
@@ -31,7 +32,8 @@
       "skipComments": false,
       "IIFEs": false
     }],
-    "jest/no-standalone-expect": "off"
+    "jest/no-standalone-expect": "off",
+    "no-alert": "off"
   },
   "ignorePatterns": [
     "tests/vue-testing-library/jsdom/setup.ts",
@@ -62,6 +64,6 @@
     "document": "readonly",
     "process": "readonly",
     "localStorage": "readonly",
-    "URLSearchParams": "readonly",
+    "URLSearchParams": "readonly"
   }
 }

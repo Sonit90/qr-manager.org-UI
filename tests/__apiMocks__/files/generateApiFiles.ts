@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker'
-import type { TypeFileV1 } from '@/api/__generated__/v1/data-contracts.ts'
+import type { TypeFileV1 } from 'src/api/__generated__/v1/data-contracts.ts'
 
 export function buildTypeFileV1(overrides: Partial<TypeFileV1> = {}): TypeFileV1 {
   return {
@@ -25,4 +25,27 @@ export function buildTypeFileV1Array(
 
 export function buildDownloadUrlResponse(download_url = faker.internet.url()) {
   return { download_url }
+}
+
+export function generateFileNameWithExtension() {
+  const extensions = ['xls', 'xlsx', 'csv']
+  const name = faker.word.words(1).replaceAll(/\s/g, '')
+  const extension = faker.helpers.arrayElement(extensions)
+  return `${name}.${extension}`
+}
+
+export function createMockFile(
+  name: string,
+  type: string,
+  size: number = faker.number.int({ min: 1024, max: 10240 }),
+): File {
+  const content = faker.lorem.paragraphs()
+  const blob = new Blob([content], { type })
+  const file = new File([blob], name, { type })
+  Object.defineProperty(file, 'size', { value: size })
+  return file
+}
+
+export function generateFileData(): TypeFileV1[] {
+  return buildTypeFileV1Array(faker.number.int({ min: 1, max: 3 }))
 }

@@ -7,23 +7,15 @@ import {
   mockPasswordResetInvalidTokenError,
   mockPasswordResetValidationError,
   mockPasswordResetNetworkError,
-} from '../../__apiMocks__/mockForgotPassword'
-import {
-  generateValidResetToken,
-  generateValidPassword,
-  generateResetUrlParams,
-} from '../../__testData__/mockForgotPasswordData'
+} from '@tests/__apiMocks__/forgotPassword/mockForgotPassword.ts'
 import { mockWithDelay } from '../../../helpers/mockWithDelay.ts'
+import {
+  generateResetUrlParams,
+  generateValidPassword,
+  generateValidResetToken,
+} from '@tests/__apiMocks__/forgotPassword/generateForgotPasswordData.ts'
 
 describe('ResetPasswordWithToken Integration Tests', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-  })
-
-  afterEach(() => {
-    vi.restoreAllMocks()
-  })
-
   test('should submit form with valid passwords and show success message', async () => {
     const { mockedReset } = mockPasswordResetSuccess()
     const token = generateValidResetToken()

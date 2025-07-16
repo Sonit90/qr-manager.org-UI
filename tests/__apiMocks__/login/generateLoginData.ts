@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker'
-import type { TypeTokenV1 } from '@/api/__generated__/v1/data-contracts.ts'
+import type { TypeTokenV1 } from 'src/api/__generated__/v1/data-contracts.ts'
 
 // Generate mock token response using faker
 export const generateMockTokenResponse = (): TypeTokenV1 => ({

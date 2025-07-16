@@ -1,17 +1,17 @@
 import { visitRoute } from '../../helpers/visitRoute.ts'
 import { waitFor } from '@testing-library/vue'
-import { mockLogin } from '../../__apiMocks__/mockLogin'
+import { mockLogin } from '@tests/__apiMocks__/login/mockLogin.ts'
 import {
   mockLoginUnauthorizedError,
   mockLoginNetworkError,
-} from '../../__apiMocks__/mockLoginError'
+} from '@tests/__apiMocks__/login/mockLoginError.ts'
 import {
   generateValidLoginCredentials,
   generateInvalidLoginCredentials,
   generateInvalidEmailCredentials,
   generateShortPasswordCredentials,
-} from '../../__apiMocks__/mockData'
-import { mockUser } from '../../__apiMocks__/user/mockUser.ts'
+} from '@tests/__apiMocks__/login/generateLoginData.ts'
+import { mockUser } from '@tests/__apiMocks__/user/mockUser.ts'
 
 describe('LoginPage Integration Tests', () => {
   test('should render login form with all required fields', async () => {

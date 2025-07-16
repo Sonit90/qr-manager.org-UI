@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { VFileUpload } from 'vuetify/labs/VFileUpload'
 import { useFiles } from '@/modules/files/userFiles/composables/useFiles.ts'
-import { ref, type Ref } from 'vue'
+import { nextTick, ref, type Ref } from 'vue'
 
 const { uploading, uploadFile } = useFiles()
 
-const fileToUpload = ref<File | null>(null)
+const fileToUpload = ref<File | undefined>(undefined)
 
 async function onFileUpload(isActive: Ref<boolean>) {
   if (!fileToUpload.value) {
@@ -15,13 +15,14 @@ async function onFileUpload(isActive: Ref<boolean>) {
 
   if (result) {
     isActive.value = false
-    fileToUpload.value = null
+    fileToUpload.value = undefined
   }
 }
 
-function onCancel(isActive: Ref<boolean>) {
-  fileToUpload.value = null
+async function onCancel(isActive: Ref<boolean>) {
+  fileToUpload.value = undefined
   isActive.value = false
+  await nextTick()
 }
 </script>
 
@@ -34,14 +35,15 @@ function onCancel(isActive: Ref<boolean>) {
       </v-btn>
     </template>
     <template #default="{ isActive }">
-      <v-card>
+      <v-card data-testid="file-upload-body">
         <v-card-title class="d-flex justify-space-between align-center py-1">
           <div class="text-h5 text-medium-emphasis">Upload File</div>
-          <v-btn icon="mdi-close" variant="text" @click="isActive.value = false" />
+          <v-btn icon="mdi-close" variant="text" @click="onCancel(isActive)" />
         </v-card-title>
         <v-card-text>
           <v-file-upload
             v-model="fileToUpload"
+            data-testid="file-upload"
             accept=".csv,.xls,.xlsx"
             density="compact"
             :loading="uploading"

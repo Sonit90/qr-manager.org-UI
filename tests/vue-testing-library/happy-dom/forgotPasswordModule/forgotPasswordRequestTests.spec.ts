@@ -7,9 +7,13 @@ import {
   mockPasswordResetRequestInvalidEmailError,
   mockPasswordResetRequestUserNotFoundError,
   mockPasswordResetRequestNetworkError,
-} from '../../__apiMocks__/mockForgotPassword'
-import { generateValidEmail, generateInvalidEmail } from '../../__testData__/mockForgotPasswordData'
+} from '@tests/__apiMocks__/forgotPassword/mockForgotPassword.ts'
+
 import { mockWithDelay } from '../../../helpers/mockWithDelay.ts'
+import {
+  generateInvalidEmail,
+  generateValidEmail,
+} from '@tests/__apiMocks__/forgotPassword/generateForgotPasswordData.ts'
 
 describe('ForgotPasswordRequestPage Integration Tests', () => {
   test('should render forgot password request form with email field', async () => {
@@ -152,7 +156,7 @@ describe('ForgotPasswordRequestPage Integration Tests', () => {
 
   test('should show loading state when submitting form', async () => {
     // Use a delayed mock to observe loading state
-    const mockedRequest = mockWithDelay({}, 100)
+    const mockedRequest = mockWithDelay({ message: '' }, 100)
 
     vi.spyOn(ApiClientV1, 'authenticationRequestPasswordReset').mockImplementation(mockedRequest)
 

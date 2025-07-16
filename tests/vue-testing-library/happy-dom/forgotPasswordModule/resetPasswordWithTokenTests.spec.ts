@@ -1,11 +1,11 @@
 import { visitRoute } from '../../helpers/visitRoute.ts'
 import { waitFor } from '@testing-library/vue'
 import {
-  generateValidResetToken,
-  generateValidPassword,
-  generateWeakPassword,
   generateResetUrlParams,
-} from '../../__testData__/mockForgotPasswordData'
+  generateValidPassword,
+  generateValidResetToken,
+  generateWeakPassword,
+} from '@tests/__apiMocks__/forgotPassword/generateForgotPasswordData.ts'
 
 describe('ResetPasswordWithToken Integration Tests', () => {
   test('should render password reset form with valid token', async () => {

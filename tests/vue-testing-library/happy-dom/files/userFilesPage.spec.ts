@@ -3,8 +3,14 @@ import { visitRoute } from '../../helpers/visitRoute.ts'
 import userEvent from '@testing-library/user-event'
 import { ApiClientV1 } from '@/api/v1/ApiClientV1.ts'
 import { mockWithDelay } from '../../../helpers/mockWithDelay.ts'
-import { mockFileReadFiles, mockFileReadFilesError } from '../../__apiMocks__/mockFileReadFiles.ts'
-import { buildTypeFileV1Array, buildDownloadUrlResponse } from '../../__testData__/fileBuilders.ts'
+import {
+  mockFileReadFiles,
+  mockFileReadFilesError,
+} from '@tests/__apiMocks__/files/mockFileReadFiles.ts'
+import {
+  buildTypeFileV1Array,
+  buildDownloadUrlResponse,
+} from '@tests/__apiMocks__/files/generateApiFiles.ts'
 
 const testFiles = buildTypeFileV1Array(2, [
   { id: 1, status: 'processed' },

@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker'
-import type { TypeUserPublicV1 } from '@/api/__generated__/v1/data-contracts.ts'
+import type { TypeUserPublicV1 } from 'src/api/__generated__/v1/data-contracts.ts'
 
 export function generateUser(): TypeUserPublicV1 {
   return {

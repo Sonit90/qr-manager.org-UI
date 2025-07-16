@@ -15,23 +15,23 @@ export class FileUploadService {
           'Content-Type': file.type,
         },
       })
-      
+
       notify({
         type: 'success',
         title: 'Upload',
         text: 'File uploaded successfully',
       })
-      
+
       return true
     } catch (error) {
       console.error('Error uploading file to MinIO:', error)
-      
+
       notify({
         type: 'error',
         title: 'Upload Failed',
         text: 'Failed to upload file. Please try again later.',
       })
-      
+
       return false
     }
   }

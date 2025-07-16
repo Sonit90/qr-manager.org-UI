@@ -15,13 +15,6 @@ export function generateInvalidActivationToken(): string {
 }
 
 /**
- * Generate an expired activation token
- */
-export function generateExpiredActivationToken(): string {
-  return faker.string.alphanumeric({ length: 64 })
-}
-
-/**
  * Generate activation URL parameters
  */
 export function generateActivationParams(token?: string) {

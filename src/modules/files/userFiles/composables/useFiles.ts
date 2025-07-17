@@ -8,8 +8,9 @@ import { FileUploadService } from '@/api/services/FileUploadService.ts'
 const loading = ref(false)
 const uploading = ref(false)
 const deleting = ref(false)
+const files = ref<TypeFileV1[]>([])
+
 export function useFiles() {
-  const files = ref<TypeFileV1[]>([])
   const error = ref<string | null>(null)
   const downloadingFileId = ref<number | null>(null)
 

@@ -9,7 +9,7 @@ import { handleApiError } from '@/api/helpers/handleApiError.ts'
 const navigationItems = [
   { title: 'Dashboard', icon: 'mdi-view-dashboard', to: '/dashboard' },
   { title: 'My Files', icon: 'mdi-file-multiple', to: '/my-files' },
-  { title: 'Users', icon: 'mdi-account-group', to: '/users' },
+  { title: 'Users', icon: 'mdi-account-group', to: '/admin/users' },
   { title: 'Projects', icon: 'mdi-folder-multiple', to: '/projects' },
   { title: 'Analytics', icon: 'mdi-chart-line', to: '/analytics' },
   { title: 'Reports', icon: 'mdi-file-chart', to: '/reports' },
@@ -20,6 +20,8 @@ const rail = ref(false)
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+
+userStore.fetchUser()
 
 const router = useRouter()
 async function logout() {
@@ -53,7 +55,7 @@ async function logout() {
     <v-menu offset-y>
       <template #activator="{ props }">
         <v-btn v-bind="props" class="me-2">
-          {{ user?.email }}
+          {{ user?.email || user?.full_name }}
           <v-avatar size="32">
             <v-icon>mdi-account</v-icon>
           </v-avatar>

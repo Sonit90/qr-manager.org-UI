@@ -6,15 +6,7 @@ import { handleApiError } from '@/api/helpers/handleApiError.ts'
 import { storeToRefs } from 'pinia'
 import { useUserStore } from '@/stores/userStore.ts'
 import { notify } from '@kyvg/vue3-notification'
-
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString)
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  })
-}
+import { formatDate } from '@/helpers/formatDate.ts'
 
 const getRoleColor = (role?: string) => {
   if (!role) {
@@ -43,12 +35,6 @@ function handleEditUser() {
 function handleCancelEdit() {
   isEditing.value = false
 }
-
-async function loadUser() {
-  await userStore.fetchUser()
-}
-
-loadUser()
 
 const hasChanges = computed(() => cloned.value?.full_name !== user.value?.full_name)
 

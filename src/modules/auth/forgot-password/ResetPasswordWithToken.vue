@@ -101,15 +101,24 @@ const confirmPasswordRules = computed(() => [
     <template v-if="resetStatus === ResetPasswordStatus.INITIAL">
       <v-form ref="form" v-model="valid">
         <v-text-field
+          type="text"
+          autocomplete="username"
+          style="display: none"
+          tabindex="-1"
+          aria-hidden="true"
+        />
+        <v-text-field
           v-model.trim="password"
           :type="showPassword ? 'text' : 'password'"
           :rules="passwordRules"
           :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
           label="New Password"
+          autocomplete="new-password"
           placeholder="Enter your new password"
           required
           variant="outlined"
           class="mb-4"
+          name="password"
           @click:append-inner="showPassword = !showPassword"
         />
 
@@ -119,17 +128,26 @@ const confirmPasswordRules = computed(() => [
           :rules="confirmPasswordRules"
           :append-inner-icon="showConfirmPassword ? 'mdi-eye' : 'mdi-eye-off'"
           label="Confirm Password"
+          autocomplete="new-password"
           placeholder="Confirm your new password"
           required
           variant="outlined"
           class="mb-4"
+          name="confirmPassword"
           @click:append-inner="showConfirmPassword = !showConfirmPassword"
         />
-      </v-form>
 
-      <v-btn color="primary" block size="large" :loading="isLoading" @click="resetPassword">
-        Reset Password
-      </v-btn>
+        <v-btn
+          type="submit"
+          color="primary"
+          block
+          size="large"
+          :loading="isLoading"
+          @click="resetPassword"
+        >
+          Reset Password
+        </v-btn>
+      </v-form>
     </template>
     <component
       :is="currentInstance.component"

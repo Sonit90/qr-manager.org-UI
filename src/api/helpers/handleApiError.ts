@@ -1,15 +1,11 @@
 import { isAxiosError } from 'axios'
-import { notify } from '@kyvg/vue3-notification'
-
-interface NotificationPayload {
-  title: string
-  text: string
-}
+import { type NotificationsOptions, notify } from '@kyvg/vue3-notification'
 
 export function handleApiError(error: unknown, { title, text }: { title?: string; text?: string }) {
-  const notification: NotificationPayload = {
+  const notification: Partial<NotificationsOptions> = {
     title: title || 'Error',
     text: text || 'Something went wrong',
+    type: 'error',
   }
 
   if (error instanceof Error && !isAxiosError(error)) {

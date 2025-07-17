@@ -63,6 +63,15 @@ export const routes = [
           requiresAuth: true,
         },
       },
+      {
+        path: '/admin/users',
+        name: 'users',
+        component: () => import('@/modules/admin/users/AdminUsers.vue'),
+        meta: {
+          requiresAuth: true,
+          roles: ['admin'],
+        },
+      },
     ],
     meta: {
       requiresAuth: true,

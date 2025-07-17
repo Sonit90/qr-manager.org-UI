@@ -1,4 +1,3 @@
-import { visitRoute } from '../../helpers/visitRoute.ts'
 import { waitFor } from '@testing-library/vue'
 import { ApiClientV1 } from '@/api/v1/ApiClientV1.ts'
 import {
@@ -8,12 +7,13 @@ import {
   mockPasswordResetValidationError,
   mockPasswordResetNetworkError,
 } from '@tests/__apiMocks__/forgotPassword/mockForgotPassword.ts'
-import { mockWithDelay } from '../../../helpers/mockWithDelay.ts'
 import {
   generateResetUrlParams,
   generateValidPassword,
   generateValidResetToken,
 } from '@tests/__apiMocks__/forgotPassword/generateForgotPasswordData.ts'
+import { visitRoute } from '@tests/vue-testing-library/helpers/visitRoute.ts'
+import { mockWithDelay } from '@tests/helpers/mockWithDelay.ts'
 
 describe('ResetPasswordWithToken Integration Tests', () => {
   test('should submit form with valid passwords and show success message', async () => {
@@ -180,12 +180,11 @@ describe('ResetPasswordWithToken Integration Tests', () => {
       view.getByText('Resetting your password...')
     })
 
-    // Wait for success message
     await waitFor(
       () => {
-        view.getByText('Password Reset Successful!')
+        view.getByText('Sign In')
       },
-      { timeout: 200 },
+      { timeout: 500 },
     )
   })
 

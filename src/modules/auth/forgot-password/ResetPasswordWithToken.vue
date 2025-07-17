@@ -28,54 +28,39 @@ const {
 
 const componentMap: Record<
   Exclude<ResetPasswordStatus, ResetPasswordStatus.INITIAL>,
-  {
-    component: typeof GenericState
-    props: GenericStateProps
-  }
+  GenericStateProps
 > = {
   [ResetPasswordStatus.LOADING]: {
-    component: GenericState,
-    props: {
-      state: 'loading',
-      title: 'Resetting your password...',
-      subtitle: 'Please wait while we process your password reset request.',
-    },
+    state: 'loading',
+    title: 'Resetting your password...',
+    subtitle: 'Please wait while we process your password reset request.',
   },
   [ResetPasswordStatus.SUCCESS]: {
-    component: GenericState,
-    props: {
-      state: 'success',
-      title: 'Password Reset Successful!',
-      subtitle:
-        'Your password has been successfully reset. You can now sign in with your new password.',
-    },
+    state: 'success',
+    title: 'Password Reset Successful!',
+    subtitle:
+      'Your password has been successfully reset. You can now sign in with your new password.',
   },
   [ResetPasswordStatus.ERROR]: {
-    component: GenericState,
-    props: {
-      state: 'error',
-      title: 'Password Reset Failed',
-      subtitle:
-        'An error occurred while resetting your password. Please try again or request a new link.',
-      buttonProps: {
-        path: '/forgot-password',
-        icon: 'mdi-lock-reset',
-        label: 'Reset Password',
-      },
+    state: 'error',
+    title: 'Password Reset Failed',
+    subtitle:
+      'An error occurred while resetting your password. Please try again or request a new link.',
+    buttonProps: {
+      path: '/forgot-password',
+      icon: 'mdi-lock-reset',
+      label: 'Reset Password',
     },
   },
   [ResetPasswordStatus.INVALID_LINK]: {
-    component: GenericState,
-    props: {
-      state: 'warning',
-      title: 'Invalid Password Reset Link',
-      subtitle:
-        'The password reset link is invalid or has expired. Please request a new password reset email.',
-    },
+    state: 'warning',
+    title: 'Invalid Password Reset Link',
+    subtitle:
+      'The password reset link is invalid or has expired. Please request a new password reset email.',
   },
 }
 
-const currentInstance = computed(() => {
+const stateProps = computed(() => {
   if (resetStatus.value === ResetPasswordStatus.INITIAL) {
     return null
   }
@@ -98,62 +83,54 @@ const confirmPasswordRules = computed(() => [
 </script>
 <template>
   <AuthForm title="Reset Password" subtitle="Enter your new password">
-    <template v-if="resetStatus === ResetPasswordStatus.INITIAL">
-      <v-form ref="form" v-model="valid">
-        <v-text-field
-          type="text"
-          autocomplete="username"
-          style="display: none"
-          tabindex="-1"
-          aria-hidden="true"
-        />
-        <v-text-field
-          v-model.trim="password"
-          :type="showPassword ? 'text' : 'password'"
-          :rules="passwordRules"
-          :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-          label="New Password"
-          autocomplete="new-password"
-          placeholder="Enter your new password"
-          required
-          variant="outlined"
-          class="mb-4"
-          name="password"
-          @click:append-inner="showPassword = !showPassword"
-        />
+    <v-form
+      v-if="resetStatus === ResetPasswordStatus.INITIAL"
+      ref="form"
+      v-model="valid"
+      data-testid="reset-password-form"
+      @submit.prevent="resetPassword"
+    >
+      <v-text-field
+        type="text"
+        autocomplete="username"
+        style="display: none"
+        tabindex="-1"
+        aria-hidden="true"
+      />
+      <v-text-field
+        v-model.trim="password"
+        :type="showPassword ? 'text' : 'password'"
+        :rules="passwordRules"
+        :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+        label="New Password"
+        autocomplete="new-password"
+        placeholder="Enter your new password"
+        required
+        variant="outlined"
+        class="mb-4"
+        name="password"
+        @click:append-inner="showPassword = !showPassword"
+      />
 
-        <v-text-field
-          v-model.trim="confirmPassword"
-          :type="showConfirmPassword ? 'text' : 'password'"
-          :rules="confirmPasswordRules"
-          :append-inner-icon="showConfirmPassword ? 'mdi-eye' : 'mdi-eye-off'"
-          label="Confirm Password"
-          autocomplete="new-password"
-          placeholder="Confirm your new password"
-          required
-          variant="outlined"
-          class="mb-4"
-          name="confirmPassword"
-          @click:append-inner="showConfirmPassword = !showConfirmPassword"
-        />
+      <v-text-field
+        v-model.trim="confirmPassword"
+        :type="showConfirmPassword ? 'text' : 'password'"
+        :rules="confirmPasswordRules"
+        :append-inner-icon="showConfirmPassword ? 'mdi-eye' : 'mdi-eye-off'"
+        label="Confirm Password"
+        autocomplete="new-password"
+        placeholder="Confirm your new password"
+        required
+        variant="outlined"
+        class="mb-4"
+        name="confirmPassword"
+        @click:append-inner="showConfirmPassword = !showConfirmPassword"
+      />
 
-        <v-btn
-          type="submit"
-          color="primary"
-          block
-          size="large"
-          :loading="isLoading"
-          @click="resetPassword"
-        >
-          Reset Password
-        </v-btn>
-      </v-form>
-    </template>
-    <component
-      :is="currentInstance.component"
-      v-else-if="currentInstance"
-      :error-message="errorMessage"
-      v-bind="currentInstance.props"
-    />
+      <v-btn type="submit" color="primary" block size="large" :loading="isLoading">
+        Reset Password
+      </v-btn>
+    </v-form>
+    <GenericState v-else-if="stateProps" :error-message="errorMessage" v-bind="stateProps" />
   </AuthForm>
 </template>

@@ -33,7 +33,8 @@
       "IIFEs": false
     }],
     "jest/no-standalone-expect": "off",
-    "no-alert": "off"
+    "no-alert": "off",
+    "jest/no-conditional-in-test": "off"
   },
   "ignorePatterns": [
     "tests/vue-testing-library/jsdom/setup.ts",

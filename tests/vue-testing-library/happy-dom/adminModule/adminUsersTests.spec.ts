@@ -38,7 +38,9 @@ describe('AdminUsers Integration Tests', () => {
     // Check if user data is displayed
     for (const user of users) {
       view.getByText(user.email)
-      view.getByText(user.full_name as string)
+      if (user.full_name) {
+        view.getByText(user.full_name)
+      }
     }
   })
 

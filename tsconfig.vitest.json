@@ -11,6 +11,6 @@
     "target": "ES2021",
     "lib": ["ES2021", "DOM"],
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.vitest.tsbuildinfo",
-    "types": ["vitest/globals", "node", "jsdom", "happy-dom", "bun-types"]
+    "types": ["vitest/globals", "node", "jsdom", "happy-dom"]
   }
 }

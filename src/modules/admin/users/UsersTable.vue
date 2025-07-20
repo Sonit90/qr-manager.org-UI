@@ -9,6 +9,7 @@ defineProps<{
 }>()
 
 const emit = defineEmits<{
+  edit: [user: TypeUserPublicV1]
   delete: [userId: string]
 }>()
 
@@ -55,6 +56,15 @@ const headers = [
 
     <template #item.actions="{ item }">
       <div class="d-flex gap-2">
+        <v-btn
+          variant="text"
+          color="primary"
+          size="small"
+          title="Edit"
+          icon="mdi-pencil"
+          @click="emit('edit', item)"
+        />
+
         <v-btn
           :disabled="deleteId === item.id"
           variant="text"

@@ -11,6 +11,12 @@ const users = ref<TypeUserPublicV1[]>([])
 const totalUsers = ref(0)
 
 export function useAdminUsers() {
+  function replaceUserById(id: string, user: TypeUserPublicV1) {
+    const userIndex = users.value.findIndex((u) => u.id === id)
+    if (userIndex === -1) return
+    users.value[userIndex] = user
+  }
+
   async function fetchUsers() {
     loading.value = true
 
@@ -36,8 +42,23 @@ export function useAdminUsers() {
       deleteId.value = null
     }
   }
+
+  async function fetchUser(userId: string) {
+    loading.value = true
+
+    try {
+      const user = await ApiClientV1.adminGetUserById(userId)
+      replaceUserById(userId, user)
+    } catch (err) {
+      handleApiError(err, { title: 'Fetch user error' })
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     fetchUsers,
+    fetchUser,
     deleteUser,
     loading,
     uploading,

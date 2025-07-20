@@ -7,13 +7,8 @@ import { notify } from '@kyvg/vue3-notification'
 import { handleApiError } from '@/api/helpers/handleApiError.ts'
 
 const navigationItems = [
-  { title: 'Dashboard', icon: 'mdi-view-dashboard', to: '/dashboard' },
   { title: 'My Files', icon: 'mdi-file-multiple', to: '/my-files' },
   { title: 'Users', icon: 'mdi-account-group', to: '/admin/users' },
-  { title: 'Projects', icon: 'mdi-folder-multiple', to: '/projects' },
-  { title: 'Analytics', icon: 'mdi-chart-line', to: '/analytics' },
-  { title: 'Reports', icon: 'mdi-file-chart', to: '/reports' },
-  { title: 'Messages', icon: 'mdi-message', to: '/messages' },
 ]
 const drawer = ref(true)
 const rail = ref(false)
@@ -124,8 +119,8 @@ async function logout() {
     <template #append>
       <v-divider />
       <v-list density="compact" nav>
-        <v-list-item prepend-icon="mdi-help-circle" title="Help & Support" @click="$emit('help')" />
-        <v-list-item prepend-icon="mdi-information" title="About" @click="$emit('about')" />
+        <v-list-item prepend-icon="mdi-help-circle" title="Help & Support" @click="() => {}" />
+        <v-list-item prepend-icon="mdi-information" title="About" @click="() => {}" />
       </v-list>
     </template>
   </v-navigation-drawer>

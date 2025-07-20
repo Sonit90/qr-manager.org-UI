@@ -11,11 +11,14 @@ import {
   buildTypeFileV1Array,
   buildDownloadUrlResponse,
 } from '@tests/__apiMocks__/files/generateApiFiles.ts'
+import { mockUser } from '@tests/__apiMocks__/user/mockUser.ts'
 
 const testFiles = buildTypeFileV1Array(2, [
   { id: 1, status: 'processed' },
   { id: 2, status: 'pending' },
 ])
+
+mockUser()
 
 describe('UserFilesPage', () => {
   test('should display files when API returns data', async () => {

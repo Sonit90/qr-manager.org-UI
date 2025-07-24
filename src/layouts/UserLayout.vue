@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useUserStore } from '@/stores/userStore.ts'
 import { useRouter } from 'vue-router'
 import { notify } from '@kyvg/vue3-notification'
 import { handleApiError } from '@/api/helpers/handleApiError.ts'
 import { useUser } from '@/tanstack/useUser.ts'
 import { UserRole } from '@/types/user/roles.ts'
+import { useUserRoles } from '@/helpers/roles/useUserRoles.ts'
 
 const drawer = ref(true)
 const rail = ref(false)
@@ -17,10 +18,13 @@ const navigationItems = [
   { title: 'Users', icon: 'mdi-account-group', to: '/admin/users', roles: [UserRole.ADMIN] },
 ]
 
-const availableNavigationItems = navigationItems.filter((item) => {
-  if (!item.roles) return true
-  return userStore.hasRole(item.roles)
-})
+const { hasRole } = useUserRoles()
+const availableNavigationItems = computed(() =>
+  navigationItems.filter((item) => {
+    if (!item.roles) return true
+    return hasRole(item.roles)
+  }),
+)
 
 const { data: user } = useUser()
 

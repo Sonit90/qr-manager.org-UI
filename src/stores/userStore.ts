@@ -7,8 +7,6 @@ import type {
 } from '@/api/__generated__/v1/data-contracts.ts'
 import { useStorage } from '@vueuse/core'
 import { queryClient } from '@/tanstack/queryClient.ts'
-import { useUser } from '@/tanstack/useUser.ts'
-import { UserRole } from '@/types/user/roles.ts'
 
 export const useUserStore = defineStore('user', () => {
   const isLoading = ref(false)
@@ -58,19 +56,12 @@ export const useUserStore = defineStore('user', () => {
     queryClient.clear()
   }
 
-  function hasRole(roles: UserRole[]) {
-    const { data } = useUser()
-    if (!data.value) return false
-    return roles.includes(data.value.role as UserRole)
-  }
-
   return {
     login,
     logout,
     register,
     clearTokens,
     refreshUser,
-    hasRole,
     isAuthenticated,
     isLoading,
     access_token,

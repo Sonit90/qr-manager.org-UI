@@ -3,10 +3,12 @@ import { ref, computed } from 'vue'
 import { useCloned } from '@vueuse/core'
 import EditableUserField from '@/modules/user/EditableUserField.vue'
 import { handleApiError } from '@/api/helpers/handleApiError.ts'
-import { storeToRefs } from 'pinia'
-import { useUserStore } from '@/stores/userStore.ts'
 import { notify } from '@kyvg/vue3-notification'
 import { formatDate } from '@/helpers/formatDate.ts'
+import { useUser } from '@/tanstack/useUser.ts'
+import { useMutation, useQueryClient } from '@tanstack/vue-query'
+import { ApiClientV1 } from '@/api/v1/ApiClientV1.ts'
+import type { TypeUserUpdateMeV1 } from '@/api/__generated__/v1/data-contracts.ts'
 
 const getRoleColor = (role?: string) => {
   if (!role) {
@@ -21,11 +23,12 @@ const getRoleColor = (role?: string) => {
   return colors[role.toLowerCase()] || 'primary'
 }
 
-const userStore = useUserStore()
-const { isLoading, user } = storeToRefs(userStore)
+const { isLoading, data: user } = useUser()
+
+const safeUser = computed(() => user.value ?? null)
 
 const isEditing = ref(false)
-const { cloned, sync } = useCloned(user)
+const { cloned, sync } = useCloned(safeUser)
 
 function handleEditUser() {
   isEditing.value = true
@@ -38,33 +41,43 @@ function handleCancelEdit() {
 
 const hasChanges = computed(() => cloned.value?.full_name !== user.value?.full_name)
 
-async function handleApply() {
-  try {
-    await userStore.editUser({ full_name: cloned.value?.full_name })
+const queryClient = useQueryClient()
+const { isPending, mutate } = useMutation({
+  mutationFn: (data: TypeUserUpdateMeV1) => ApiClientV1.userUpdateCurrentUser(data),
+  onSettled: () => {
+    queryClient.invalidateQueries({ queryKey: ['fetchUser'] })
     isEditing.value = false
     notify({
       title: 'User profile',
       text: 'Profile has been edited successfully',
       type: 'success',
     })
-  } catch (e) {
-    handleApiError(e, { title: 'Update user' })
-  }
+  },
+  onError: (error) => {
+    handleApiError(error, { title: 'Update user' })
+  },
+})
+
+function handleApply() {
+  mutate({ full_name: cloned.value?.full_name })
 }
 </script>
 <template>
   <div v-if="isLoading" class="d-flex justify-center align-center" style="height: 200px">
     <v-progress-circular indeterminate color="primary" size="48" />
   </div>
-  <v-card v-else class="user-info-widget" max-width="400" elevation="2">
+  <v-card
+    v-else
+    data-testid="user-info-container"
+    class="user-info-widget"
+    max-width="400"
+    elevation="2"
+  >
     <v-card-title v-if="user" class="d-flex align-center">
       <v-avatar color="primary" class="me-3">
         <v-icon color="white">mdi-account</v-icon>
       </v-avatar>
-      <div>
-        <div class="text-h6">{{ user.full_name }}</div>
-        <div class="text-caption text-medium-emphasis">{{ user.email }}</div>
-      </div>
+      <div class="text-h6">User Profile</div>
       <v-btn
         v-if="!isEditing"
         color="primary"
@@ -72,6 +85,7 @@ async function handleApply() {
         icon="mdi-pencil"
         size="small"
         class="ml-auto"
+        data-testid="edit-user-button"
         @click="handleEditUser"
       />
 
@@ -81,6 +95,7 @@ async function handleApply() {
         icon="mdi-cancel"
         size="small"
         class="ml-auto"
+        data-testid="cancel-edit-button"
         @click="handleCancelEdit()"
       />
       <v-btn
@@ -88,18 +103,25 @@ async function handleApply() {
         color="success"
         variant="text"
         icon="mdi-check"
-        :loading="isLoading"
+        :loading="isPending"
         size="small"
         :disabled="!hasChanges"
+        data-testid="save-edit-button"
         @click="handleApply()"
       />
     </v-card-title>
 
-    <v-card-text v-if="user && cloned" class="pa-0">
+    <v-card-text v-if="user && cloned" data-testid="user-page-edit-form" class="pa-0">
       <v-list density="compact" class="pa-0">
-        <EditableUserField v-model="cloned.email" icon="mdi-email" label="Email" />
+        <EditableUserField
+          v-model="cloned.email"
+          :original-value="user.email"
+          icon="mdi-email"
+          label="Email"
+        />
         <EditableUserField
           v-model="cloned.full_name"
+          :original-value="user.full_name"
           :is-editing="isEditing"
           icon="mdi-account"
           label="Name"

@@ -11,8 +11,9 @@ import {
 import { mockUser } from '@tests/__apiMocks__/user/mockUser.ts'
 import { flushPromises } from '@vue/test-utils'
 import { mockWithDelay } from '@tests/helpers/mockWithDelay.ts'
+import { UserRole } from '@/types/user/roles.ts'
 
-mockUser({ role: 'admin' })
+mockUser({ role: UserRole.ADMIN })
 
 describe('AdminUsers Integration Tests', () => {
   test('should render admin users page with user table', async () => {

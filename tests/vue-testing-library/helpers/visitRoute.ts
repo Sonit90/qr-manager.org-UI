@@ -4,8 +4,10 @@ import { createRouter, createWebHistory } from 'vue-router'
 import MockApp from '../__mocks__/MockApp.vue'
 import { setActivePinia } from 'pinia'
 import { createTestingPinia } from '@pinia/testing'
-import { routes } from '@/router/index.ts'
+import { routes } from '@/router/routes.ts'
 import { createVuetify } from 'vuetify'
+import { QueryClient, VueQueryPlugin } from '@tanstack/vue-query'
+import type { App } from 'vue'
 
 interface VisitOptions extends Omit<RenderOptions<typeof MockApp>, 'global'> {
   stubActions?: boolean
@@ -24,6 +26,14 @@ export async function createTestRouter(initialPath = '/') {
 }
 
 export async function visitRoute(url: string, options: VisitOptions = {}) {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+      },
+    },
+  })
+
   const { stubActions = false, ...renderOptions } = options
 
   // Initialize user-event
@@ -39,15 +49,24 @@ export async function visitRoute(url: string, options: VisitOptions = {}) {
 
   // Prepare global configuration
   const globalConfig = {
-    plugins: [router, pinia, vuetify],
+    plugins: [
+      router,
+      pinia,
+      vuetify,
+      {
+        install(app: App<Element>) {
+          app.use(VueQueryPlugin, { queryClient })
+        },
+      },
+    ],
     mocks: {
       // Default mocks
-      $t: (key: string, params?: Record<string, never>) => {
-        if (params) {
-          return key.replaceAll(/\{(\w+)}/g, (match, param) => params[param] || match)
-        }
-        return key
-      },
+      // $t: (key: string, params?: Record<string, never>) => {
+      //   if (params) {
+      //     return key.replaceAll(/\{(\w+)}/g, (match, param) => params[param] || match)
+      //   }
+      //   return key
+      // },
     },
   }
 

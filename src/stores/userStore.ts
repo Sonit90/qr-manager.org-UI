@@ -3,15 +3,15 @@ import { defineStore } from 'pinia'
 import { ApiClientV1 } from '@/api/v1/ApiClientV1.ts'
 import type {
   TypeBodyAuthenticationLoginV1,
-  TypeUserPublicV1,
   TypeUserRegisterV1,
-  TypeUserUpdateMeV1,
 } from '@/api/__generated__/v1/data-contracts.ts'
 import { useStorage } from '@vueuse/core'
+import { queryClient } from '@/tanstack/queryClient.ts'
+import { useUser } from '@/tanstack/useUser.ts'
+import { UserRole } from '@/types/user/roles.ts'
 
 export const useUserStore = defineStore('user', () => {
   const isLoading = ref(false)
-  const user = ref<TypeUserPublicV1 | null>(null)
 
   const access_token = useStorage<string | null>('access_token', null)
   const refresh_token = useStorage<string | null>('refresh_token', null)
@@ -33,16 +33,7 @@ export const useUserStore = defineStore('user', () => {
   async function register(params: TypeUserRegisterV1) {
     try {
       isLoading.value = true
-      user.value = await ApiClientV1.authenticationRegisterUser(params)
-    } finally {
-      isLoading.value = false
-    }
-  }
-
-  async function fetchUser() {
-    try {
-      isLoading.value = true
-      user.value = await ApiClientV1.userGetCurrentUser()
+      await ApiClientV1.authenticationRegisterUser(params)
     } finally {
       isLoading.value = false
     }
@@ -64,22 +55,23 @@ export const useUserStore = defineStore('user', () => {
   async function logout() {
     await ApiClientV1.authenticationLogout()
     clearTokens()
+    queryClient.clear()
   }
 
-  async function editUser(data: TypeUserUpdateMeV1) {
-    user.value = await ApiClientV1.userUpdateCurrentUser(data)
+  function hasRole(roles: UserRole[]) {
+    const { data } = useUser()
+    if (!data.value) return false
+    return roles.includes(data.value.role as UserRole)
   }
 
   return {
     login,
     logout,
     register,
-    fetchUser,
-    editUser,
     clearTokens,
     refreshUser,
+    hasRole,
     isAuthenticated,
-    user,
     isLoading,
     access_token,
     refresh_token,

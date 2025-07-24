@@ -1,3 +1,5 @@
+import { UserRole } from '@/types/user/roles.ts'
+
 export const routes = [
   {
     path: '/files',
@@ -69,7 +71,7 @@ export const routes = [
         component: () => import('@/modules/admin/users/AdminUsers.vue'),
         meta: {
           requiresAuth: true,
-          roles: ['admin'],
+          roles: [UserRole.ADMIN],
         },
       },
     ],

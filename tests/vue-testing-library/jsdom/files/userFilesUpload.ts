@@ -11,7 +11,7 @@ import {
   generateFileNameWithExtension,
 } from '@tests/__apiMocks__/files/generateApiFiles.ts'
 import { faker } from '@faker-js/faker'
-import { renderFileUpload } from '@tests/vue-testing-library/happy-dom/files/_renderFileUpload.ts'
+import { renderFileUpload } from '@tests/vue-testing-library/happy-dom/filesModule/_renderFileUpload.ts'
 import { mockWithDelay } from '@tests/helpers/mockWithDelay.ts'
 
 // Mock the API client

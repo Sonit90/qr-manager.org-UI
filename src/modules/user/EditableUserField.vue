@@ -3,6 +3,7 @@ defineProps<{
   isEditing?: boolean
   icon?: string
   label: string
+  originalValue?: string | null | undefined
 }>()
 
 const model = defineModel<string | null | undefined>()
@@ -20,7 +21,7 @@ const model = defineModel<string | null | undefined>()
     <template #append>
       <slot>
         <span v-if="!isEditing" class="text-body-2 text-medium-emphasis">
-          {{ model }}
+          {{ originalValue }}
         </span>
       </slot>
     </template>

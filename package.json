@@ -29,6 +29,7 @@
   "dependencies": {
     "@faker-js/faker": "^9.9.0",
     "@kyvg/vue3-notification": "^3.4.1",
+    "@tanstack/vue-query": "^5.83.0",
     "@vueuse/core": "^13.4.0",
     "axios": "^1.10.0",
     "pinia": "^3.0.3",

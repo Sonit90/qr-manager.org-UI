@@ -45,8 +45,11 @@ export function useFiles() {
           text: 'Download started successfully',
         })
       } else {
-        throw new Error('Download URL not available')
-        //TODO Replace with notification
+        notify({
+          type: 'error',
+          title: 'Download',
+          text: 'Download URL not available',
+        })
       }
     } catch (err) {
       handleApiError(err, { title: 'Download' })

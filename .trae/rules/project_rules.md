@@ -35,3 +35,9 @@ authenticationActivateUser: vi.fn(),
 }))
 
 vi.mocked(ApiClientV1.authenticationActivateUser).mockImplementation(mockedActivation)
+
+If you want to get a button, get it byRole, or by data-testid. If button has only icon, assign data-testid to that button, in other case, get it by role like that:
+view.getByRole('button', {name: 'Cancel'})
+
+If you want to get an input, always get it by label:
+view.getByLabelText('Email')

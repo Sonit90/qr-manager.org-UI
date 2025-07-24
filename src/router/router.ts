@@ -1,20 +1,24 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { routes } from '@/router/index.ts'
+import { routes } from '@/router/routes.ts'
 import { useUserStore } from '@/stores/userStore.ts'
 import { storeToRefs } from 'pinia'
 import { notify } from '@kyvg/vue3-notification'
+import { queryClient } from '@/tanstack/queryClient.ts'
+import { fetchUserQuery } from '@/tanstack/useUser.ts'
+import { UserRole } from '@/types/user/roles.ts'
 
 export const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore()
 
   const { isAuthenticated } = storeToRefs(userStore)
-  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
-  const disallowAuthenticated = to.matched.some((record) => record.meta.disallowAuthenticated)
+  const requiresAuth = to.meta.requiresAuth
+  const disallowAuthenticated = to.meta.disallowAuthenticated
+  const requiredRoles = to.meta.roles as UserRole[]
 
   if (requiresAuth && !isAuthenticated.value) {
     notify({
@@ -23,6 +27,23 @@ router.beforeEach((to, from, next) => {
       type: 'warn',
     })
     return next('/login')
+  }
+
+  if (requiredRoles) {
+    const user = await queryClient.fetchQuery(fetchUserQuery)
+    if (!user.role) {
+      return next('/user')
+    }
+
+    if (!requiredRoles.includes(user.role as UserRole)) {
+      notify({
+        type: 'warn',
+        title: 'Permission denied',
+        text: `This page requires to have ${requiredRoles.join(' ')} roles`,
+      })
+      return next('/user')
+    }
+    return next()
   }
 
   if (disallowAuthenticated && isAuthenticated.value) {

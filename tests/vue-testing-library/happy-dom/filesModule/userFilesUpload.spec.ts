@@ -1,7 +1,7 @@
 import { within } from '@testing-library/vue'
 import { mockFileReadFiles } from '@tests/__apiMocks__/files/mockFileReadFiles.ts'
 import { generateFileData } from '@tests/__apiMocks__/files/generateApiFiles.ts'
-import { renderFileUpload } from '@tests/vue-testing-library/happy-dom/files/_renderFileUpload.ts'
+import { renderFileUpload } from '@tests/vue-testing-library/happy-dom/filesModule/_renderFileUpload.ts'
 
 // Mock the API client
 vi.mock('@/api/v1/ApiClientV1.ts', () => ({

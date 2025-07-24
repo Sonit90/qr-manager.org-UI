@@ -1,22 +1,28 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useUserStore } from '@/stores/userStore.ts'
-import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import { notify } from '@kyvg/vue3-notification'
 import { handleApiError } from '@/api/helpers/handleApiError.ts'
+import { useUser } from '@/tanstack/useUser.ts'
+import { UserRole } from '@/types/user/roles.ts'
 
-const navigationItems = [
-  { title: 'My Files', icon: 'mdi-file-multiple', to: '/my-files' },
-  { title: 'Users', icon: 'mdi-account-group', to: '/admin/users' },
-]
 const drawer = ref(true)
 const rail = ref(false)
 
 const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
 
-userStore.fetchUser()
+const navigationItems = [
+  { title: 'My Files', icon: 'mdi-file-multiple', to: '/my-files' },
+  { title: 'Users', icon: 'mdi-account-group', to: '/admin/users', roles: [UserRole.ADMIN] },
+]
+
+const availableNavigationItems = navigationItems.filter((item) => {
+  if (!item.roles) return true
+  return userStore.hasRole(item.roles)
+})
+
+const { data: user } = useUser()
 
 const router = useRouter()
 async function logout() {
@@ -58,30 +64,13 @@ async function logout() {
       </template>
 
       <v-list>
-        <!--        <v-list-item>-->
-        <!--          <v-list-item-title class="font-weight-medium">-->
-        <!--            {{ user?.email }}-->
-        <!--          </v-list-item-title>-->
-        <!--        </v-list-item>-->
-
-        <v-divider />
-
         <v-list-item to="/user">
           <template #prepend>
             <v-icon>mdi-account-circle</v-icon>
           </template>
           <v-list-item-title>Profile</v-list-item-title>
         </v-list-item>
-
-        <!--        <v-list-item to="/settings">-->
-        <!--          <template #prepend>-->
-        <!--            <v-icon>mdi-cog</v-icon>-->
-        <!--          </template>-->
-        <!--          <v-list-item-title>Settings</v-list-item-title>-->
-        <!--        </v-list-item>-->
-
         <v-divider />
-
         <v-list-item @click="logout()">
           <template #prepend>
             <v-icon color="error">mdi-logout</v-icon>
@@ -105,7 +94,7 @@ async function logout() {
     <!-- Navigation Items -->
     <v-list density="compact" nav>
       <v-list-item
-        v-for="item in navigationItems"
+        v-for="item in availableNavigationItems"
         :key="item.title"
         :to="item.to"
         :prepend-icon="item.icon"
@@ -125,7 +114,7 @@ async function logout() {
     </template>
   </v-navigation-drawer>
 
-  <v-container class="pa-6">
+  <v-container fluid class="pa-6">
     <router-view />
   </v-container>
 </template>

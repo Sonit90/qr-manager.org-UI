@@ -1,6 +1,6 @@
 {
   "name": "excel-front-fresh",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
   "type": "module",
   "scripts": {
@@ -33,6 +33,7 @@
     "@vueuse/core": "^13.4.0",
     "axios": "^1.10.0",
     "pinia": "^3.0.3",
+    "vite-svg-loader": "^5.1.0",
     "vue": "^3.5.17",
     "vue-router": "^4.5.1"
   },

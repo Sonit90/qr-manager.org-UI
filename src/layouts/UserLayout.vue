@@ -7,6 +7,8 @@ import { handleApiError } from '@/api/helpers/handleApiError.ts'
 import { useUser } from '@/tanstack/useUser.ts'
 import { UserRole } from '@/types/user/roles.ts'
 import { useUserRoles } from '@/helpers/roles/useUserRoles.ts'
+import VersionInfo from '@/components/version/VersionInfo.vue'
+import LogoIcon from '@/assets/logo.svg'
 
 const drawer = ref(true)
 const rail = ref(false)
@@ -50,11 +52,25 @@ async function logout() {
 
     <!-- Logo -->
     <div class="d-flex align-center flex-grow-1">
-      <v-img src="/logo.svg" alt="Logo" max-height="32" max-width="32" class="me-3" />
+      <LogoIcon class="logo-icon mx-2" alt="Logo" height="32" width="32" />
       <v-toolbar-title class="text-h6 font-weight-bold flex-grow-1"> MyApp </v-toolbar-title>
     </div>
 
     <v-spacer />
+
+    <v-menu
+      offset-y
+      :offset="2"
+      location="bottom right"
+      width="300"
+      :transition="false"
+      :close-on-content-click="false"
+    >
+      <template #activator="{ props }">
+        <v-btn v-bind="props" prepend-icon="mdi-information-outline" text="Version Info" />
+      </template>
+      <VersionInfo />
+    </v-menu>
 
     <!-- User Menu -->
     <v-menu offset-y>
@@ -129,5 +145,10 @@ async function logout() {
   transform: translateX(50%);
   top: 135px;
   z-index: 1;
+}
+
+.logo-icon :deep(path) {
+  fill: white;
+  stroke: white;
 }
 </style>

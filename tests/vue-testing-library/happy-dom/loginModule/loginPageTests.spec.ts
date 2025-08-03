@@ -98,10 +98,7 @@ describe('LoginPage Integration Tests', () => {
     // Submit form
     await user.click(submitButton)
 
-    // Wait for API call
-    await waitFor(() => {
-      expect(mockedLogin).toHaveBeenCalledWith(credentials)
-    })
+    expect(mockedLogin).toHaveBeenCalledWith({}, credentials)
   })
 
   test('should handle unauthorized login error', async () => {
@@ -120,7 +117,7 @@ describe('LoginPage Integration Tests', () => {
     // Submit form
     await user.click(submitButton)
 
-    expect(mockedLogin).toHaveBeenCalledWith(credentials)
+    expect(mockedLogin).toHaveBeenCalledWith({}, credentials)
 
     view.getByText('Incorrect email or password')
   })
@@ -143,10 +140,7 @@ describe('LoginPage Integration Tests', () => {
     // Submit form
     await user.click(submitButton)
 
-    // Wait for API call
-    await waitFor(() => {
-      expect(mockedLogin).toHaveBeenCalledWith(credentials)
-    })
+    expect(mockedLogin).toHaveBeenCalledWith({}, credentials)
   })
 
   test('should show loading state during login', async () => {
@@ -168,7 +162,7 @@ describe('LoginPage Integration Tests', () => {
     // Submit form
     await user.click(submitButton)
 
-    expect(mockedLogin).toHaveBeenCalledWith(credentials)
+    expect(mockedLogin).toHaveBeenCalledWith({}, credentials)
   })
 
   test('should navigate to register page when clicking sign up link', async () => {

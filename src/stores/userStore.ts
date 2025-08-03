@@ -20,7 +20,7 @@ export const useUserStore = defineStore('user', () => {
   async function login(params: TypeBodyAuthenticationLoginV1) {
     try {
       isLoading.value = true
-      const response = await ApiClientV1.authenticationLogin(params)
+      const response = await ApiClientV1.authenticationLogin({}, params)
       access_token.value = response.access_token
       refresh_token.value = response.refresh_token
       token_type.value = response.token_type
@@ -51,7 +51,7 @@ export const useUserStore = defineStore('user', () => {
   }
 
   async function logout() {
-    await ApiClientV1.authenticationLogout()
+    await ApiClientV1.authenticationLogout({})
     clearTokens()
     queryClient.clear()
   }

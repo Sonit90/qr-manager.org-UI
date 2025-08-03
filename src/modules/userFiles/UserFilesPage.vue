@@ -10,11 +10,11 @@ const { files, loading, error, deleting, downloadingFileId, fetchFiles, download
 
 fetchFiles()
 
-function handleDownload(fileId: number) {
+function handleDownload(fileId: string) {
   downloadFile(fileId)
 }
 
-function handleDelete(fileId: number) {
+function handleDelete(fileId: string) {
   deleteFile(fileId)
 }
 </script>

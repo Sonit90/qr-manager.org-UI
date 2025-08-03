@@ -14,8 +14,8 @@ import {
 import { mockUser } from '@tests/__apiMocks__/user/mockUser.ts'
 
 const testFiles = buildTypeFileV1Array(2, [
-  { id: 1, status: 'processed' },
-  { id: 2, status: 'pending' },
+  { id: '1', status: 'processed' },
+  { id: '2', status: 'pending' },
 ])
 
 mockUser()

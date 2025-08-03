@@ -6,7 +6,7 @@
     "vitest.config.ts",
     "tests/**/*",
   ],
-  "exclude": [],
+  "exclude": ["tests/bun-test/**/*"],
   "compilerOptions": {
     "target": "ES2021",
     "lib": ["ES2021", "DOM"],

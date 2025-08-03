@@ -60,7 +60,15 @@ export const routes = [
       {
         path: '/my-files',
         name: 'my-files',
-        component: () => import('@/modules/files/userFiles/UserFilesPage.vue'),
+        component: () => import('@/modules/userFiles/UserFilesPage.vue'),
+        meta: {
+          requiresAuth: true,
+        },
+      },
+      {
+        path: '/merges',
+        name: 'merges',
+        component: () => import('@/modules/merges/MergeProcesses.vue'),
         meta: {
           requiresAuth: true,
         },

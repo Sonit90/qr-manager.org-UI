@@ -17,6 +17,7 @@ const userStore = useUserStore()
 
 const navigationItems = [
   { title: 'My Files', icon: 'mdi-file-multiple', to: '/my-files' },
+  { title: 'Transformations', icon: 'mdi-file-excel', to: '/merges' },
   { title: 'Users', icon: 'mdi-account-group', to: '/admin/users', roles: [UserRole.ADMIN] },
 ]
 

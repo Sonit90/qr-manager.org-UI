@@ -26,5 +26,8 @@ export default defineConfig(({ mode }) => {
     define: {
       __BUILD_DATE__: JSON.stringify(new Date().toISOString().split('T')[0]), // e.g. "2025-07-24"
     },
+    experimental:{
+      enableNativePlugin: true
+    }
   }
 })

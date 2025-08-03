@@ -24,10 +24,9 @@ function onRefresh() {
       prepend-icon="mdi-refresh"
       :loading="loading"
       variant="text"
+      text="Refresh"
       @click="onRefresh"
-    >
-      Refresh
-    </v-btn>
+    />
   </v-card-title>
   <v-divider />
 </template>

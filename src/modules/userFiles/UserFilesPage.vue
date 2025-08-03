@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { useFiles } from '@/modules/files/userFiles/composables/useFiles.ts'
-import FileLoadingState from '@/modules/files/userFiles/components/FileLoadingState.vue'
-import FileEmptyState from '@/modules/files/userFiles/components/FileEmptyState.vue'
-import FileErrorState from '@/modules/files/userFiles/components/FileErrorState.vue'
-import FileTable from '@/modules/files/userFiles/components/FileTable.vue'
-import FileCardHeader from '@/modules/files/userFiles/components/FileCardHeader.vue'
+import { useFiles } from '@/modules/userFiles/composables/useFiles.ts'
+
+import FileTable from '@/modules/userFiles/components/FileTable.vue'
+import FileCardHeader from '@/modules/userFiles/components/FileCardHeader.vue'
+import GenericState from '@/components/GenericState.vue'
 
 const { files, loading, error, deleting, downloadingFileId, fetchFiles, downloadFile, deleteFile } =
   useFiles()
@@ -23,17 +22,22 @@ function handleDelete(fileId: number) {
 <template>
   <div data-testid="user-files-page">
     <h1 class="text-h4">My Files</h1>
-
-    <v-card class="mb-4">
+    <v-card>
       <FileCardHeader :loading="loading" @refresh="fetchFiles" />
-
       <v-card-text>
-        <FileErrorState v-if="error" :error="error" />
-
-        <FileLoadingState v-if="loading" />
-
-        <FileEmptyState v-else-if="files.length === 0" />
-
+        <GenericState
+          v-if="error"
+          title="Error"
+          subtitle="Failed to load files. Please try again later."
+          state="error"
+        />
+        <GenericState v-if="loading" title="Loading" state="loading" />
+        <GenericState
+          v-else-if="files.length === 0"
+          subtitle="Upload files to see them here"
+          title="No files found"
+          state="info"
+        />
         <FileTable
           v-else
           :files="files"

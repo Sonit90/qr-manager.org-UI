@@ -12,7 +12,7 @@ const files = ref<TypeFileV1[]>([])
 
 export function useFiles() {
   const error = ref<string | null>(null)
-  const downloadingFileId = ref<number | null>(null)
+  const downloadingFileId = ref<string | null>(null)
 
   async function fetchFiles() {
     loading.value = true
@@ -28,7 +28,7 @@ export function useFiles() {
     }
   }
 
-  async function downloadFile(fileId: number) {
+  async function downloadFile(fileId: string) {
     if (!fileId) return
 
     downloadingFileId.value = fileId
@@ -89,7 +89,7 @@ export function useFiles() {
     }
   }
 
-  async function deleteFile(fileId: number): Promise<boolean> {
+  async function deleteFile(fileId: string): Promise<boolean> {
     if (!fileId) return false
 
     deleting.value = true

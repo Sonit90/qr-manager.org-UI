@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { VFileUpload } from 'vuetify/labs/VFileUpload'
-import { useFiles } from '@/modules/files/userFiles/composables/useFiles.ts'
+import { useFiles } from '@/modules/userFiles/composables/useFiles.ts'
 import { nextTick, ref, type Ref } from 'vue'
 
 const { uploading, uploadFile } = useFiles()
@@ -29,10 +29,7 @@ async function onCancel(isActive: Ref<boolean>) {
 <template>
   <v-dialog max-width="600">
     <template #activator="{ props: activatorProps }">
-      <v-btn v-bind="activatorProps" color="primary">
-        Upload file
-        <v-icon>mdi-upload</v-icon>
-      </v-btn>
+      <v-btn v-bind="activatorProps" color="primary" text="Upload file" prepend-icon="mdi-upload" />
     </template>
     <template #default="{ isActive }">
       <v-card data-testid="file-upload-body">

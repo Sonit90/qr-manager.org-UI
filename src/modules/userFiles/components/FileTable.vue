@@ -3,16 +3,16 @@ import type { TypeFileV1 } from '@/api/__generated__/v1/data-contracts.ts'
 
 defineProps<{
   files: TypeFileV1[]
-  downloadingFileId: number | null
+  downloadingFileId: string | null
   deleting: boolean
 }>()
 
 const emit = defineEmits<{
-  download: [fileId: number]
-  delete: [fileId: number]
+  download: [fileId: string]
+  delete: [fileId: string]
 }>()
 
-function onDownload(fileId?: number) {
+function onDownload(fileId?: TypeFileV1['id']) {
   if (!fileId) return
   emit('download', fileId)
 }

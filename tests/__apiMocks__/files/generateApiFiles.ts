@@ -3,7 +3,7 @@ import type { TypeFileV1 } from 'src/api/__generated__/v1/data-contracts.ts'
 
 export function buildTypeFileV1(overrides: Partial<TypeFileV1> = {}): TypeFileV1 {
   return {
-    id: faker.number.int({ min: 1, max: 1000 }),
+    id: faker.number.int({ min: 1, max: 1000 }).toString(),
     name: faker.system.fileName(),
     original_name: faker.system.fileName(),
     status: faker.helpers.arrayElement(['ready', 'pending', 'processing', 'error']),

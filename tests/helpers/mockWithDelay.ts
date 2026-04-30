@@ -8,7 +8,7 @@ import { vi } from 'vitest'
  * @param shouldReject - If true, the promise will reject instead of resolve.
  * @returns A Vitest mock function returning a delayed promise.
  */
-export function mockWithDelay<T>(value: T, delay = 100, shouldReject = false) {
+export function mockWithDelay<T>(value?: T, delay = 100, shouldReject = false) {
   return vi.fn((): Promise<T> => {
     return new Promise<T>((resolve, reject) => {
       setTimeout(() => {

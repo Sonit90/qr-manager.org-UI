@@ -51,7 +51,7 @@ describe('LoginPage Integration Tests', () => {
     const submitButton = view.getByRole('button', { name: /sign in/i })
 
     // Fill with invalid email
-    await user.type(emailInput, credentials.username)
+    await user.type(emailInput, credentials.email)
     await user.type(passwordInput, credentials.password)
     await user.click(submitButton)
 
@@ -70,7 +70,7 @@ describe('LoginPage Integration Tests', () => {
     const submitButton = view.getByRole('button', { name: /sign in/i })
 
     // Fill with short password
-    await user.type(emailInput, credentials.username)
+    await user.type(emailInput, credentials.email)
     await user.type(passwordInput, credentials.password)
     await user.click(submitButton)
 
@@ -92,13 +92,13 @@ describe('LoginPage Integration Tests', () => {
     const submitButton = view.getByRole('button', { name: /sign in/i })
 
     // Fill form with valid credentials
-    await user.type(emailInput, credentials.username)
+    await user.type(emailInput, credentials.email)
     await user.type(passwordInput, credentials.password)
 
     // Submit form
     await user.click(submitButton)
 
-    expect(mockedLogin).toHaveBeenCalledWith({}, credentials)
+    expect(mockedLogin).toHaveBeenCalledWith(credentials)
   })
 
   test('should handle unauthorized login error', async () => {
@@ -111,13 +111,13 @@ describe('LoginPage Integration Tests', () => {
     const passwordInput = view.getByLabelText('Password')
     const submitButton = view.getByRole('button', { name: /sign in/i })
 
-    await user.type(emailInput, credentials.username)
+    await user.type(emailInput, credentials.email)
     await user.type(passwordInput, credentials.password)
 
     // Submit form
     await user.click(submitButton)
 
-    expect(mockedLogin).toHaveBeenCalledWith({}, credentials)
+    expect(mockedLogin).toHaveBeenCalledWith(credentials)
 
     view.getByText('Incorrect email or password')
   })
@@ -134,13 +134,13 @@ describe('LoginPage Integration Tests', () => {
     const submitButton = view.getByRole('button', { name: /sign in/i })
 
     // Fill form
-    await user.type(emailInput, credentials.username)
+    await user.type(emailInput, credentials.email)
     await user.type(passwordInput, credentials.password)
 
     // Submit form
     await user.click(submitButton)
 
-    expect(mockedLogin).toHaveBeenCalledWith({}, credentials)
+    expect(mockedLogin).toHaveBeenCalledWith(credentials)
   })
 
   test('should show loading state during login', async () => {
@@ -156,13 +156,13 @@ describe('LoginPage Integration Tests', () => {
     const submitButton = view.getByRole('button', { name: /sign in/i })
 
     // Fill form
-    await user.type(emailInput, credentials.username)
+    await user.type(emailInput, credentials.email)
     await user.type(passwordInput, credentials.password)
 
     // Submit form
     await user.click(submitButton)
 
-    expect(mockedLogin).toHaveBeenCalledWith({}, credentials)
+    expect(mockedLogin).toHaveBeenCalledWith(credentials)
   })
 
   test('should navigate to register page when clicking sign up link', async () => {

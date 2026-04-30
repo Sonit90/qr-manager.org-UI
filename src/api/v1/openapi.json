@@ -635,6 +635,77 @@
         ]
       }
     },
+    "/api/v1/files/{id}/preview": {
+      "get": {
+        "tags": [
+          "files"
+        ],
+        "operationId": "preview_file",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "rows",
+            "in": "query",
+            "description": "Number of data rows to return. Clamped to 10–50. Default: 20.",
+            "required": false,
+            "schema": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "int32",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "sheet",
+            "in": "query",
+            "description": "Sheet name for XLS/XLSX files. Defaults to the first sheet.",
+            "required": false,
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilePreviewResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": ""
+          },
+          "403": {
+            "description": ""
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ]
+      }
+    },
     "/api/v1/formats": {
       "get": {
         "tags": [
@@ -1484,6 +1555,38 @@
           "xlsx"
         ]
       },
+      "FilePreviewResponse": {
+        "type": "object",
+        "required": [
+          "headers",
+          "rows",
+          "sheet_names"
+        ],
+        "properties": {
+          "headers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Column headers from the first row, in source order."
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {}
+            },
+            "description": "Data rows (each row is an array of cell values)."
+          },
+          "sheet_names": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Sheet names — populated for XLS/XLSX files, empty for CSV."
+          }
+        }
+      },
       "FilterOp": {
         "type": "string",
         "enum": [
@@ -2098,6 +2201,16 @@
           "expires_at": {
             "type": "string",
             "format": "date-time"
+          },
+          "headers": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Column headers parsed from the first row of the file, in source order."
           },
           "id": {
             "type": "string",

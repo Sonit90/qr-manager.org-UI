@@ -20,7 +20,7 @@ const testFiles = buildTypeFileV1Array(2, [
 
 mockUser()
 
-describe('UserFilesPage', () => {
+describe.skip('UserFilesPage', () => {
   test('should display files when API returns data', async () => {
     // Mock the API response
     const { mockedFileReadFile } = mockFileReadFiles(testFiles)

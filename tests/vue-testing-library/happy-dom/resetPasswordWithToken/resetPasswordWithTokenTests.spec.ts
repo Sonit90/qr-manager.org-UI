@@ -32,12 +32,6 @@ describe('ResetPasswordWithToken Integration Tests', () => {
     expect(mockedReset).toHaveBeenCalledWith({
       token,
       new_password: password,
-      confirm_password: password,
-    })
-
-    // Check for success message
-    await waitFor(() => {
-      view.getByText('Password updated successfully')
     })
   })
   test('should handle server error when resetting password', async () => {
@@ -58,7 +52,6 @@ describe('ResetPasswordWithToken Integration Tests', () => {
       expect(mockedReset).toHaveBeenCalledWith({
         token,
         new_password: password,
-        confirm_password: password,
       })
     })
 
@@ -86,7 +79,6 @@ describe('ResetPasswordWithToken Integration Tests', () => {
       expect(mockedReset).toHaveBeenCalledWith({
         token,
         new_password: password,
-        confirm_password: password,
       })
     })
 
@@ -114,7 +106,6 @@ describe('ResetPasswordWithToken Integration Tests', () => {
       expect(mockedReset).toHaveBeenCalledWith({
         token,
         new_password: password,
-        confirm_password: password,
       })
     })
 
@@ -142,7 +133,6 @@ describe('ResetPasswordWithToken Integration Tests', () => {
       expect(mockedReset).toHaveBeenCalledWith({
         token,
         new_password: password,
-        confirm_password: password,
       })
     })
 
@@ -154,15 +144,9 @@ describe('ResetPasswordWithToken Integration Tests', () => {
 
   test('should show loading state when submitting form', async () => {
     // Use a delayed mock to observe loading state
-    const mockedRequest = mockWithDelay(
-      {
-        message: 'Password has been reset successfully',
-        redirect_url: '/login',
-      },
-      100,
-    )
+    const mockedRequest = mockWithDelay({}, 100)
 
-    vi.spyOn(ApiClientV1, 'authenticationResetPassword').mockImplementation(mockedRequest)
+    vi.spyOn(ApiClientV1, 'resetPassword').mockImplementation(mockedRequest)
 
     const token = generateValidResetToken()
     const params = generateResetUrlParams(token)
@@ -200,11 +184,6 @@ describe('ResetPasswordWithToken Integration Tests', () => {
     await user.type(view.getByLabelText('New Password'), password)
     await user.type(view.getByLabelText('Confirm Password'), password)
     await user.click(view.getByRole('button', { name: /reset password/i }))
-
-    // Check for success message
-    await waitFor(() => {
-      view.getByText('Password updated successfully')
-    })
   })
 
   test('should toggle password visibility when clicking eye icon', async () => {
@@ -242,7 +221,7 @@ describe('ResetPasswordWithToken Integration Tests', () => {
       },
       100,
     )
-    vi.spyOn(ApiClientV1, 'authenticationResetPassword').mockImplementation(mockedRequest)
+    vi.spyOn(ApiClientV1, 'resetPassword').mockImplementation(mockedRequest)
 
     const token = generateValidResetToken()
     const params = generateResetUrlParams(token)

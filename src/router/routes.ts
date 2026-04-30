@@ -1,4 +1,4 @@
-import { UserRole } from '@/types/user/roles.ts'
+import { TypeRoleV1 } from '@/api/__generated__/v1/data-contracts.ts'
 
 export const routes = [
   {
@@ -74,7 +74,7 @@ export const routes = [
         component: () => import('@/modules/admin/users/AdminUsers.vue'),
         meta: {
           requiresAuth: true,
-          roles: [UserRole.ADMIN],
+          roles: [TypeRoleV1.EnumAdmin],
         },
       },
       {

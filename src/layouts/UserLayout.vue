@@ -5,10 +5,10 @@ import { useRouter } from 'vue-router'
 import { notify } from '@kyvg/vue3-notification'
 import { handleApiError } from '@/api/helpers/handleApiError.ts'
 import { useUser } from '@/tanstack/useUser.ts'
-import { UserRole } from '@/types/user/roles.ts'
 import { useUserRoles } from '@/helpers/roles/useUserRoles.ts'
 import VersionInfo from '@/components/version/VersionInfo.vue'
 import LogoIcon from '@/assets/logo.svg'
+import { TypeRoleV1 } from '@/api/__generated__/v1/data-contracts.ts'
 
 const drawer = ref(true)
 const rail = ref(false)
@@ -19,7 +19,7 @@ const navigationItems = [
   { title: 'My Files', icon: 'mdi-file-multiple', to: '/my-files' },
   { title: 'Transformations', icon: 'mdi-file-excel', to: '/merges' },
   { title: 'Files WIP', icon: 'mdi-file-excel', to: '/files' },
-  { title: 'Users', icon: 'mdi-account-group', to: '/admin/users', roles: [UserRole.ADMIN] },
+  { title: 'Users', icon: 'mdi-account-group', to: '/admin/users', roles: [TypeRoleV1.EnumAdmin] },
 ]
 
 const { hasRole } = useUserRoles()

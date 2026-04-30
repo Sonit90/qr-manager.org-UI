@@ -5,7 +5,7 @@ import { storeToRefs } from 'pinia'
 import { notify } from '@kyvg/vue3-notification'
 import { queryClient } from '@/tanstack/queryClient.ts'
 import { fetchUserQuery } from '@/tanstack/useUser.ts'
-import { UserRole } from '@/types/user/roles.ts'
+import { TypeRoleV1 } from '@/api/__generated__/v1/data-contracts.ts'
 
 export const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -18,7 +18,7 @@ router.beforeEach(async (to, from, next) => {
   const { isAuthenticated } = storeToRefs(userStore)
   const requiresAuth = to.meta.requiresAuth
   const disallowAuthenticated = to.meta.disallowAuthenticated
-  const requiredRoles = to.meta.roles as UserRole[]
+  const requiredRoles = to.meta.roles as TypeRoleV1[]
 
   if (requiresAuth && !isAuthenticated.value) {
     notify({
@@ -35,7 +35,7 @@ router.beforeEach(async (to, from, next) => {
       return next('/user')
     }
 
-    if (!requiredRoles.includes(user.role as UserRole)) {
+    if (!requiredRoles.includes(user.role)) {
       notify({
         type: 'warn',
         title: 'Permission denied',

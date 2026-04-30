@@ -1,6 +1,5 @@
 import { ApiClientV1 } from '@/api/v1/ApiClientV1.ts'
 import { createAxiosError } from '../../helpers/createAxiosError.ts'
-import type { TypePasswordResetResponseV1 } from '@/api/__generated__/v1/data-contracts.ts'
 
 /**
  * Mock successful password reset request
@@ -10,7 +9,7 @@ export function mockPasswordResetRequestSuccess() {
     message: 'Password reset link has been sent to your email',
   })
 
-  vi.spyOn(ApiClientV1, 'authenticationRequestPasswordReset').mockImplementation(mockedRequest)
+  vi.spyOn(ApiClientV1, 'forgotPassword').mockImplementation(mockedRequest)
 
   return { mockedRequest }
 }
@@ -29,7 +28,7 @@ export function mockPasswordResetRequestError() {
     }),
   )
 
-  vi.spyOn(ApiClientV1, 'authenticationRequestPasswordReset').mockImplementation(mockedRequest)
+  vi.spyOn(ApiClientV1, 'forgotPassword').mockImplementation(mockedRequest)
 
   return { mockedRequest }
 }
@@ -48,7 +47,7 @@ export function mockPasswordResetRequestInvalidEmailError() {
     }),
   )
 
-  vi.spyOn(ApiClientV1, 'authenticationRequestPasswordReset').mockImplementation(mockedRequest)
+  vi.spyOn(ApiClientV1, 'forgotPassword').mockImplementation(mockedRequest)
 
   return { mockedRequest }
 }
@@ -67,7 +66,7 @@ export function mockPasswordResetRequestUserNotFoundError() {
     }),
   )
 
-  vi.spyOn(ApiClientV1, 'authenticationRequestPasswordReset').mockImplementation(mockedRequest)
+  vi.spyOn(ApiClientV1, 'forgotPassword').mockImplementation(mockedRequest)
 
   return { mockedRequest }
 }
@@ -78,7 +77,7 @@ export function mockPasswordResetRequestUserNotFoundError() {
 export function mockPasswordResetRequestNetworkError() {
   const mockedRequest = vi.fn().mockRejectedValue(new Error('Network Error'))
 
-  vi.spyOn(ApiClientV1, 'authenticationRequestPasswordReset').mockImplementation(mockedRequest)
+  vi.spyOn(ApiClientV1, 'forgotPassword').mockImplementation(mockedRequest)
 
   return { mockedRequest }
 }
@@ -87,16 +86,11 @@ export function mockPasswordResetRequestNetworkError() {
  * Mock successful password reset with token
  */
 export function mockPasswordResetSuccess() {
-  const response: TypePasswordResetResponseV1 = {
-    message: 'Password updated successfully',
-    redirect_url: '/login',
-  }
+  const mockedReset = vi.fn()
 
-  const mockedReset = vi.fn().mockResolvedValue(response)
+  vi.spyOn(ApiClientV1, 'resetPassword').mockImplementation(mockedReset)
 
-  vi.spyOn(ApiClientV1, 'authenticationResetPassword').mockImplementation(mockedReset)
-
-  return { mockedReset, response }
+  return { mockedReset }
 }
 
 /**
@@ -113,7 +107,7 @@ export function mockPasswordResetError() {
     }),
   )
 
-  vi.spyOn(ApiClientV1, 'authenticationResetPassword').mockImplementation(mockedReset)
+  vi.spyOn(ApiClientV1, 'resetPassword').mockImplementation(mockedReset)
 
   return { mockedReset }
 }
@@ -132,7 +126,7 @@ export function mockPasswordResetInvalidTokenError() {
     }),
   )
 
-  vi.spyOn(ApiClientV1, 'authenticationResetPassword').mockImplementation(mockedReset)
+  vi.spyOn(ApiClientV1, 'resetPassword').mockImplementation(mockedReset)
 
   return { mockedReset }
 }
@@ -157,7 +151,7 @@ export function mockPasswordResetValidationError() {
     }),
   )
 
-  vi.spyOn(ApiClientV1, 'authenticationResetPassword').mockImplementation(mockedReset)
+  vi.spyOn(ApiClientV1, 'resetPassword').mockImplementation(mockedReset)
 
   return { mockedReset }
 }
@@ -168,7 +162,7 @@ export function mockPasswordResetValidationError() {
 export function mockPasswordResetNetworkError() {
   const mockedReset = vi.fn().mockRejectedValue(new Error('Network Error'))
 
-  vi.spyOn(ApiClientV1, 'authenticationResetPassword').mockImplementation(mockedReset)
+  vi.spyOn(ApiClientV1, 'resetPassword').mockImplementation(mockedReset)
 
   return { mockedReset }
 }

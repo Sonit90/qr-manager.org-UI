@@ -4,7 +4,7 @@ import { createAxiosError } from '@tests/helpers/createAxiosError.ts'
 
 export function mockLoginError(error: AxiosError | Error) {
   const mockedLogin = vi.fn().mockRejectedValue(error)
-  vi.spyOn(ApiClientV1, 'authenticationLogin').mockImplementation(mockedLogin)
+  vi.spyOn(ApiClientV1, 'login').mockImplementation(mockedLogin)
 
   return { mockedLogin }
 }

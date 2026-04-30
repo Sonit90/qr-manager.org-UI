@@ -11,12 +11,11 @@ import {
 } from '@/helpers/validations/validations.ts'
 import AuthForm from '@/modules/auth/components/AuthForm.vue'
 import { handleApiError } from '@/api/helpers/handleApiError.ts'
-import { useRouter } from 'vue-router'
 
-const router = useRouter()
 const registerForm = ref<Ref | null>(null)
 const showPassword = ref(false)
 const showConfirmPassword = ref(false)
+const requestSent = ref(false)
 
 const form = reactive({
   display_name: '',
@@ -50,15 +49,16 @@ const handleRegister = async () => {
       email: form.email,
       password: form.password,
     })
-    await router.push('/user')
+    requestSent.value = true
   } catch (e) {
     handleApiError(e, { title: 'Registration' })
+    requestSent.value = false
   }
 }
 </script>
 <template>
   <AuthForm title="Create Account">
-    <v-form ref="registerForm" class="ga-4" @submit.prevent="handleRegister">
+    <v-form v-if="!requestSent" ref="registerForm" class="ga-4" @submit.prevent="handleRegister">
       <v-text-field
         v-model.trim="form.display_name"
         label="Display Name (optional)"
@@ -113,6 +113,14 @@ const handleRegister = async () => {
         Create Account
       </v-btn>
     </v-form>
+    <div v-else class="text-center">
+      <v-icon color="success" size="64" class="mb-4"> mdi-check-circle </v-icon>
+      <v-card-title class="justify-center text-success"> Registered Successfully! </v-card-title>
+      <v-card-text class="text-center">
+        Please check your e-mail for activation link. You can now sign in and start using our
+        platform.
+      </v-card-text>
+    </div>
 
     <template #append>
       <span>Already have an account? </span>

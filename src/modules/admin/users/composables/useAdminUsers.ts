@@ -1,29 +1,22 @@
 import { ref } from 'vue'
 import { ApiClientV1 } from '@/api/v1/ApiClientV1.ts'
 import { handleApiError } from '@/api/helpers/handleApiError.ts'
-import type { TypeUserPublicV1 } from '@/api/__generated__/v1/data-contracts.ts'
+import type { TypeRoleV1, TypeUserV1 } from '@/api/__generated__/v1/data-contracts.ts'
 import { notify } from '@kyvg/vue3-notification'
 
 const loading = ref(false)
-const uploading = ref(false)
-const deleteId = ref<string | null>(null)
-const users = ref<TypeUserPublicV1[]>([])
-const totalUsers = ref(0)
+const users = ref<TypeUserV1[]>([])
 
 export function useAdminUsers() {
-  function replaceUserById(id: string, user: TypeUserPublicV1) {
-    const userIndex = users.value.findIndex((u) => u.id === id)
-    if (userIndex === -1) return
-    users.value[userIndex] = user
+  function replaceUserById(id: string, user: TypeUserV1) {
+    const idx = users.value.findIndex((u) => u.id === id)
+    if (idx !== -1) users.value[idx] = user
   }
 
   async function fetchUsers() {
     loading.value = true
-
     try {
-      const { data, total } = await ApiClientV1.adminGetAllUsers({})
-      totalUsers.value = total
-      users.value = data
+      users.value = await ApiClientV1.listUsers({})
     } catch (err) {
       handleApiError(err, { title: 'Users' })
     } finally {
@@ -31,38 +24,31 @@ export function useAdminUsers() {
     }
   }
 
-  async function deleteUser(userId: string): Promise<void> {
-    try {
-      deleteId.value = userId
-      const { message } = await ApiClientV1.adminDeleteUser(userId)
-      notify({ title: message })
-    } catch (err) {
-      handleApiError(err, { title: 'Delete user' })
-    } finally {
-      deleteId.value = null
+  async function updateUser(
+    original: TypeUserV1,
+    changes: { role?: TypeRoleV1; active?: boolean },
+  ) {
+    const calls: Promise<void>[] = []
+    if (changes.role !== undefined && changes.role !== original.role) {
+      calls.push(ApiClientV1.setRole(original.id, { role: changes.role }))
     }
-  }
-
-  async function fetchUser(userId: string) {
-    loading.value = true
-
-    try {
-      const user = await ApiClientV1.adminGetUserById(userId)
-      replaceUserById(userId, user)
-    } catch (err) {
-      handleApiError(err, { title: 'Fetch user error' })
-    } finally {
-      loading.value = false
+    if (changes.active !== undefined && changes.active !== original.is_active) {
+      calls.push(ApiClientV1.setActive(original.id, { active: changes.active }))
     }
+    if (calls.length === 0) return
+    await Promise.all(calls)
+    replaceUserById(original.id, {
+      ...original,
+      role: changes.role ?? original.role,
+      is_active: changes.active ?? original.is_active,
+    })
+    notify({ title: 'User updated' })
   }
 
   return {
     fetchUsers,
-    fetchUser,
-    deleteUser,
+    updateUser,
     loading,
-    uploading,
-    deleteId,
     users,
   }
 }

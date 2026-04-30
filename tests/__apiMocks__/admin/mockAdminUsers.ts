@@ -1,39 +1,27 @@
 import { ApiClientV1 } from '@/api/v1/ApiClientV1.ts'
-import type { TypeUserPublicV1 } from '@/api/__generated__/v1/data-contracts.ts'
 import { generateUser } from '../user/generateUser.ts'
 
-export function mockAdminUsers(count = 5) {
+export function mockListUsers(count = 5) {
   const users = Array.from({ length: count }, () => generateUser())
-  const response = { data: users, total: users.length }
-  const mockedGetAllUsers = vi.fn().mockResolvedValue(response)
-  vi.spyOn(ApiClientV1, 'adminGetAllUsers').mockImplementation(mockedGetAllUsers)
-  return { mockedGetAllUsers, users, response }
+  const mockedListUsers = vi.fn().mockResolvedValue(users)
+  vi.spyOn(ApiClientV1, 'listUsers').mockImplementation(mockedListUsers)
+  return { mockedListUsers, users }
 }
 
-export function mockAdminDeleteUser() {
-  const response = { message: 'User deleted successfully' }
-  const mockedDeleteUser = vi.fn().mockResolvedValue(response)
-  vi.spyOn(ApiClientV1, 'adminDeleteUser').mockImplementation(mockedDeleteUser)
-  return { mockedDeleteUser, response }
+export function mockSetActive() {
+  const mockedSetActive = vi.fn().mockResolvedValue(undefined)
+  vi.spyOn(ApiClientV1, 'setActive').mockImplementation(mockedSetActive)
+  return { mockedSetActive }
 }
 
-export function mockAdminGetUserById(user?: TypeUserPublicV1) {
-  const userData = user || generateUser()
-  const mockedGetUserById = vi.fn().mockResolvedValue(userData)
-  vi.spyOn(ApiClientV1, 'adminGetUserById').mockImplementation(mockedGetUserById)
-  return { mockedGetUserById, user: userData }
+export function mockSetRole() {
+  const mockedSetRole = vi.fn().mockResolvedValue(undefined)
+  vi.spyOn(ApiClientV1, 'setRole').mockImplementation(mockedSetRole)
+  return { mockedSetRole }
 }
 
-export function mockAdminCreateUser() {
-  const newUser = generateUser()
-  const mockedCreateUser = vi.fn().mockResolvedValue(newUser)
-  vi.spyOn(ApiClientV1, 'adminCreateUser').mockImplementation(mockedCreateUser)
-  return { mockedCreateUser, newUser }
-}
-
-export function mockAdminUpdateUser() {
-  const updatedUser = generateUser()
-  const mockedUpdateUser = vi.fn().mockResolvedValue(updatedUser)
-  vi.spyOn(ApiClientV1, 'adminUpdateUser').mockImplementation(mockedUpdateUser)
-  return { mockedUpdateUser, updatedUser }
+export function mockGrantPermission() {
+  const mockedGrantPermission = vi.fn().mockResolvedValue(undefined)
+  vi.spyOn(ApiClientV1, 'grantPermission').mockImplementation(mockedGrantPermission)
+  return { mockedGrantPermission }
 }

@@ -3,23 +3,23 @@ import { useAdminUsers } from '@/modules/admin/users/composables/useAdminUsers.t
 import UsersTable from '@/modules/admin/users/UsersTable.vue'
 import UserForm from '@/modules/admin/users/UserForm.vue'
 import { ref } from 'vue'
-import type { TypeUserPublicV1 } from '@/api/__generated__/v1/data-contracts.ts'
+import type { TypeUserV1 } from '@/api/__generated__/v1/data-contracts.ts'
 
-const { users, loading, deleteId, fetchUsers, fetchUser, deleteUser } = useAdminUsers()
+const { users, loading, fetchUsers } = useAdminUsers()
 
 fetchUsers()
 
 const isActive = ref(false)
-const user = ref<TypeUserPublicV1 | undefined>(undefined)
+const editingUser = ref<TypeUserV1 | undefined>(undefined)
 
-function onEdit(editedUser: TypeUserPublicV1) {
-  user.value = editedUser
+function onEdit(user: TypeUserV1) {
+  editingUser.value = user
   isActive.value = true
 }
 
 function onCancel() {
   isActive.value = false
-  user.value = undefined
+  editingUser.value = undefined
 }
 </script>
 
@@ -27,29 +27,15 @@ function onCancel() {
   <v-card class="mb-4">
     <v-card-title class="d-flex">
       <h1 class="text-h4">All users</h1>
-      <v-spacer />
-      <v-btn
-        color="primary"
-        prepend-icon="mdi-account-plus"
-        text="Create User"
-        @click="isActive = true"
-      />
-      <UserForm
-        v-if="isActive"
-        v-model:dialog="isActive"
-        v-model:form-data="user"
-        @created="fetchUsers()"
-        @updated="fetchUser($event)"
-        @cancel="onCancel()"
-      />
     </v-card-title>
     <v-card-text>
-      <UsersTable
-        :loading="loading"
-        :users="users"
-        :delete-id="deleteId"
-        @edit="onEdit($event)"
-        @delete="deleteUser($event)"
+      <UsersTable :loading="loading" :users="users" @edit="onEdit($event)" />
+      <UserForm
+        v-if="isActive && editingUser"
+        v-model:dialog="isActive"
+        :user="editingUser"
+        @updated="onCancel()"
+        @cancel="onCancel()"
       />
     </v-card-text>
   </v-card>

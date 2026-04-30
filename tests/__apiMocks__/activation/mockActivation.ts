@@ -8,7 +8,7 @@ import { createAxiosError } from '../../helpers/createAxiosError.ts'
 export function mockActivationSuccess() {
   const mockedActivation = vi.fn().mockResolvedValue({})
 
-  vi.mocked(ApiClientV1.authenticationActivateUser).mockImplementation(mockedActivation)
+  vi.mocked(ApiClientV1.verifyEmail).mockImplementation(mockedActivation)
 
   return { mockedActivation }
 }
@@ -27,7 +27,7 @@ export function mockActivationError() {
     }),
   )
 
-  vi.mocked(ApiClientV1.authenticationActivateUser).mockImplementation(mockedActivation)
+  vi.mocked(ApiClientV1.verifyEmail).mockImplementation(mockedActivation)
 
   return { mockedActivation }
 }
@@ -46,7 +46,7 @@ export function mockActivationInvalidTokenError() {
     }),
   )
 
-  vi.mocked(ApiClientV1.authenticationActivateUser).mockImplementation(mockedActivation)
+  vi.mocked(ApiClientV1.verifyEmail).mockImplementation(mockedActivation)
 
   return { mockedActivation }
 }
@@ -65,7 +65,7 @@ export function mockActivationAlreadyActivatedError() {
     }),
   )
 
-  vi.mocked(ApiClientV1.authenticationActivateUser).mockImplementation(mockedActivation)
+  vi.mocked(ApiClientV1.verifyEmail).mockImplementation(mockedActivation)
 
   return { mockedActivation }
 }
@@ -82,7 +82,7 @@ export function mockActivationNetworkError() {
     }),
   )
 
-  vi.mocked(ApiClientV1.authenticationActivateUser).mockImplementation(mockedActivation)
+  vi.mocked(ApiClientV1.verifyEmail).mockImplementation(mockedActivation)
 
   return { mockedActivation }
 }

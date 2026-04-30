@@ -31,52 +31,13 @@ const componentMap: Record<ActivationStatus, GenericStateProps> = {
   [ActivationStatus.INVALID_LINK]: {
     state: 'warning',
     title: 'Invalid Verification Link',
-    subtitle: 'The verification link is invalid or has expired. Please request a new verification email.',
+    subtitle:
+      'The verification link is invalid or has expired. Please request a new verification email.',
   },
 }
 
 const currentInstance = computed(() => componentMap[activationStatus.value])
 
-// Simulate API call for resending activation email
-// const resendActivationEmail = async () => {
-//   try {
-//     const response = await fetch('/api/resend-activation', {
-//       method: 'POST',
-//       headers: {
-//         'Content-Type': 'application/json',
-//       },
-//       body: JSON.stringify({
-//         email: params.email || '',
-//         userId: params.userId || '',
-//       }),
-//     })
-//
-//     if (response.ok) {
-//       notify({
-//         title: 'Success',
-//         text: 'Activation email sent successfully! Please check your inbox.',
-//         type: 'success',
-//         duration: 5000,
-//       })
-//     } else {
-//       notify({
-//         title: 'Error',
-//         text: 'Failed to send activation email. Please try again.',
-//         type: 'error',
-//         duration: 5000,
-//       })
-//     }
-//   } catch {
-//     notify({
-//       title: 'Error',
-//       text: 'Network error occurred. Please try again.',
-//       type: 'error',
-//       duration: 5000,
-//     })
-//   }
-// }
-
-// Handle activation on component mount
 onMounted(async () => {
   const token = params.token as string
 

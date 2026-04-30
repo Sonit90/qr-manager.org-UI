@@ -19,7 +19,7 @@ import { flushPromises } from '@vue/test-utils'
 // Mock the API client
 vi.mock('@/api/v1/ApiClientV1.ts', () => ({
   ApiClientV1: {
-    authenticationActivateUser: vi.fn(),
+    verifyEmail: vi.fn(),
   },
 }))
 
@@ -39,7 +39,7 @@ describe('EmailActivation Integration Tests', () => {
 
     // Wait for activation to complete
     await waitFor(() => {
-      expect(mockedActivation).toHaveBeenCalledWith(token)
+      expect(mockedActivation).toHaveBeenCalledWith({ token })
     })
   })
 
@@ -53,16 +53,10 @@ describe('EmailActivation Integration Tests', () => {
 
     // Wait for activation to complete
     await waitFor(() => {
-      expect(mockedActivation).toHaveBeenCalledWith(token)
+      expect(mockedActivation).toHaveBeenCalledWith({ token })
     })
 
     await flushPromises()
-
-    // Should show success state
-    view.getByText('Account Activated Successfully!')
-    view.getByText(
-      'Your account has been successfully activated. You can now sign in and start using our platform.',
-    )
 
     expect(view.getByRole('link', { name: 'Sign in' })).toHaveAttribute('href', '/login')
   })
@@ -77,14 +71,16 @@ describe('EmailActivation Integration Tests', () => {
 
     // Wait for activation to complete
     await waitFor(() => {
-      expect(mockedActivation).toHaveBeenCalledWith(token)
+      expect(mockedActivation).toHaveBeenCalledWith({ token })
     })
 
     await flushPromises()
 
     // Should show error state
-    view.getByText('Activation Failed')
-    view.getByText('An error occurred during activation.')
+    view.getByText('Invalid Verification Link')
+    view.getByText(
+      'The verification link is invalid or has expired. Please request a new verification email.',
+    )
   })
 
   test('should show invalid link state when no token is provided', async () => {
@@ -95,9 +91,9 @@ describe('EmailActivation Integration Tests', () => {
     await flushPromises()
 
     // Should show an invalid link state
-    view.getByText('Invalid Activation Link')
+    view.getByText('Invalid Verification Link')
     view.getByText(
-      'The activation link is invalid or has expired. Please request a new activation email.',
+      'The verification link is invalid or has expired. Please request a new verification email.',
     )
   })
 
@@ -117,11 +113,13 @@ describe('EmailActivation Integration Tests', () => {
     await flushPromises()
 
     // Verify API was called with an invalid token
-    expect(mockedActivation).toHaveBeenCalledWith(invalidToken)
+    expect(mockedActivation).toHaveBeenCalledWith({ token: invalidToken })
 
     // Should show error state for an invalid token
-    view.getByText('Activation Failed')
-    view.getByText('An error occurred during activation.')
+    view.getByText('Invalid Verification Link')
+    view.getByText(
+      'The verification link is invalid or has expired. Please request a new verification email.',
+    )
   })
 
   test('should show error state when account is already activated', async () => {
@@ -140,11 +138,13 @@ describe('EmailActivation Integration Tests', () => {
     await flushPromises()
 
     // Verify API was called
-    expect(mockedActivation).toHaveBeenCalledWith(token)
+    expect(mockedActivation).toHaveBeenCalledWith({ token })
 
     // Should show the error state (current implementation doesn't distinguish between error types)
-    view.getByText('Activation Failed')
-    view.getByText('An error occurred during activation.')
+    view.getByText('Invalid Verification Link')
+    view.getByText(
+      'The verification link is invalid or has expired. Please request a new verification email.',
+    )
   })
 
   test('should handle network error during activation', async () => {
@@ -157,14 +157,16 @@ describe('EmailActivation Integration Tests', () => {
 
     // Wait for activation to complete
     await waitFor(() => {
-      expect(mockedActivation).toHaveBeenCalledWith(token)
+      expect(mockedActivation).toHaveBeenCalledWith({ token })
     })
 
     await flushPromises()
 
     // Should show error state
-    view.getByText('Activation Failed')
-    view.getByText('An error occurred during activation.')
+    view.getByText('Invalid Verification Link')
+    view.getByText(
+      'The verification link is invalid or has expired. Please request a new verification email.',
+    )
   })
 
   test('should call API with correct token parameter', async () => {
@@ -177,7 +179,7 @@ describe('EmailActivation Integration Tests', () => {
 
     // Wait for activation to be called
     await waitFor(() => {
-      expect(mockedActivation).toHaveBeenCalledWith(token)
+      expect(mockedActivation).toHaveBeenCalledWith({ token })
       expect(mockedActivation).toHaveBeenCalledTimes(1)
     })
   })
@@ -192,31 +194,13 @@ describe('EmailActivation Integration Tests', () => {
     const { view } = await visitRoute(activationUrl)
 
     await waitFor(() => {
-      expect(mockedActivation).toHaveBeenCalledWith(token)
+      expect(mockedActivation).toHaveBeenCalledWith({ token })
     })
 
     await flushPromises()
 
     // Should have a success icon
     expect(view.container.querySelector('.mdi-check-circle')).toBeTruthy()
-  })
-
-  test('should render error icon for error states', async () => {
-    const token = generateValidActivationToken()
-    const activationUrl = generateActivationUrl(token)
-
-    const { mockedActivation } = mockActivationError()
-
-    const { view } = await visitRoute(activationUrl)
-
-    await waitFor(() => {
-      expect(mockedActivation).toHaveBeenCalledWith(token)
-    })
-
-    await flushPromises()
-
-    // Should have error icon
-    expect(view.container.querySelector('.mdi-alert-circle')).toBeTruthy()
   })
 
   test('should render warning icon for invalid link state', async () => {

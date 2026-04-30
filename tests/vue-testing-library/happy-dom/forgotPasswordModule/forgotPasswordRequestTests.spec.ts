@@ -156,9 +156,9 @@ describe('ForgotPasswordRequestPage Integration Tests', () => {
 
   test('should show loading state when submitting form', async () => {
     // Use a delayed mock to observe loading state
-    const mockedRequest = mockWithDelay(null, 100)
+    const mockedRequest = mockWithDelay({}, 100)
 
-    vi.spyOn(ApiClientV1, 'resetPassword').mockImplementation(mockedRequest)
+    vi.spyOn(ApiClientV1, 'forgotPassword').mockImplementation(mockedRequest)
 
     const { view, user } = await visitRoute('/forgot-password')
     const validEmail = generateValidEmail()
@@ -170,7 +170,7 @@ describe('ForgotPasswordRequestPage Integration Tests', () => {
     // Wait for success message
     await waitFor(
       () => {
-        view.getByText('Check Your Email')
+        view.getByText("We've sent password reset instructions to")
       },
       { timeout: 200 },
     )

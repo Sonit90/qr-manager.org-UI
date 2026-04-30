@@ -30,7 +30,7 @@ const handleLogin = async () => {
     return
   }
   try {
-    await userStore.login({ username: form.email, password: form.password })
+    await userStore.login({ email: form.email, password: form.password })
     notify({
       title: 'Authorization',
       text: 'You have been logged in!',

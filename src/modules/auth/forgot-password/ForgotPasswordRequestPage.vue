@@ -23,7 +23,7 @@ const handleResetPassword = async () => {
   }
   try {
     isLoading.value = true
-    await ApiClientV1.authenticationRequestPasswordReset({ email: form.email })
+    await ApiClientV1.forgotPassword({ email: form.email })
     emailSent.value = true
   } catch (e) {
     handleApiError(e, { title: 'Password reset' })
@@ -51,11 +51,10 @@ const handleResetPassword = async () => {
         />
       </div>
 
-      <v-btn type="submit" class="btn-primary" color="primary" :is-loading="isLoading" block>
+      <v-btn type="submit" class="btn-primary" color="primary" :loading="isLoading" block>
         Send Reset Link
       </v-btn>
     </v-form>
-    <!-- Success Message -->
     <div v-else class="text-center py-4">
       <v-icon size="64" color="success" class="mb-4">mdi-check-circle</v-icon>
       <h3 class="mb-3 text-gray-800 font-normal">Check Your Email</h3>

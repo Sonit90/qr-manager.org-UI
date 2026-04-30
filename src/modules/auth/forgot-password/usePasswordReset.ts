@@ -4,7 +4,6 @@ import { useUrlSearchParams } from '@vueuse/core'
 import { handleApiError } from '@/api/helpers/handleApiError.ts'
 import { ResetPasswordStatus } from '@/modules/auth/forgot-password/types.ts'
 import { useRouter } from 'vue-router'
-import { notify } from '@kyvg/vue3-notification'
 import type { VForm } from 'vuetify/components'
 
 export function usePasswordReset() {
@@ -30,18 +29,14 @@ export function usePasswordReset() {
     try {
       isLoading.value = true
       resetStatus.value = ResetPasswordStatus.LOADING
-      const { message } = await ApiClientV1.authenticationResetPassword({
-        confirm_password: confirmPassword.value,
-        new_password: password.value,
+      await ApiClientV1.resetPassword({
         token: params.token as string,
+        new_password: password.value,
       })
-
-      notify({ text: message })
-
       resetStatus.value = ResetPasswordStatus.SUCCESS
       await router.push('/login')
     } catch (e) {
-      const { message } = handleApiError(e, { title: 'Activation Error' })
+      const { message } = handleApiError(e, { title: 'Password Reset Error' })
       resetStatus.value = ResetPasswordStatus.ERROR
       errorMessage.value = message || 'Network error. Please check your connection and try again.'
     } finally {

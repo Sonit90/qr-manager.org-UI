@@ -16,9 +16,8 @@ const componentMap: Record<ActivationStatus, GenericStateProps> = {
   },
   [ActivationStatus.SUCCESS]: {
     state: 'success',
-    title: 'Account Activated Successfully!',
-    subtitle:
-      'Your account has been successfully activated. You can now sign in and start using our platform.',
+    title: 'Email Verified Successfully!',
+    subtitle: 'Your email has been verified. You can now sign in and start using our platform.',
     buttonProps: {
       path: '/login',
       label: 'Sign in',
@@ -26,28 +25,13 @@ const componentMap: Record<ActivationStatus, GenericStateProps> = {
   },
   [ActivationStatus.ERROR]: {
     state: 'error',
-    title: 'Activation Failed',
-    subtitle: 'An error occurred during activation.',
-    buttonProps: {
-      path: '/forgot-password',
-      icon: 'mdi-lock-reset',
-      label: 'Reset Password',
-    },
-  },
-  [ActivationStatus.ALREADY_ACTIVATED]: {
-    state: 'info',
-    title: 'Account Already Activated',
-    subtitle: 'This account has already been activated. You can sign in using your credentials.',
-    buttonProps: {
-      path: '/login',
-      label: 'Sign in',
-    },
+    title: 'Verification Failed',
+    subtitle: 'An error occurred during email verification. Please try again.',
   },
   [ActivationStatus.INVALID_LINK]: {
     state: 'warning',
-    title: 'Invalid Activation Link',
-    subtitle:
-      'The activation link is invalid or has expired. Please request a new activation email.',
+    title: 'Invalid Verification Link',
+    subtitle: 'The verification link is invalid or has expired. Please request a new verification email.',
   },
 }
 

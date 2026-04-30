@@ -11,21 +11,19 @@ import {
 } from '@/helpers/validations/validations.ts'
 import AuthForm from '@/modules/auth/components/AuthForm.vue'
 import { handleApiError } from '@/api/helpers/handleApiError.ts'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const registerForm = ref<Ref | null>(null)
 const showPassword = ref(false)
 const showConfirmPassword = ref(false)
 
 const form = reactive({
-  firstName: '',
-  lastName: '',
+  display_name: '',
   email: '',
   password: '',
   confirmPassword: '',
-  agreeToTerms: false,
 })
-
-const nameRules = [isRequired('Name'), hasMinLength(2)]
 
 const emailRules = [isRequired('E-mail'), isValidEmail]
 
@@ -39,8 +37,6 @@ const confirmPasswordRules = computed(() => [
 const userStore = useUserStore()
 const { isLoading } = storeToRefs(userStore)
 
-const requestSent = ref(false)
-
 const handleRegister = async () => {
   if (!registerForm.value) return
   const { valid } = await registerForm.value.validate()
@@ -50,38 +46,25 @@ const handleRegister = async () => {
   }
   try {
     await userStore.register({
-      full_name: [form.firstName, form.lastName].filter(Boolean).join(' '),
+      display_name: form.display_name || null,
       email: form.email,
       password: form.password,
     })
-    requestSent.value = true
+    await router.push('/user')
   } catch (e) {
     handleApiError(e, { title: 'Registration' })
-    requestSent.value = false
   }
 }
 </script>
 <template>
   <AuthForm title="Create Account">
-    <v-form v-if="!requestSent" ref="registerForm" class="ga-4" @submit.prevent="handleRegister">
+    <v-form ref="registerForm" class="ga-4" @submit.prevent="handleRegister">
       <v-text-field
-        v-model.trim="form.firstName"
-        :rules="nameRules"
-        label="First Name"
+        v-model.trim="form.display_name"
+        label="Display Name (optional)"
         prepend-inner-icon="mdi-account"
         variant="outlined"
         color="primary"
-        required
-      />
-
-      <v-text-field
-        v-model.trim="form.lastName"
-        :rules="nameRules"
-        label="Last Name"
-        prepend-inner-icon="mdi-account"
-        variant="outlined"
-        color="primary"
-        required
       />
 
       <v-text-field
@@ -126,32 +109,10 @@ const handleRegister = async () => {
         @click:append-inner="showConfirmPassword = !showConfirmPassword"
       />
 
-      <v-checkbox
-        v-model="form.agreeToTerms"
-        :rules="[(v) => !!v || 'You must agree to the terms and conditions']"
-        color="primary"
-        required
-      >
-        <template #label>
-          <span>
-            I agree to the
-            <a href="#" class="link-styled"> Terms and Conditions </a>
-          </span>
-        </template>
-      </v-checkbox>
-
       <v-btn type="submit" class="btn-primary" color="primary" :loading="isLoading" block>
         Create Account
       </v-btn>
     </v-form>
-    <div v-else class="text-center">
-      <v-icon color="success" size="64" class="mb-4"> mdi-check-circle </v-icon>
-      <v-card-title class="justify-center text-success"> Registrered Successfully! </v-card-title>
-      <v-card-text class="text-center">
-        Please check your e-mail for activation link. You can now sign in and start using our
-        platform.
-      </v-card-text>
-    </div>
 
     <template #append>
       <span>Already have an account? </span>

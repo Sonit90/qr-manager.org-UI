@@ -14,11 +14,11 @@ export function useActivation() {
   async function activateUser(token: string) {
     try {
       isLoading.value = true
-      await ApiClientV1.authenticationActivateUser(token)
+      await ApiClientV1.verifyEmail({ token })
       activationStatus.value = ActivationStatus.SUCCESS
     } catch (e) {
       const { message } = handleApiError(e, { title: 'Activation Error' })
-      activationStatus.value = ActivationStatus.ERROR
+      activationStatus.value = ActivationStatus.INVALID_LINK
       errorMessage.value = message || 'Network error. Please check your connection and try again.'
     } finally {
       isLoading.value = false

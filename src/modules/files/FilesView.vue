@@ -1,11 +1,15 @@
 <script setup lang="ts">
-import OutputComponent from '@/modules/files/OutputComponent.vue'
+import OutputComponent from '@/modules/files/outputColumns/OutputComponent.vue'
 import FilesComponent from '@/modules/files/FilesComponent.vue'
 </script>
 
 <template>
-  <div class="d-flex pa-4">
-    <FilesComponent class="pa-2 w-50" />
-    <OutputComponent class="w-50" />
-  </div>
+  <v-row class="d-flex pa-4">
+    <v-col cols="6">
+      <FilesComponent />
+    </v-col>
+    <v-col cols="6">
+      <OutputComponent />
+    </v-col>
+  </v-row>
 </template>

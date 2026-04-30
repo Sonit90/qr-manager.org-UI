@@ -26,7 +26,6 @@ function onDelete(item: TypeFileV1) {
 }
 
 const headers = [
-  { title: 'Name', key: 'name' },
   { title: 'Original Name', key: 'original_name' },
   { title: 'Column Count', key: 'column_count' },
   { title: 'Row Count', key: 'row_count' },

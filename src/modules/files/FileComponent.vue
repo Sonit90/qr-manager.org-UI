@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import type { FileInput } from '@/modules/files/fileTypes.ts'
-import { useOutputColumns } from '@/modules/files/useOutputColumns.ts'
+import { useOutputColumns } from '@/modules/files/outputColumns/useOutputColumns.ts'
 import FileFilters from '@/modules/files/FileFilters.vue'
 
 defineProps<{

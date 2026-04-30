@@ -2,11 +2,6 @@ import { UserRole } from '@/types/user/roles.ts'
 
 export const routes = [
   {
-    path: '/files',
-    name: 'files',
-    component: () => import('@/modules/files/FilesView.vue'),
-  },
-  {
     path: '',
     redirect: '/login',
     component: () => import('@/layouts/LoginLayout.vue'),
@@ -81,6 +76,11 @@ export const routes = [
           requiresAuth: true,
           roles: [UserRole.ADMIN],
         },
+      },
+      {
+        path: '/files',
+        name: 'files',
+        component: () => import('@/modules/files/FilesView.vue'),
       },
     ],
     meta: {

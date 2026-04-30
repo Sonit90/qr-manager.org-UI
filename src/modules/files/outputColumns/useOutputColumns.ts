@@ -9,7 +9,7 @@ export interface OutputColumn extends OutputColumnData {
   index: number
 }
 
-const outputColumns = ref<OutputColumnData[]>([{ name: 'Наименование' }, { name: 'Цена' }])
+const outputColumns = ref<OutputColumnData[]>([])
 
 export function useOutputColumns(fileColumns?: Ref<FileColumn[] | undefined>) {
   const availableColumns = computed<OutputColumn[]>(() => {

@@ -10,6 +10,7 @@
     "build-typecheck": "run-p type-check \"build-only {@}\" --",
     "build": "run-s generate build-only",
     "generate-api-v1": "bun ./src/api/v1/generateApiV1.js",
+    "update-api": "bun ./src/api/v1/updateApiV1.ts",
     "generate": "run-p generate-api-v1",
     "preview": "vite preview",
     "test:vtu-jsdom": "vitest run --project=vtu-jsdom",

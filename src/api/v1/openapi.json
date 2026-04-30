@@ -1,1 +1,2199 @@
-{"openapi":"3.1.0","info":{"title":"Price Merger API","description":"","contact":{"name":"price-merger contributors"},"license":{"name":"MIT OR Apache-2.0","identifier":"MIT OR Apache-2.0"},"version":"0.1.0"},"paths":{"/api/v1/admin/users":{"get":{"tags":["admin"],"operationId":"list_users","parameters":[{"name":"limit","in":"query","required":false,"schema":{"type":"integer","format":"int64"}},{"name":"offset","in":"query","required":false,"schema":{"type":"integer","format":"int64"}}],"responses":{"200":{"description":"","content":{"application/json":{"schema":{"type":"array","items":{"$ref":"#/components/schemas/User"}}}}},"401":{"description":""},"403":{"description":""}},"security":[{"bearer_auth":[]}]}},"/api/v1/admin/users/{id}/active":{"patch":{"tags":["admin"],"operationId":"set_active","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string","format":"uuid"}}],"requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/SetActiveReq"}}},"required":true},"responses":{"204":{"description":"Active flag updated"},"401":{"description":""},"403":{"description":""}},"security":[{"bearer_auth":[]}]}},"/api/v1/admin/users/{id}/permissions":{"post":{"tags":["admin"],"operationId":"grant_permission","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string","format":"uuid"}}],"requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/GrantPermReq"}}},"required":true},"responses":{"204":{"description":"Permission updated"},"401":{"description":""},"403":{"description":""}},"security":[{"bearer_auth":[]}]}},"/api/v1/admin/users/{id}/role":{"patch":{"tags":["admin"],"operationId":"set_role","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string","format":"uuid"}}],"requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/SetRoleReq"}}},"required":true},"responses":{"204":{"description":"Role updated"},"401":{"description":""},"403":{"description":""}},"security":[{"bearer_auth":[]}]}},"/api/v1/auth/forgot-password":{"post":{"tags":["auth"],"operationId":"forgot_password","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/ForgotPasswordReq"}}},"required":true},"responses":{"204":{"description":"Reset email sent if account exists"}}}},"/api/v1/auth/login":{"post":{"tags":["auth"],"operationId":"login","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/LoginReq"}}},"required":true},"responses":{"200":{"description":"Logged in","content":{"application/json":{"schema":{"$ref":"#/components/schemas/TokenPair"}}}},"401":{"description":"Invalid credentials"}}}},"/api/v1/auth/logout":{"post":{"tags":["auth"],"operationId":"logout","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/LogoutReq"}}},"required":true},"responses":{"204":{"description":"Logged out"},"401":{"description":""}}}},"/api/v1/auth/oauth/google":{"get":{"tags":["auth"],"operationId":"google_start","responses":{"307":{"description":"Redirect to Google"},"400":{"description":"Google OAuth disabled"}}}},"/api/v1/auth/oauth/google/callback":{"get":{"tags":["auth"],"operationId":"google_callback","parameters":[{"name":"code","in":"query","description":"OAuth authorization code","required":true,"schema":{"type":"string"}},{"name":"state","in":"query","required":false,"schema":{"type":["string","null"]}}],"responses":{"200":{"description":"","content":{"application/json":{"schema":{"$ref":"#/components/schemas/TokenPair"}}}}}}},"/api/v1/auth/refresh":{"post":{"tags":["auth"],"operationId":"refresh","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/RefreshReq"}}},"required":true},"responses":{"200":{"description":"Tokens rotated","content":{"application/json":{"schema":{"$ref":"#/components/schemas/TokenPair"}}}},"401":{"description":"Token invalid or expired"}}}},"/api/v1/auth/register":{"post":{"tags":["auth"],"operationId":"register","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/RegisterReq"}}},"required":true},"responses":{"201":{"description":"Registered","content":{"application/json":{"schema":{"$ref":"#/components/schemas/TokenPair"}}}},"409":{"description":"Email already taken"},"422":{"description":"Validation error"}}}},"/api/v1/auth/resend-verification":{"post":{"tags":["auth"],"operationId":"resend_verification","responses":{"204":{"description":"Verification email sent"},"401":{"description":"Not authenticated"}},"security":[{"bearer_auth":[]}]}},"/api/v1/auth/reset-password":{"post":{"tags":["auth"],"operationId":"reset_password","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/ResetPasswordReq"}}},"required":true},"responses":{"204":{"description":"Password updated"},"400":{"description":"Token invalid or expired, or password too short"}}}},"/api/v1/auth/verify-email":{"get":{"tags":["auth"],"operationId":"verify_email","parameters":[{"name":"token","in":"query","description":"One-time verification token (URL-safe base64, 32 bytes)","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"Email verified"},"400":{"description":"Token invalid or expired"}}}},"/api/v1/files":{"get":{"tags":["files"],"operationId":"list_files","responses":{"200":{"description":"","content":{"application/json":{"schema":{"type":"array","items":{"$ref":"#/components/schemas/UploadedFile"}}}}},"401":{"description":""}},"security":[{"bearer_auth":[]}]},"post":{"tags":["files"],"operationId":"upload","requestBody":{"content":{"multipart/form-data":{"schema":{"type":"string"}}},"required":true},"responses":{"201":{"description":"File uploaded","content":{"application/json":{"schema":{"$ref":"#/components/schemas/UploadedFile"}}}},"400":{"description":""},"401":{"description":""},"403":{"description":""}},"security":[{"bearer_auth":[]}]}},"/api/v1/files/{id}":{"get":{"tags":["files"],"operationId":"download","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string","format":"uuid"}}],"responses":{"200":{"description":"File bytes","content":{"application/octet-stream":{}}},"401":{"description":""},"403":{"description":""},"404":{"description":""}},"security":[{"bearer_auth":[]}]},"delete":{"tags":["files"],"operationId":"delete_file","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string","format":"uuid"}}],"responses":{"202":{"description":"Deletion enqueued"},"401":{"description":""},"403":{"description":""},"404":{"description":""}},"security":[{"bearer_auth":[]}]}},"/api/v1/formats":{"get":{"tags":["formats"],"operationId":"list_formats","responses":{"200":{"description":"","content":{"application/json":{"schema":{"type":"array","items":{"$ref":"#/components/schemas/OutputFormat"}}}}},"401":{"description":""}},"security":[{"bearer_auth":[]}]},"post":{"tags":["formats"],"operationId":"create_format","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/CreateFormatReq"}}},"required":true},"responses":{"201":{"description":"","content":{"application/json":{"schema":{"$ref":"#/components/schemas/OutputFormat"}}}},"401":{"description":""},"403":{"description":""}},"security":[{"bearer_auth":[]}]}},"/api/v1/formats/{id}":{"get":{"tags":["formats"],"operationId":"get_format","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string","format":"uuid"}}],"responses":{"200":{"description":"","content":{"application/json":{"schema":{"$ref":"#/components/schemas/OutputFormat"}}}},"401":{"description":""},"403":{"description":""},"404":{"description":""}},"security":[{"bearer_auth":[]}]},"delete":{"tags":["formats"],"operationId":"delete_format","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string","format":"uuid"}}],"responses":{"204":{"description":""},"401":{"description":""},"403":{"description":""},"404":{"description":""}},"security":[{"bearer_auth":[]}]}},"/api/v1/mappings":{"get":{"tags":["mappings"],"operationId":"list_mappings","responses":{"200":{"description":"","content":{"application/json":{"schema":{"type":"array","items":{"$ref":"#/components/schemas/ColumnMapping"}}}}},"401":{"description":""}},"security":[{"bearer_auth":[]}]},"post":{"tags":["mappings"],"operationId":"create_mapping","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/CreateMappingReq"}}},"required":true},"responses":{"201":{"description":"","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ColumnMapping"}}}},"401":{"description":""},"403":{"description":""}},"security":[{"bearer_auth":[]}]}},"/api/v1/mappings/{id}":{"get":{"tags":["mappings"],"operationId":"get_mapping","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string","format":"uuid"}}],"responses":{"200":{"description":"","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ColumnMapping"}}}},"401":{"description":""},"403":{"description":""},"404":{"description":""}},"security":[{"bearer_auth":[]}]},"delete":{"tags":["mappings"],"operationId":"delete_mapping","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string","format":"uuid"}}],"responses":{"204":{"description":""},"401":{"description":""},"403":{"description":""},"404":{"description":""}},"security":[{"bearer_auth":[]}]}},"/api/v1/merge/runs":{"post":{"tags":["merge"],"operationId":"start_run","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/StartRunReq"}}},"required":true},"responses":{"202":{"description":"Run enqueued","content":{"application/json":{"schema":{"$ref":"#/components/schemas/MergeRun"}}}},"400":{"description":""},"401":{"description":""},"403":{"description":""}},"security":[{"bearer_auth":[]}]}},"/api/v1/merge/runs/{id}":{"get":{"tags":["merge"],"operationId":"get_run","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string","format":"uuid"}}],"responses":{"200":{"description":"","content":{"application/json":{"schema":{"$ref":"#/components/schemas/MergeRun"}}}},"401":{"description":""},"403":{"description":""},"404":{"description":""}},"security":[{"bearer_auth":[]}]}},"/api/v1/users/me":{"get":{"tags":["users"],"operationId":"me","responses":{"200":{"description":"Current user","content":{"application/json":{"schema":{"$ref":"#/components/schemas/User"}}}},"401":{"description":""},"404":{"description":""}},"security":[{"bearer_auth":[]}]}},"/api/v1/users/me/permissions":{"get":{"tags":["users"],"operationId":"my_permissions","responses":{"200":{"description":"List of permission names","content":{"application/json":{"schema":{"type":"array","items":{"type":"string"}}}}},"401":{"description":""}},"security":[{"bearer_auth":[]}]}}},"components":{"schemas":{"CanonicalColumn":{"type":"string","description":"A canonical column the system understands. Extend as needed."},"ColumnMapping":{"type":"object","description":"A user's markup of an uploaded file.","required":["id","owner_id","file_id","header_row","data_start_row","columns","created_at","updated_at"],"properties":{"columns":{"type":"array","items":{"$ref":"#/components/schemas/MappedColumn"}},"created_at":{"type":"string","format":"date-time"},"data_start_row":{"type":"integer","format":"int32","minimum":0},"file_id":{"type":"string","format":"uuid"},"header_row":{"type":"integer","format":"int32","minimum":0},"id":{"type":"string","format":"uuid"},"owner_id":{"type":"string","format":"uuid"},"sheet_name":{"type":["string","null"]},"updated_at":{"type":"string","format":"date-time"}}},"ColumnTarget":{"oneOf":[{"type":"object","required":["canonical"],"properties":{"canonical":{"type":"string"}}},{"type":"object","required":["output_name"],"properties":{"output_name":{"type":"string"}}}],"description":"A reference to a logical column.\n\n`canonical` matches the canonical schema (sku, name, brand, price, qty…).\n`output_name` lets a global transform target an extra (output-only) column."},"ColumnTransform":{"oneOf":[{"type":"object","description":"Trim whitespace.","required":["kind"],"properties":{"kind":{"type":"string","enum":["trim"]}}},{"type":"object","description":"Lower / upper case.","required":["kind"],"properties":{"kind":{"type":"string","enum":["lower_case"]}}},{"type":"object","required":["kind"],"properties":{"kind":{"type":"string","enum":["upper_case"]}}},{"type":"object","description":"Replace `from` with `to`. Plain string match.","required":["from","to","kind"],"properties":{"from":{"type":"string"},"kind":{"type":"string","enum":["replace"]},"to":{"type":"string"}}},{"type":"object","description":"Regex replace.","required":["pattern","replacement","kind"],"properties":{"kind":{"type":"string","enum":["regex_replace"]},"pattern":{"type":"string"},"replacement":{"type":"string"}}},{"type":"object","description":"Parse \"1 234,56\" / \"1,234.56\" / \"1234.56\" -> f64.","required":["decimal_separator","thousand_separator","kind"],"properties":{"decimal_separator":{"type":"string"},"kind":{"type":"string","enum":["parse_decimal"]},"thousand_separator":{"type":["string","null"]}}},{"type":"object","description":"Multiply numeric value by a constant.","required":["factor","kind"],"properties":{"factor":{"type":"number","format":"double"},"kind":{"type":"string","enum":["multiply_by"]}}},{"type":"object","description":"Add a constant.","required":["value","kind"],"properties":{"kind":{"type":"string","enum":["add_constant"]},"value":{"type":"number","format":"double"}}},{"type":"object","description":"Increase by percent: x * (1 + p/100).","required":["percent","kind"],"properties":{"kind":{"type":"string","enum":["increase_percent"]},"percent":{"type":"number","format":"double"}}},{"type":"object","description":"Coerce to int (truncate).","required":["kind"],"properties":{"kind":{"type":"string","enum":["to_int"]}}},{"type":"object","description":"Coerce to a fixed string.","required":["value","kind"],"properties":{"kind":{"type":"string","enum":["constant"]},"value":{"type":"string"}}}],"description":"Transforms applied per-column while reading a source file."},"CreateFormatReq":{"type":"object","required":["name","columns"],"properties":{"columns":{"type":"array","items":{"$ref":"#/components/schemas/OutputColumn"}},"description":{"type":["string","null"]},"global_transforms":{"type":"array","items":{"$ref":"#/components/schemas/GlobalTransform"}},"name":{"type":"string"},"output_kind":{"$ref":"#/components/schemas/FileKind"}}},"CreateMappingReq":{"type":"object","required":["file_id","columns"],"properties":{"columns":{"type":"array","items":{"$ref":"#/components/schemas/MappedColumn"}},"data_start_row":{"type":["integer","null"],"format":"int32"},"file_id":{"type":"string","format":"uuid"},"header_row":{"type":["integer","null"],"format":"int32"},"sheet_name":{"type":["string","null"]}}},"DataType":{"type":"string","enum":["string","integer","decimal","boolean"]},"FileKind":{"type":"string","enum":["csv","xls","xlsx"]},"FilterOp":{"type":"string","enum":["eq","ne","gt","gte","lt","lte","empty","not_empty","contains"]},"ForgotPasswordReq":{"type":"object","required":["email"],"properties":{"email":{"type":"string"}}},"GlobalTransform":{"oneOf":[{"type":"object","description":"Multiply a numeric column by a factor.","required":["target","factor","kind"],"properties":{"factor":{"type":"number","format":"double"},"kind":{"type":"string","enum":["multiply_by"]},"target":{"$ref":"#/components/schemas/ColumnTarget"}}},{"type":"object","description":"Increase a numeric column by percent.","required":["target","percent","kind"],"properties":{"kind":{"type":"string","enum":["increase_percent"]},"percent":{"type":"number","format":"double"},"target":{"$ref":"#/components/schemas/ColumnTarget"}}},{"type":"object","description":"Drop rows where the predicate is true.","required":["target","op","kind"],"properties":{"kind":{"type":"string","enum":["filter"]},"op":{"$ref":"#/components/schemas/FilterOp"},"target":{"$ref":"#/components/schemas/ColumnTarget"},"value":{"type":["object","null"]}}},{"type":"object","description":"Keep only rows where the predicate is true.","required":["target","op","kind"],"properties":{"kind":{"type":"string","enum":["keep"]},"op":{"$ref":"#/components/schemas/FilterOp"},"target":{"$ref":"#/components/schemas/ColumnTarget"},"value":{"type":["object","null"]}}},{"type":"object","description":"Set a column to a constant.","required":["target","value","kind"],"properties":{"kind":{"type":"string","enum":["set_constant"]},"target":{"$ref":"#/components/schemas/ColumnTarget"},"value":{"type":"object"}}},{"type":"object","description":"Round numeric column to N decimals.","required":["target","decimals","kind"],"properties":{"decimals":{"type":"integer","format":"int32","minimum":0},"kind":{"type":"string","enum":["round"]},"target":{"$ref":"#/components/schemas/ColumnTarget"}}},{"type":"object","description":"Deduplicate rows by a column's value (keeps first occurrence).","required":["target","kind"],"properties":{"kind":{"type":"string","enum":["deduplicate_by"]},"target":{"$ref":"#/components/schemas/ColumnTarget"}}}],"description":"Transforms applied to the merged dataset as a whole."},"GrantPermReq":{"type":"object","required":["permission","granted"],"properties":{"granted":{"type":"boolean"},"permission":{"type":"string"}}},"LoginReq":{"type":"object","required":["email","password"],"properties":{"email":{"type":"string"},"password":{"type":"string"}}},"LogoutReq":{"type":"object","required":["refresh_token"],"properties":{"refresh_token":{"type":"string"}}},"MappedColumn":{"type":"object","description":"One column inside a `ColumnMapping.columns` JSON array.","required":["source_index","data_type"],"properties":{"canonical":{"type":["string","null"],"description":"Canonical name; if None, the column is read but not used in the output\nunless an `extra` output column references it by header."},"data_type":{"$ref":"#/components/schemas/DataType"},"source_header":{"type":["string","null"],"description":"Header text as seen in the file (informational)."},"source_index":{"type":"integer","format":"int32","description":"0-based index in the source file.","minimum":0},"transformations":{"type":"array","items":{"$ref":"#/components/schemas/ColumnTransform"}}}},"MergeRun":{"type":"object","required":["id","owner_id","output_format_id","input_mapping_ids","status","created_at","started_at","finished_at"],"properties":{"created_at":{"type":"string","format":"date-time"},"error_message":{"type":["string","null"]},"finished_at":{"type":["string","null"],"format":"date-time"},"id":{"type":"string","format":"uuid"},"input_mapping_ids":{"type":"array","items":{"type":"string","format":"uuid"}},"output_file_id":{"type":["string","null"],"format":"uuid"},"output_format_id":{"type":"string","format":"uuid"},"owner_id":{"type":"string","format":"uuid"},"started_at":{"type":["string","null"],"format":"date-time"},"status":{"$ref":"#/components/schemas/MergeStatus"}}},"MergeStatus":{"type":"string","enum":["queued","running","completed","failed","cancelled"]},"OAuthCallbackQuery":{"type":"object","required":["code"],"properties":{"code":{"type":"string","description":"OAuth authorization code"},"state":{"type":["string","null"]}}},"OutputColumn":{"type":"object","description":"One column in a user-defined output format.","required":["name"],"properties":{"canonical":{"type":["string","null"],"description":"If set, this column is sourced from the canonical schema.\nIf None and `extra` is true, the column is synthesized from\n`default_value` (and may be filled in by global transforms)."},"default_value":{"type":["object","null"]},"extra":{"type":"boolean"},"name":{"type":"string","description":"Header text written in the output file."}}},"OutputFormat":{"type":"object","description":"A reusable output-format definition.","required":["id","owner_id","name","columns","output_kind","created_at","updated_at"],"properties":{"columns":{"type":"array","items":{"$ref":"#/components/schemas/OutputColumn"}},"created_at":{"type":"string","format":"date-time"},"description":{"type":["string","null"]},"global_transforms":{"type":"array","items":{"$ref":"#/components/schemas/GlobalTransform"}},"id":{"type":"string","format":"uuid"},"name":{"type":"string"},"output_kind":{"$ref":"#/components/schemas/FileKind"},"owner_id":{"type":"string","format":"uuid"},"updated_at":{"type":"string","format":"date-time"}}},"Page":{"type":"object","properties":{"limit":{"type":"integer","format":"int64"},"offset":{"type":"integer","format":"int64"}}},"RefreshReq":{"type":"object","required":["refresh_token"],"properties":{"refresh_token":{"type":"string"}}},"RegisterReq":{"type":"object","required":["email","password"],"properties":{"display_name":{"type":["string","null"]},"email":{"type":"string"},"password":{"type":"string"}}},"ResetPasswordReq":{"type":"object","required":["token","new_password"],"properties":{"new_password":{"type":"string"},"token":{"type":"string"}}},"Role":{"type":"string","enum":["admin","moderator","user"]},"SetActiveReq":{"type":"object","required":["active"],"properties":{"active":{"type":"boolean"}}},"SetRoleReq":{"type":"object","required":["role"],"properties":{"role":{"$ref":"#/components/schemas/Role"}}},"StartRunReq":{"type":"object","required":["output_format_id","input_mapping_ids"],"properties":{"input_mapping_ids":{"type":"array","items":{"type":"string","format":"uuid"}},"output_format_id":{"type":"string","format":"uuid"}}},"TokenPair":{"type":"object","required":["access_token","refresh_token","access_expires_in"],"properties":{"access_expires_in":{"type":"integer","format":"int64"},"access_token":{"type":"string"},"refresh_token":{"type":"string"}}},"UploadedFile":{"type":"object","required":["id","owner_id","original_name","storage_key","kind","size_bytes","expires_at","purged_at","created_at"],"properties":{"created_at":{"type":"string","format":"date-time"},"expires_at":{"type":"string","format":"date-time"},"id":{"type":"string","format":"uuid"},"kind":{"$ref":"#/components/schemas/FileKind"},"mime_type":{"type":["string","null"]},"original_name":{"type":"string"},"owner_id":{"type":"string","format":"uuid"},"purged_at":{"type":["string","null"],"format":"date-time"},"sha256":{"type":["string","null"]},"size_bytes":{"type":"integer","format":"int64"},"storage_key":{"type":"string"}}},"User":{"type":"object","required":["id","role","is_active","email_verified","created_at","updated_at"],"properties":{"created_at":{"type":"string","format":"date-time"},"display_name":{"type":["string","null"]},"email":{"type":["string","null"]},"email_verified":{"type":"boolean"},"id":{"type":"string","format":"uuid"},"is_active":{"type":"boolean"},"role":{"$ref":"#/components/schemas/Role"},"updated_at":{"type":"string","format":"date-time"}}}},"securitySchemes":{"bearer_auth":{"type":"http","scheme":"bearer","bearerFormat":"JWT"}}}}
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Price Merger API",
+    "description": "",
+    "contact": {
+      "name": "price-merger contributors"
+    },
+    "license": {
+      "name": "MIT OR Apache-2.0",
+      "identifier": "MIT OR Apache-2.0"
+    },
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/v1/admin/users": {
+      "get": {
+        "tags": [
+          "admin"
+        ],
+        "operationId": "list_users",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": ""
+          },
+          "403": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/users/{id}/active": {
+      "patch": {
+        "tags": [
+          "admin"
+        ],
+        "operationId": "set_active",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetActiveReq"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Active flag updated"
+          },
+          "401": {
+            "description": ""
+          },
+          "403": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/users/{id}/permissions": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "operationId": "grant_permission",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GrantPermReq"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Permission updated"
+          },
+          "401": {
+            "description": ""
+          },
+          "403": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/users/{id}/role": {
+      "patch": {
+        "tags": [
+          "admin"
+        ],
+        "operationId": "set_role",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetRoleReq"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Role updated"
+          },
+          "401": {
+            "description": ""
+          },
+          "403": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/auth/forgot-password": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "operationId": "forgot_password",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPasswordReq"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Reset email sent if account exists"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "operationId": "login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginReq"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Logged in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenPair"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "operationId": "logout",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogoutReq"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Logged out"
+          },
+          "401": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/auth/oauth/google": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "operationId": "google_start",
+        "responses": {
+          "307": {
+            "description": "Redirect to Google"
+          },
+          "400": {
+            "description": "Google OAuth disabled"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/oauth/google/callback": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "operationId": "google_callback",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "query",
+            "description": "OAuth authorization code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenPair"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/refresh": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "operationId": "refresh",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshReq"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Tokens rotated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenPair"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token invalid or expired"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/register": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "operationId": "register",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterReq"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Registered",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenPair"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Email already taken"
+          },
+          "422": {
+            "description": "Validation error"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/resend-verification": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "operationId": "resend_verification",
+        "responses": {
+          "204": {
+            "description": "Verification email sent"
+          },
+          "401": {
+            "description": "Not authenticated"
+          }
+        },
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/auth/reset-password": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "operationId": "reset_password",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordReq"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Password updated"
+          },
+          "400": {
+            "description": "Token invalid or expired, or password too short"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/verify-email": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "operationId": "verify_email",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "description": "One-time verification token (URL-safe base64, 32 bytes)",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Email verified"
+          },
+          "400": {
+            "description": "Token invalid or expired"
+          }
+        }
+      }
+    },
+    "/api/v1/files": {
+      "get": {
+        "tags": [
+          "files"
+        ],
+        "operationId": "list_files",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UploadedFile"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "files"
+        ],
+        "operationId": "upload",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "File uploaded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadedFile"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          },
+          "401": {
+            "description": ""
+          },
+          "403": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/files/{id}": {
+      "get": {
+        "tags": [
+          "files"
+        ],
+        "operationId": "download",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File bytes",
+            "content": {
+              "application/octet-stream": {}
+            }
+          },
+          "401": {
+            "description": ""
+          },
+          "403": {
+            "description": ""
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "files"
+        ],
+        "operationId": "delete_file",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Deletion enqueued"
+          },
+          "401": {
+            "description": ""
+          },
+          "403": {
+            "description": ""
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/formats": {
+      "get": {
+        "tags": [
+          "formats"
+        ],
+        "operationId": "list_formats",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OutputFormat"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "formats"
+        ],
+        "operationId": "create_format",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateFormatReq"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OutputFormat"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": ""
+          },
+          "403": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/formats/{id}": {
+      "get": {
+        "tags": [
+          "formats"
+        ],
+        "operationId": "get_format",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OutputFormat"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": ""
+          },
+          "403": {
+            "description": ""
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "formats"
+        ],
+        "operationId": "delete_format",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": ""
+          },
+          "403": {
+            "description": ""
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/mappings": {
+      "get": {
+        "tags": [
+          "mappings"
+        ],
+        "operationId": "list_mappings",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ColumnMapping"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "mappings"
+        ],
+        "operationId": "create_mapping",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMappingReq"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ColumnMapping"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": ""
+          },
+          "403": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/mappings/{id}": {
+      "get": {
+        "tags": [
+          "mappings"
+        ],
+        "operationId": "get_mapping",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ColumnMapping"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": ""
+          },
+          "403": {
+            "description": ""
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "mappings"
+        ],
+        "operationId": "delete_mapping",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": ""
+          },
+          "403": {
+            "description": ""
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/merge/runs": {
+      "post": {
+        "tags": [
+          "merge"
+        ],
+        "operationId": "start_run",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartRunReq"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Run enqueued",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MergeRun"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          },
+          "401": {
+            "description": ""
+          },
+          "403": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/merge/runs/{id}": {
+      "get": {
+        "tags": [
+          "merge"
+        ],
+        "operationId": "get_run",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MergeRun"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": ""
+          },
+          "403": {
+            "description": ""
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/users/me": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "operationId": "me",
+        "responses": {
+          "200": {
+            "description": "Current user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": ""
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/users/me/permissions": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "operationId": "my_permissions",
+        "responses": {
+          "200": {
+            "description": "List of permission names",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CanonicalColumn": {
+        "type": "string",
+        "description": "A canonical column the system understands. Extend as needed."
+      },
+      "ColumnMapping": {
+        "type": "object",
+        "description": "A user's markup of an uploaded file.",
+        "required": [
+          "id",
+          "owner_id",
+          "file_id",
+          "header_row",
+          "data_start_row",
+          "columns",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "columns": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MappedColumn"
+            }
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "data_start_row": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "file_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "header_row": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "owner_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "sheet_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ColumnTarget": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "canonical"
+            ],
+            "properties": {
+              "canonical": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "output_name"
+            ],
+            "properties": {
+              "output_name": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "description": "A reference to a logical column.\n\n`canonical` matches the canonical schema (sku, name, brand, price, qty…).\n`output_name` lets a global transform target an extra (output-only) column."
+      },
+      "ColumnTransform": {
+        "oneOf": [
+          {
+            "type": "object",
+            "description": "Trim whitespace.",
+            "required": [
+              "kind"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "trim"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "description": "Lower / upper case.",
+            "required": [
+              "kind"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "lower_case"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "kind"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "upper_case"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "description": "Replace `from` with `to`. Plain string match.",
+            "required": [
+              "from",
+              "to",
+              "kind"
+            ],
+            "properties": {
+              "from": {
+                "type": "string"
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "replace"
+                ]
+              },
+              "to": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "description": "Regex replace.",
+            "required": [
+              "pattern",
+              "replacement",
+              "kind"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "regex_replace"
+                ]
+              },
+              "pattern": {
+                "type": "string"
+              },
+              "replacement": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "description": "Parse \"1 234,56\" / \"1,234.56\" / \"1234.56\" -> f64.",
+            "required": [
+              "decimal_separator",
+              "thousand_separator",
+              "kind"
+            ],
+            "properties": {
+              "decimal_separator": {
+                "type": "string"
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "parse_decimal"
+                ]
+              },
+              "thousand_separator": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "description": "Multiply numeric value by a constant.",
+            "required": [
+              "factor",
+              "kind"
+            ],
+            "properties": {
+              "factor": {
+                "type": "number",
+                "format": "double"
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "multiply_by"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "description": "Add a constant.",
+            "required": [
+              "value",
+              "kind"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "add_constant"
+                ]
+              },
+              "value": {
+                "type": "number",
+                "format": "double"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "description": "Increase by percent: x * (1 + p/100).",
+            "required": [
+              "percent",
+              "kind"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "increase_percent"
+                ]
+              },
+              "percent": {
+                "type": "number",
+                "format": "double"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "description": "Coerce to int (truncate).",
+            "required": [
+              "kind"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "to_int"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "description": "Coerce to a fixed string.",
+            "required": [
+              "value",
+              "kind"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "constant"
+                ]
+              },
+              "value": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "description": "Transforms applied per-column while reading a source file."
+      },
+      "CreateFormatReq": {
+        "type": "object",
+        "required": [
+          "name",
+          "columns"
+        ],
+        "properties": {
+          "columns": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OutputColumn"
+            }
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "global_transforms": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GlobalTransform"
+            }
+          },
+          "name": {
+            "type": "string"
+          },
+          "output_kind": {
+            "$ref": "#/components/schemas/FileKind"
+          }
+        }
+      },
+      "CreateMappingReq": {
+        "type": "object",
+        "required": [
+          "file_id",
+          "columns"
+        ],
+        "properties": {
+          "columns": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MappedColumn"
+            }
+          },
+          "data_start_row": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "file_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "header_row": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "sheet_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "DataType": {
+        "type": "string",
+        "enum": [
+          "string",
+          "integer",
+          "decimal",
+          "boolean"
+        ]
+      },
+      "FileKind": {
+        "type": "string",
+        "enum": [
+          "csv",
+          "xls",
+          "xlsx"
+        ]
+      },
+      "FilterOp": {
+        "type": "string",
+        "enum": [
+          "eq",
+          "ne",
+          "gt",
+          "gte",
+          "lt",
+          "lte",
+          "empty",
+          "not_empty",
+          "contains"
+        ]
+      },
+      "ForgotPasswordReq": {
+        "type": "object",
+        "required": [
+          "email"
+        ],
+        "properties": {
+          "email": {
+            "type": "string"
+          }
+        }
+      },
+      "GlobalTransform": {
+        "oneOf": [
+          {
+            "type": "object",
+            "description": "Multiply a numeric column by a factor.",
+            "required": [
+              "target",
+              "factor",
+              "kind"
+            ],
+            "properties": {
+              "factor": {
+                "type": "number",
+                "format": "double"
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "multiply_by"
+                ]
+              },
+              "target": {
+                "$ref": "#/components/schemas/ColumnTarget"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "description": "Increase a numeric column by percent.",
+            "required": [
+              "target",
+              "percent",
+              "kind"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "increase_percent"
+                ]
+              },
+              "percent": {
+                "type": "number",
+                "format": "double"
+              },
+              "target": {
+                "$ref": "#/components/schemas/ColumnTarget"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "description": "Drop rows where the predicate is true.",
+            "required": [
+              "target",
+              "op",
+              "kind"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "filter"
+                ]
+              },
+              "op": {
+                "$ref": "#/components/schemas/FilterOp"
+              },
+              "target": {
+                "$ref": "#/components/schemas/ColumnTarget"
+              },
+              "value": {
+                "type": [
+                  "object",
+                  "null"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "description": "Keep only rows where the predicate is true.",
+            "required": [
+              "target",
+              "op",
+              "kind"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "keep"
+                ]
+              },
+              "op": {
+                "$ref": "#/components/schemas/FilterOp"
+              },
+              "target": {
+                "$ref": "#/components/schemas/ColumnTarget"
+              },
+              "value": {
+                "type": [
+                  "object",
+                  "null"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "description": "Set a column to a constant.",
+            "required": [
+              "target",
+              "value",
+              "kind"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "set_constant"
+                ]
+              },
+              "target": {
+                "$ref": "#/components/schemas/ColumnTarget"
+              },
+              "value": {
+                "type": "object"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "description": "Round numeric column to N decimals.",
+            "required": [
+              "target",
+              "decimals",
+              "kind"
+            ],
+            "properties": {
+              "decimals": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 0
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "round"
+                ]
+              },
+              "target": {
+                "$ref": "#/components/schemas/ColumnTarget"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "description": "Deduplicate rows by a column's value (keeps first occurrence).",
+            "required": [
+              "target",
+              "kind"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "deduplicate_by"
+                ]
+              },
+              "target": {
+                "$ref": "#/components/schemas/ColumnTarget"
+              }
+            }
+          }
+        ],
+        "description": "Transforms applied to the merged dataset as a whole."
+      },
+      "GrantPermReq": {
+        "type": "object",
+        "required": [
+          "permission",
+          "granted"
+        ],
+        "properties": {
+          "granted": {
+            "type": "boolean"
+          },
+          "permission": {
+            "type": "string"
+          }
+        }
+      },
+      "LoginReq": {
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "LogoutReq": {
+        "type": "object",
+        "required": [
+          "refresh_token"
+        ],
+        "properties": {
+          "refresh_token": {
+            "type": "string"
+          }
+        }
+      },
+      "MappedColumn": {
+        "type": "object",
+        "description": "One column inside a `ColumnMapping.columns` JSON array.",
+        "required": [
+          "source_index",
+          "data_type"
+        ],
+        "properties": {
+          "canonical": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Canonical name; if None, the column is read but not used in the output\nunless an `extra` output column references it by header."
+          },
+          "data_type": {
+            "$ref": "#/components/schemas/DataType"
+          },
+          "source_header": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Header text as seen in the file (informational)."
+          },
+          "source_index": {
+            "type": "integer",
+            "format": "int32",
+            "description": "0-based index in the source file.",
+            "minimum": 0
+          },
+          "transformations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ColumnTransform"
+            }
+          }
+        }
+      },
+      "MergeRun": {
+        "type": "object",
+        "required": [
+          "id",
+          "owner_id",
+          "output_format_id",
+          "input_mapping_ids",
+          "status",
+          "created_at",
+          "started_at",
+          "finished_at"
+        ],
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "error_message": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "finished_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "input_mapping_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "output_file_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "output_format_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "owner_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "started_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "status": {
+            "$ref": "#/components/schemas/MergeStatus"
+          }
+        }
+      },
+      "MergeStatus": {
+        "type": "string",
+        "enum": [
+          "queued",
+          "running",
+          "completed",
+          "failed",
+          "cancelled"
+        ]
+      },
+      "OAuthCallbackQuery": {
+        "type": "object",
+        "required": [
+          "code"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "OAuth authorization code"
+          },
+          "state": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "OutputColumn": {
+        "type": "object",
+        "description": "One column in a user-defined output format.",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "canonical": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "If set, this column is sourced from the canonical schema.\nIf None and `extra` is true, the column is synthesized from\n`default_value` (and may be filled in by global transforms)."
+          },
+          "default_value": {
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "extra": {
+            "type": "boolean"
+          },
+          "name": {
+            "type": "string",
+            "description": "Header text written in the output file."
+          }
+        }
+      },
+      "OutputFormat": {
+        "type": "object",
+        "description": "A reusable output-format definition.",
+        "required": [
+          "id",
+          "owner_id",
+          "name",
+          "columns",
+          "output_kind",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "columns": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OutputColumn"
+            }
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "global_transforms": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GlobalTransform"
+            }
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "output_kind": {
+            "$ref": "#/components/schemas/FileKind"
+          },
+          "owner_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Page": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "offset": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "RefreshReq": {
+        "type": "object",
+        "required": [
+          "refresh_token"
+        ],
+        "properties": {
+          "refresh_token": {
+            "type": "string"
+          }
+        }
+      },
+      "RegisterReq": {
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "properties": {
+          "display_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "ResetPasswordReq": {
+        "type": "object",
+        "required": [
+          "token",
+          "new_password"
+        ],
+        "properties": {
+          "new_password": {
+            "type": "string"
+          },
+          "token": {
+            "type": "string"
+          }
+        }
+      },
+      "Role": {
+        "type": "string",
+        "enum": [
+          "admin",
+          "moderator",
+          "user"
+        ]
+      },
+      "SetActiveReq": {
+        "type": "object",
+        "required": [
+          "active"
+        ],
+        "properties": {
+          "active": {
+            "type": "boolean"
+          }
+        }
+      },
+      "SetRoleReq": {
+        "type": "object",
+        "required": [
+          "role"
+        ],
+        "properties": {
+          "role": {
+            "$ref": "#/components/schemas/Role"
+          }
+        }
+      },
+      "StartRunReq": {
+        "type": "object",
+        "required": [
+          "output_format_id",
+          "input_mapping_ids"
+        ],
+        "properties": {
+          "input_mapping_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "output_format_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "TokenPair": {
+        "type": "object",
+        "required": [
+          "access_token",
+          "refresh_token",
+          "access_expires_in"
+        ],
+        "properties": {
+          "access_expires_in": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "access_token": {
+            "type": "string"
+          },
+          "refresh_token": {
+            "type": "string"
+          }
+        }
+      },
+      "UploadedFile": {
+        "type": "object",
+        "required": [
+          "id",
+          "owner_id",
+          "original_name",
+          "storage_key",
+          "kind",
+          "size_bytes",
+          "expires_at",
+          "purged_at",
+          "created_at"
+        ],
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/FileKind"
+          },
+          "mime_type": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "original_name": {
+            "type": "string"
+          },
+          "owner_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "purged_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "sha256": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "size_bytes": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "storage_key": {
+            "type": "string"
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "required": [
+          "id",
+          "role",
+          "is_active",
+          "email_verified",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "display_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "email": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "email_verified": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "role": {
+            "$ref": "#/components/schemas/Role"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearer_auth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

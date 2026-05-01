@@ -20,6 +20,12 @@ const navigationItems = [
   { title: 'Transformations', icon: 'mdi-file-excel', to: '/merges' },
   { title: 'Files WIP', icon: 'mdi-file-excel', to: '/files' },
   { title: 'Users', icon: 'mdi-account-group', to: '/admin/users', roles: [TypeRoleV1.EnumAdmin] },
+  {
+    title: 'Output Formats',
+    icon: 'mdi-file-cog',
+    to: '/admin/formats',
+    roles: [TypeRoleV1.EnumAdmin],
+  },
 ]
 
 const { hasRole } = useUserRoles()

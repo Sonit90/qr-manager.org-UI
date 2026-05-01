@@ -1788,6 +1788,22 @@
           }
         }
       },
+      "FilterItem": {
+        "type": "object",
+        "description": "One filter inside a `Filters` step.",
+        "required": [
+          "scope",
+          "expr"
+        ],
+        "properties": {
+          "expr": {
+            "type": "object"
+          },
+          "scope": {
+            "$ref": "#/components/schemas/StepScope"
+          }
+        }
+      },
       "ForgotPasswordReq": {
         "type": "object",
         "required": [
@@ -2111,52 +2127,50 @@
         "oneOf": [
           {
             "type": "object",
-            "description": "Drop rows where `expr` evaluates to false/null.",
+            "description": "Batch of filters. Drops rows where any item evaluates to false/null\n(within the matching scope).",
             "required": [
-              "scope",
-              "expr",
+              "items",
               "kind"
             ],
             "properties": {
-              "expr": {
-                "type": "object"
+              "items": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/FilterItem"
+                }
               },
               "kind": {
                 "type": "string",
                 "enum": [
-                  "filter"
+                  "filters"
                 ]
-              },
-              "scope": {
-                "$ref": "#/components/schemas/StepScope"
               }
             }
           },
           {
             "type": "object",
-            "description": "Set `field` = eval(expr, row) for each row.",
+            "description": "Batch of transforms. Each item sets `field` = eval(expr, row).",
             "required": [
-              "field",
-              "expr",
+              "items",
               "kind"
             ],
             "properties": {
-              "expr": {
-                "type": "object"
-              },
-              "field": {
-                "type": "string"
+              "items": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/TransformItem"
+                }
               },
               "kind": {
                 "type": "string",
                 "enum": [
-                  "transform"
+                  "transforms"
                 ]
               }
             }
           }
         ],
-        "description": "One processing step in an output format. Steps are applied in order."
+        "description": "One processing step. Steps are applied in order; items within a step\nalso apply in order. A step is homogeneous — either all filters or all\ntransforms."
       },
       "Page": {
         "type": "object",
@@ -2293,6 +2307,22 @@
             "type": "string"
           },
           "refresh_token": {
+            "type": "string"
+          }
+        }
+      },
+      "TransformItem": {
+        "type": "object",
+        "description": "One transform inside a `Transforms` step.",
+        "required": [
+          "field",
+          "expr"
+        ],
+        "properties": {
+          "expr": {
+            "type": "object"
+          },
+          "field": {
             "type": "string"
           }
         }

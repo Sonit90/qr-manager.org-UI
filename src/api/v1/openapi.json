@@ -706,157 +706,6 @@
         ]
       }
     },
-    "/api/v1/formats": {
-      "get": {
-        "tags": [
-          "formats"
-        ],
-        "operationId": "list_formats",
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/OutputFormat"
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer_auth": []
-          }
-        ]
-      },
-      "post": {
-        "tags": [
-          "formats"
-        ],
-        "operationId": "create_format",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateFormatReq"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OutputFormat"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": ""
-          },
-          "403": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer_auth": []
-          }
-        ]
-      }
-    },
-    "/api/v1/formats/{id}": {
-      "get": {
-        "tags": [
-          "formats"
-        ],
-        "operationId": "get_format",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OutputFormat"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": ""
-          },
-          "403": {
-            "description": ""
-          },
-          "404": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer_auth": []
-          }
-        ]
-      },
-      "delete": {
-        "tags": [
-          "formats"
-        ],
-        "operationId": "delete_format",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": ""
-          },
-          "401": {
-            "description": ""
-          },
-          "403": {
-            "description": ""
-          },
-          "404": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer_auth": []
-          }
-        ]
-      }
-    },
     "/api/v1/mappings": {
       "get": {
         "tags": [
@@ -1009,11 +858,40 @@
       }
     },
     "/api/v1/merge/runs": {
+      "get": {
+        "tags": [
+          "merge"
+        ],
+        "operationId": "list_merge_runs",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MergeRun"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ]
+      },
       "post": {
         "tags": [
           "merge"
         ],
-        "operationId": "start_run",
+        "operationId": "start_merge_run",
         "requestBody": {
           "content": {
             "application/json": {
@@ -1057,7 +935,7 @@
         "tags": [
           "merge"
         ],
-        "operationId": "get_run",
+        "operationId": "get_merge_run",
         "parameters": [
           {
             "name": "id",
@@ -1079,6 +957,204 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": ""
+          },
+          "403": {
+            "description": ""
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/merge/runs/{id}/download": {
+      "get": {
+        "tags": [
+          "merge"
+        ],
+        "operationId": "download_merge_run",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Output file bytes",
+            "content": {
+              "application/octet-stream": {}
+            }
+          },
+          "400": {
+            "description": "Run not yet completed"
+          },
+          "401": {
+            "description": ""
+          },
+          "403": {
+            "description": ""
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/output-formats": {
+      "get": {
+        "tags": [
+          "formats"
+        ],
+        "operationId": "list_formats",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OutputFormat"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "formats"
+        ],
+        "operationId": "create_format",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateFormatReq"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OutputFormat"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          },
+          "401": {
+            "description": ""
+          },
+          "403": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/output-formats/{id}": {
+      "get": {
+        "tags": [
+          "formats"
+        ],
+        "operationId": "get_format",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OutputFormat"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": ""
+          },
+          "403": {
+            "description": ""
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "formats"
+        ],
+        "operationId": "delete_format",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
           },
           "401": {
             "description": ""
@@ -1223,33 +1299,6 @@
             "format": "date-time"
           }
         }
-      },
-      "ColumnTarget": {
-        "oneOf": [
-          {
-            "type": "object",
-            "required": [
-              "canonical"
-            ],
-            "properties": {
-              "canonical": {
-                "type": "string"
-              }
-            }
-          },
-          {
-            "type": "object",
-            "required": [
-              "output_name"
-            ],
-            "properties": {
-              "output_name": {
-                "type": "string"
-              }
-            }
-          }
-        ],
-        "description": "A reference to a logical column.\n\n`canonical` matches the canonical schema (sku, name, brand, price, qty…).\n`output_name` lets a global transform target an extra (output-only) column."
       },
       "ColumnTransform": {
         "oneOf": [
@@ -1466,10 +1515,88 @@
         ],
         "description": "Transforms applied per-column while reading a source file."
       },
+      "ColumnType": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "kind"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "string"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "kind"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "integer"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "kind"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "float"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "kind"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "boolean"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "format",
+              "kind"
+            ],
+            "properties": {
+              "format": {
+                "$ref": "#/components/schemas/DatetimeFormat"
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "datetime"
+                ]
+              }
+            }
+          }
+        ],
+        "description": "Expected data type for an output column."
+      },
       "CreateFormatReq": {
         "type": "object",
         "required": [
-          "name",
           "columns"
         ],
         "properties": {
@@ -1485,17 +1612,22 @@
               "null"
             ]
           },
-          "global_transforms": {
+          "filename": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Base filename (without extension) for the output file."
+          },
+          "output_extension": {
+            "$ref": "#/components/schemas/FileKind"
+          },
+          "steps": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/GlobalTransform"
-            }
-          },
-          "name": {
-            "type": "string"
-          },
-          "output_kind": {
-            "$ref": "#/components/schemas/FileKind"
+              "$ref": "#/components/schemas/OutputStep"
+            },
+            "description": "Processing steps applied in order (filters and transforms)."
           }
         }
       },
@@ -1547,6 +1679,75 @@
           "boolean"
         ]
       },
+      "DatetimeFormat": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "iso8601"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "unix"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "pattern",
+              "type"
+            ],
+            "properties": {
+              "pattern": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "custom"
+                ]
+              }
+            }
+          }
+        ],
+        "description": "How a datetime column value should be interpreted."
+      },
+      "ExprTransform": {
+        "type": "object",
+        "description": "A column transform using the expression engine.\nSets `field` = `eval(expr, current_row)` for each row.",
+        "required": [
+          "field",
+          "expr"
+        ],
+        "properties": {
+          "expr": {
+            "type": "object",
+            "description": "Expression whose result is assigned to `field`."
+          },
+          "field": {
+            "type": "string",
+            "description": "Target field name in the canonical row."
+          }
+        }
+      },
       "FileKind": {
         "type": "string",
         "enum": [
@@ -1587,20 +1788,6 @@
           }
         }
       },
-      "FilterOp": {
-        "type": "string",
-        "enum": [
-          "eq",
-          "ne",
-          "gt",
-          "gte",
-          "lt",
-          "lte",
-          "empty",
-          "not_empty",
-          "contains"
-        ]
-      },
       "ForgotPasswordReq": {
         "type": "object",
         "required": [
@@ -1611,184 +1798,6 @@
             "type": "string"
           }
         }
-      },
-      "GlobalTransform": {
-        "oneOf": [
-          {
-            "type": "object",
-            "description": "Multiply a numeric column by a factor.",
-            "required": [
-              "target",
-              "factor",
-              "kind"
-            ],
-            "properties": {
-              "factor": {
-                "type": "number",
-                "format": "double"
-              },
-              "kind": {
-                "type": "string",
-                "enum": [
-                  "multiply_by"
-                ]
-              },
-              "target": {
-                "$ref": "#/components/schemas/ColumnTarget"
-              }
-            }
-          },
-          {
-            "type": "object",
-            "description": "Increase a numeric column by percent.",
-            "required": [
-              "target",
-              "percent",
-              "kind"
-            ],
-            "properties": {
-              "kind": {
-                "type": "string",
-                "enum": [
-                  "increase_percent"
-                ]
-              },
-              "percent": {
-                "type": "number",
-                "format": "double"
-              },
-              "target": {
-                "$ref": "#/components/schemas/ColumnTarget"
-              }
-            }
-          },
-          {
-            "type": "object",
-            "description": "Drop rows where the predicate is true.",
-            "required": [
-              "target",
-              "op",
-              "kind"
-            ],
-            "properties": {
-              "kind": {
-                "type": "string",
-                "enum": [
-                  "filter"
-                ]
-              },
-              "op": {
-                "$ref": "#/components/schemas/FilterOp"
-              },
-              "target": {
-                "$ref": "#/components/schemas/ColumnTarget"
-              },
-              "value": {
-                "type": [
-                  "object",
-                  "null"
-                ]
-              }
-            }
-          },
-          {
-            "type": "object",
-            "description": "Keep only rows where the predicate is true.",
-            "required": [
-              "target",
-              "op",
-              "kind"
-            ],
-            "properties": {
-              "kind": {
-                "type": "string",
-                "enum": [
-                  "keep"
-                ]
-              },
-              "op": {
-                "$ref": "#/components/schemas/FilterOp"
-              },
-              "target": {
-                "$ref": "#/components/schemas/ColumnTarget"
-              },
-              "value": {
-                "type": [
-                  "object",
-                  "null"
-                ]
-              }
-            }
-          },
-          {
-            "type": "object",
-            "description": "Set a column to a constant.",
-            "required": [
-              "target",
-              "value",
-              "kind"
-            ],
-            "properties": {
-              "kind": {
-                "type": "string",
-                "enum": [
-                  "set_constant"
-                ]
-              },
-              "target": {
-                "$ref": "#/components/schemas/ColumnTarget"
-              },
-              "value": {
-                "type": "object"
-              }
-            }
-          },
-          {
-            "type": "object",
-            "description": "Round numeric column to N decimals.",
-            "required": [
-              "target",
-              "decimals",
-              "kind"
-            ],
-            "properties": {
-              "decimals": {
-                "type": "integer",
-                "format": "int32",
-                "minimum": 0
-              },
-              "kind": {
-                "type": "string",
-                "enum": [
-                  "round"
-                ]
-              },
-              "target": {
-                "$ref": "#/components/schemas/ColumnTarget"
-              }
-            }
-          },
-          {
-            "type": "object",
-            "description": "Deduplicate rows by a column's value (keeps first occurrence).",
-            "required": [
-              "target",
-              "kind"
-            ],
-            "properties": {
-              "kind": {
-                "type": "string",
-                "enum": [
-                  "deduplicate_by"
-                ]
-              },
-              "target": {
-                "$ref": "#/components/schemas/ColumnTarget"
-              }
-            }
-          }
-        ],
-        "description": "Transforms applied to the merged dataset as a whole."
       },
       "GrantPermReq": {
         "type": "object",
@@ -1802,6 +1811,45 @@
           },
           "permission": {
             "type": "string"
+          }
+        }
+      },
+      "InputSpec": {
+        "type": "object",
+        "description": "Per-file input specification supplied inline when starting a merge run.",
+        "required": [
+          "file_id",
+          "columns"
+        ],
+        "properties": {
+          "columns": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MappedColumn"
+            },
+            "description": "Column mappings: source index → canonical name + per-column transforms."
+          },
+          "data_start_row": {
+            "type": "integer",
+            "format": "int32",
+            "description": "1-based first data row. Default: 2."
+          },
+          "file_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID of an uploaded file to merge."
+          },
+          "header_row": {
+            "type": "integer",
+            "format": "int32",
+            "description": "1-based row that contains column headers. Default: 1."
+          },
+          "sheet_name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Sheet name for XLS/XLSX files. Defaults to the first sheet."
           }
         }
       },
@@ -1978,13 +2026,18 @@
               "string",
               "null"
             ],
-            "description": "If set, this column is sourced from the canonical schema.\nIf None and `extra` is true, the column is synthesized from\n`default_value` (and may be filled in by global transforms)."
+            "description": "If set, this column is sourced from the canonical schema."
+          },
+          "col_type": {
+            "$ref": "#/components/schemas/ColumnType",
+            "description": "Expected data type for this column."
           },
           "default_value": {
             "type": [
               "object",
               "null"
-            ]
+            ],
+            "description": "Value used when the source field is absent."
           },
           "extra": {
             "type": "boolean"
@@ -2001,9 +2054,9 @@
         "required": [
           "id",
           "owner_id",
-          "name",
           "columns",
-          "output_kind",
+          "steps",
+          "output_extension",
           "created_at",
           "updated_at"
         ],
@@ -2024,31 +2077,86 @@
               "null"
             ]
           },
-          "global_transforms": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/GlobalTransform"
-            }
+          "filename": {
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "id": {
             "type": "string",
             "format": "uuid"
           },
-          "name": {
-            "type": "string"
-          },
-          "output_kind": {
+          "output_extension": {
             "$ref": "#/components/schemas/FileKind"
           },
           "owner_id": {
             "type": "string",
             "format": "uuid"
           },
+          "steps": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OutputStep"
+            },
+            "description": "Processing steps applied in order (filters and transforms)."
+          },
           "updated_at": {
             "type": "string",
             "format": "date-time"
           }
         }
+      },
+      "OutputStep": {
+        "oneOf": [
+          {
+            "type": "object",
+            "description": "Drop rows where `expr` evaluates to false/null.",
+            "required": [
+              "scope",
+              "expr",
+              "kind"
+            ],
+            "properties": {
+              "expr": {
+                "type": "object"
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "filter"
+                ]
+              },
+              "scope": {
+                "$ref": "#/components/schemas/StepScope"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "description": "Set `field` = eval(expr, row) for each row.",
+            "required": [
+              "field",
+              "expr",
+              "kind"
+            ],
+            "properties": {
+              "expr": {
+                "type": "object"
+              },
+              "field": {
+                "type": "string"
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "transform"
+                ]
+              }
+            }
+          }
+        ],
+        "description": "One processing step in an output format. Steps are applied in order."
       },
       "Page": {
         "type": "object",
@@ -2144,21 +2252,30 @@
         "type": "object",
         "required": [
           "output_format_id",
-          "input_mapping_ids"
+          "inputs"
         ],
         "properties": {
-          "input_mapping_ids": {
+          "inputs": {
             "type": "array",
             "items": {
-              "type": "string",
-              "format": "uuid"
-            }
+              "$ref": "#/components/schemas/InputSpec"
+            },
+            "description": "One entry per input file. At least one required."
           },
           "output_format_id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "Output format that defines the column schema and global transforms."
           }
         }
+      },
+      "StepScope": {
+        "type": "string",
+        "description": "Scope for a filter step.",
+        "enum": [
+          "file",
+          "global"
+        ]
       },
       "TokenPair": {
         "type": "object",

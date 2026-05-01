@@ -14,8 +14,6 @@ const emit = defineEmits<{
 function newColumn(): TypeOutputColumnV1 {
   return {
     name: '',
-    canonical: null,
-    extra: false,
     col_type: { kind: 'string' },
     default_value: null,
   }

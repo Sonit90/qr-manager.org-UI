@@ -3,9 +3,15 @@ import { VueDraggable } from 'vue-draggable-plus'
 import type {
   TypeOutputColumnV1,
   TypeOutputStepV1,
+  TypeFilterItemV1,
+  TypeTransformItemV1,
 } from '@/api/__generated__/v1/data-contracts.ts'
+import { TypeStepScopeV1 } from '@/api/__generated__/v1/data-contracts.ts'
 import StepRow from '@/modules/admin/formats/components/StepRow.vue'
-import { makeDefaultExpr } from '@/modules/admin/formats/types.ts'
+import {
+  defaultLiteralExprForColType,
+  makeFilterCondition,
+} from '@/modules/admin/formats/types.ts'
 
 const props = defineProps<{
   modelValue: TypeOutputStepV1[]
@@ -16,27 +22,35 @@ const emit = defineEmits<{
   'update:modelValue': [steps: TypeOutputStepV1[]]
 }>()
 
-function newFilterStep(): TypeOutputStepV1 {
-  return { kind: 'filter', scope: 'file', expr: makeDefaultExpr('bool') } as TypeOutputStepV1
+function firstFieldName(): string {
+  return props.columns.map((c) => c.name).find((n) => n.length > 0) ?? ''
 }
 
-function newTransformStep(): TypeOutputStepV1 {
-  const firstField = props.columns
-    .map((c) => c.canonical || c.name)
-    .find((n) => n.length > 0) ?? ''
+function newFilterItem(): TypeFilterItemV1 {
+  const field = firstFieldName()
+  const firstCol = props.columns.find((c) => c.name === field)
+  const valueExpr = defaultLiteralExprForColType(firstCol?.col_type)
   return {
-    kind: 'transform',
-    field: firstField,
-    expr: makeDefaultExpr('str'),
-  } as TypeOutputStepV1
+    scope: TypeStepScopeV1.EnumFile,
+    expr: makeFilterCondition(field, '==', valueExpr) as unknown as object,
+  }
 }
 
-function addFilter() {
-  emit('update:modelValue', [...props.modelValue, newFilterStep()])
+function newTransformItem(): TypeTransformItemV1 {
+  const field = firstFieldName()
+  const firstCol = props.columns.find((c) => c.name === field)
+  const expr = defaultLiteralExprForColType(firstCol?.col_type)
+  return { field, expr: expr as unknown as object }
 }
 
-function addTransform() {
-  emit('update:modelValue', [...props.modelValue, newTransformStep()])
+function addFiltersStep() {
+  const next: TypeOutputStepV1 = { kind: 'filters', items: [newFilterItem()] }
+  emit('update:modelValue', [...props.modelValue, next])
+}
+
+function addTransformsStep() {
+  const next: TypeOutputStepV1 = { kind: 'transforms', items: [newTransformItem()] }
+  emit('update:modelValue', [...props.modelValue, next])
 }
 
 function updateAt(index: number, step: TypeOutputStepV1) {
@@ -66,12 +80,12 @@ function onListUpdate(list: TypeOutputStepV1[]) {
       class="mb-3"
       icon="mdi-sort-numeric-ascending"
     >
-      Steps execute in the order shown. File-scoped filters always run before any global step.
+      Steps execute in order. Items inside a step also apply in order.
     </v-alert>
 
     <VueDraggable
       :model-value="modelValue"
-      handle=".drag-handle"
+      handle=".step-drag-handle"
       ghost-class="sortable-ghost"
       @update:model-value="onListUpdate"
     >
@@ -90,21 +104,28 @@ function onListUpdate(list: TypeOutputStepV1[]) {
       No steps. Output uses raw merged data.
     </div>
 
-    <div class="d-flex ga-2 mt-2">
-      <v-btn
-        color="primary"
-        variant="tonal"
-        prepend-icon="mdi-filter-plus"
-        text="Add filter"
-        @click="addFilter()"
-      />
-      <v-btn
-        color="primary"
-        variant="tonal"
-        prepend-icon="mdi-function-variant"
-        text="Add transform"
-        @click="addTransform()"
-      />
-    </div>
+    <v-menu>
+      <template #activator="{ props: menuProps }">
+        <v-btn
+          v-bind="menuProps"
+          color="primary"
+          variant="tonal"
+          prepend-icon="mdi-plus"
+          text="Add step"
+        />
+      </template>
+      <v-list>
+        <v-list-item
+          prepend-icon="mdi-filter"
+          title="Filters"
+          @click="addFiltersStep()"
+        />
+        <v-list-item
+          prepend-icon="mdi-function-variant"
+          title="Transforms"
+          @click="addTransformsStep()"
+        />
+      </v-list>
+    </v-menu>
   </div>
 </template>

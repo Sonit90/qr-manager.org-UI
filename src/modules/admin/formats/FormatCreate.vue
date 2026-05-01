@@ -42,35 +42,54 @@ const formRef = ref<{ validate: () => Promise<{ valid: boolean }> } | null>(null
 
 const extensionItems = [
   { title: 'XLSX (Excel)', value: TypeFileKindV1.EnumXlsx },
-  { title: 'XLS (Excel legacy)', value: TypeFileKindV1.EnumXls },
   { title: 'CSV', value: TypeFileKindV1.EnumCsv },
 ]
 
+function validateExpr(expr: Expr, where: string, errors: string[]) {
+  if (!exprIsValid(expr)) {
+    if (countNodes(expr) > MAX_NODES) {
+      errors.push(`${where}: expression exceeds ${MAX_NODES} nodes.`)
+    } else if (maxDepth(expr) > MAX_DEPTH) {
+      errors.push(`${where}: expression depth exceeds ${MAX_DEPTH}.`)
+    } else {
+      errors.push(`${where}: expression has incomplete or invalid nodes.`)
+    }
+  }
+}
+
 const stepValidationErrors = computed<string[]>(() => {
   const errors: string[] = []
-  form.steps.forEach((step, idx) => {
-    const expr = step.expr as Expr
-    if (!exprIsValid(expr)) {
-      if (countNodes(expr) > MAX_NODES) {
-        errors.push(`Step ${idx + 1}: expression exceeds ${MAX_NODES} nodes.`)
-      } else if (maxDepth(expr) > MAX_DEPTH) {
-        errors.push(`Step ${idx + 1}: expression depth exceeds ${MAX_DEPTH}.`)
-      } else {
-        errors.push(`Step ${idx + 1}: expression has incomplete or invalid nodes.`)
-      }
+  form.steps.forEach((step, sIdx) => {
+    if (step.items.length === 0) {
+      errors.push(`Step ${sIdx + 1}: at least one item required.`)
+      return
     }
-    if (step.kind === 'transform') {
-      if (!step.field) {
-        errors.push(`Step ${idx + 1}: transform requires a target field.`)
-      } else {
-        const col = form.columns.find((c) => (c.canonical || c.name) === step.field)
-        const forbidden = forbiddenOpsForColType(col?.col_type)
+    if (step.kind === 'filters') {
+      step.items.forEach((item, iIdx) => {
+        const where = `Step ${sIdx + 1} filter ${iIdx + 1}`
+        validateExpr(item.expr as Expr, where, errors)
+      })
+    } else {
+      step.items.forEach((item, iIdx) => {
+        const where = `Step ${sIdx + 1} transform ${iIdx + 1}`
+        if (!item.field) {
+          errors.push(`${where}: target column is required.`)
+          return
+        }
+        const col = form.columns.find((c) => c.name === item.field)
+        if (!col) {
+          errors.push(`${where}: target column "${item.field}" does not exist.`)
+          return
+        }
+        const expr = item.expr as Expr
+        validateExpr(expr, where, errors)
+        const forbidden = forbiddenOpsForColType(col.col_type)
         if (exprUsesForbiddenOps(expr, forbidden)) {
           errors.push(
-            `Step ${idx + 1}: expression uses operations forbidden for ${col?.col_type?.kind ?? 'string'} columns.`,
+            `${where}: expression uses operations forbidden for ${col.col_type?.kind ?? 'string'} columns.`,
           )
         }
-      }
+      })
     }
   })
   return errors

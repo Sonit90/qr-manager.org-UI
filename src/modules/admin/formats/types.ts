@@ -1,5 +1,7 @@
 import type { TypeColumnTypeV1 } from '@/api/__generated__/v1/data-contracts.ts'
 
+export type ColTypeKind = 'string' | 'integer' | 'float' | 'boolean' | 'datetime'
+
 export type ExprLiteralNum = { op: 'num'; value: number }
 export type ExprLiteralStr = { op: 'str'; value: string }
 export type ExprLiteralBool = { op: 'bool'; value: boolean }
@@ -78,6 +80,88 @@ export const ARITHMETIC_OPS: ReadonlySet<OpKind> = new Set([
 ])
 
 export const CONCAT_OPS: ReadonlySet<OpKind> = new Set(['concat'])
+
+export const FILTER_COMPARISON_OPS: ComparisonOp[] = [
+  '>',
+  '>=',
+  '<',
+  '<=',
+  '==',
+  '!=',
+]
+
+export const FILTER_OP_LABELS: Record<ComparisonOp, string> = {
+  '>': 'greater than',
+  '>=': 'greater or equal',
+  '<': 'less than',
+  '<=': 'less or equal',
+  '==': 'equals',
+  '!=': 'not equals',
+}
+
+export function getColKind(colType: TypeColumnTypeV1 | undefined): ColTypeKind {
+  return (colType?.kind ?? 'string') as ColTypeKind
+}
+
+export function defaultLiteralExprForColType(
+  colType: TypeColumnTypeV1 | undefined,
+): Expr {
+  switch (getColKind(colType)) {
+    case 'string':
+    case 'datetime':
+      return { op: 'str', value: '' }
+    case 'integer':
+    case 'float':
+      return { op: 'num', value: 0 }
+    case 'boolean':
+      return { op: 'bool', value: false }
+  }
+}
+
+export type Primitive = string | number | boolean | null
+
+export function defaultPrimitiveForColType(
+  colType: TypeColumnTypeV1 | undefined,
+): Primitive {
+  switch (getColKind(colType)) {
+    case 'string':
+    case 'datetime':
+      return ''
+    case 'integer':
+    case 'float':
+      return 0
+    case 'boolean':
+      return false
+  }
+}
+
+export function makeFilterCondition(
+  field: string,
+  op: ComparisonOp,
+  valueExpr: Expr,
+): ExprBinary {
+  return { op, args: [{ op: 'var', field }, valueExpr] }
+}
+
+export function readFilterCondition(expr: Expr): {
+  field: string
+  op: ComparisonOp
+  valueExpr: Expr
+} | null {
+  if (
+    'args' in expr &&
+    expr.args.length === 2 &&
+    (FILTER_COMPARISON_OPS as string[]).includes(expr.op) &&
+    expr.args[0].op === 'var'
+  ) {
+    return {
+      field: expr.args[0].field,
+      op: expr.op as ComparisonOp,
+      valueExpr: expr.args[1],
+    }
+  }
+  return null
+}
 
 export const MAX_DEPTH = 20
 export const MAX_NODES = 100

@@ -19,7 +19,7 @@ describe('AdminFormats Integration Tests', () => {
   test('should render formats list page', async () => {
     mockListFormats()
 
-    const { view } = await visitRoute('/admin/formats')
+    const { view } = await visitRoute('/formats')
 
     view.getByRole('heading', { name: 'Output Formats' })
     view.getByRole('button', { name: 'New format' })
@@ -31,7 +31,7 @@ describe('AdminFormats Integration Tests', () => {
   test('should call listFormats on page load', async () => {
     const { mockedListFormats } = mockListFormats()
 
-    await visitRoute('/admin/formats')
+    await visitRoute('/formats')
 
     expect(mockedListFormats).toHaveBeenCalled()
   })
@@ -39,7 +39,7 @@ describe('AdminFormats Integration Tests', () => {
   test('should display formats from API', async () => {
     const { formats } = mockListFormats(2)
 
-    const { view } = await visitRoute('/admin/formats')
+    const { view } = await visitRoute('/formats')
 
     await flushPromises()
 
@@ -54,7 +54,7 @@ describe('AdminFormats Integration Tests', () => {
 
     const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true)
 
-    const { view, user } = await visitRoute('/admin/formats')
+    const { view, user } = await visitRoute('/formats')
 
     await flushPromises()
 
@@ -75,7 +75,7 @@ describe('AdminFormats Integration Tests', () => {
 
     const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false)
 
-    const { view, user } = await visitRoute('/admin/formats')
+    const { view, user } = await visitRoute('/formats')
 
     await flushPromises()
 
@@ -90,26 +90,26 @@ describe('AdminFormats Integration Tests', () => {
   test('should navigate to detail page when view clicked', async () => {
     const { formats } = mockListFormats(1)
 
-    const { view, user } = await visitRoute('/admin/formats')
+    const { view, user } = await visitRoute('/formats')
 
     await flushPromises()
 
     await user.click(view.getByTitle('View'))
 
     await waitFor(() => {
-      expect(window.location.pathname).toBe(`/admin/formats/${formats[0].id}`)
+      expect(window.location.pathname).toBe(`/formats/${formats[0].id}`)
     })
   })
 
   test('should navigate to create page when New format clicked', async () => {
     mockListFormats()
 
-    const { view, user } = await visitRoute('/admin/formats')
+    const { view, user } = await visitRoute('/formats')
 
     await user.click(view.getByRole('button', { name: 'New format' }))
 
     await waitFor(() => {
-      expect(window.location.pathname).toBe('/admin/formats/new')
+      expect(window.location.pathname).toBe('/formats/new')
     })
   })
 
@@ -117,7 +117,7 @@ describe('AdminFormats Integration Tests', () => {
     const mockedRequest = mockWithDelay<TypeOutputFormatV1[]>([], 100)
     vi.spyOn(ApiClientV1, 'listFormats').mockImplementation(mockedRequest)
 
-    const { view } = await visitRoute('/admin/formats')
+    const { view } = await visitRoute('/formats')
 
     view.getByRole('progressbar')
 

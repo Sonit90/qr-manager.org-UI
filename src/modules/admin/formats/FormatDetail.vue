@@ -33,11 +33,9 @@ function describeColType(t: TypeColumnTypeV1 | undefined): string {
   return t.kind
 }
 
-function describeStep(step: TypeOutputStepV1): string {
-  if (step.kind === 'filter') {
-    return `Filter (${step.scope}): ${renderExprText(step.expr as Expr)}`
-  }
-  return `Transform ${step.field} = ${renderExprText(step.expr as Expr)}`
+function stepHeader(step: TypeOutputStepV1): string {
+  const word = step.kind === 'filters' ? 'Filters' : 'Transforms'
+  return `${word} (${step.items.length})`
 }
 
 async function onDelete() {
@@ -116,9 +114,7 @@ function onBack() {
             <tr>
               <th class="text-left">#</th>
               <th class="text-left">Name</th>
-              <th class="text-left">Canonical</th>
               <th class="text-left">Type</th>
-              <th class="text-left">Extra</th>
               <th class="text-left">Default</th>
             </tr>
           </thead>
@@ -126,17 +122,15 @@ function onBack() {
             <tr v-for="(col, idx) in format.columns" :key="idx">
               <td>{{ idx + 1 }}</td>
               <td>{{ col.name }}</td>
-              <td>{{ col.canonical || '—' }}</td>
               <td>{{ describeColType(col.col_type) }}</td>
-              <td>{{ col.extra ? 'yes' : 'no' }}</td>
               <td>
                 {{ col.default_value === null || col.default_value === undefined
                   ? '—'
-                  : JSON.stringify(col.default_value) }}
+                  : String(col.default_value) }}
               </td>
             </tr>
             <tr v-if="format.columns.length === 0">
-              <td colspan="6" class="text-medium-emphasis">No columns.</td>
+              <td colspan="4" class="text-medium-emphasis">No columns.</td>
             </tr>
           </tbody>
         </v-table>
@@ -147,8 +141,18 @@ function onBack() {
       <section>
         <h2 class="text-h6 mb-2">Steps</h2>
         <ol v-if="format.steps.length > 0" class="pl-6">
-          <li v-for="(step, idx) in format.steps" :key="idx" class="mb-1">
-            <code>{{ describeStep(step) }}</code>
+          <li v-for="(step, idx) in format.steps" :key="idx" class="mb-3">
+            <div class="text-subtitle-2 mb-1">{{ stepHeader(step) }}</div>
+            <ul v-if="step.kind === 'filters'" class="pl-4">
+              <li v-for="(item, iIdx) in step.items" :key="iIdx">
+                <code>{{ renderExprText(item.expr as Expr) }}</code>
+              </li>
+            </ul>
+            <ul v-else class="pl-4">
+              <li v-for="(item, iIdx) in step.items" :key="iIdx">
+                <code>{{ item.field }} = {{ renderExprText(item.expr as Expr) }}</code>
+              </li>
+            </ul>
           </li>
         </ol>
         <div v-else class="text-medium-emphasis">No steps.</div>

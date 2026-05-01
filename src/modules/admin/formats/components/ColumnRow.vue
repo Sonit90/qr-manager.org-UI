@@ -41,7 +41,11 @@ function setColTypeKind(kind: string) {
   } else {
     next = { kind: kind as 'string' | 'integer' | 'float' | 'boolean' }
   }
-  update('col_type', next)
+  emit('update:modelValue', {
+    ...props.modelValue,
+    col_type: next,
+    default_value: null,
+  })
 }
 
 function setDatetimeType(type: string) {
@@ -60,25 +64,49 @@ function setDatetimePattern(pattern: string) {
   update('col_type', { kind: 'datetime', format: { type: 'custom', pattern } })
 }
 
-function setDefaultValue(raw: string) {
-  if (raw === '') {
+const defaultStr = computed(() =>
+  typeof props.modelValue.default_value === 'string' ? props.modelValue.default_value : '',
+)
+
+const defaultNum = computed(() => {
+  const v = props.modelValue.default_value
+  return typeof v === 'number' ? v : null
+})
+
+const defaultBool = computed(() => {
+  const v = props.modelValue.default_value
+  return typeof v === 'boolean' ? v : false
+})
+
+function setStringDefault(v: string) {
+  update('default_value', (v === '' ? null : v) as unknown as TypeOutputColumnV1['default_value'])
+}
+
+function setIntegerDefault(v: string) {
+  if (v === '') {
     update('default_value', null)
     return
   }
-  try {
-    const parsed = JSON.parse(raw)
-    update('default_value', parsed as object)
-  } catch {
-    update('default_value', raw as unknown as object)
+  const n = Number.parseInt(v, 10)
+  if (Number.isFinite(n)) {
+    update('default_value', n as unknown as TypeOutputColumnV1['default_value'])
   }
 }
 
-const defaultValueText = computed(() => {
-  const v = props.modelValue.default_value
-  if (v === null || v === undefined) return ''
-  if (typeof v === 'string') return v
-  return JSON.stringify(v)
-})
+function setFloatDefault(v: string) {
+  if (v === '') {
+    update('default_value', null)
+    return
+  }
+  const n = Number.parseFloat(v)
+  if (Number.isFinite(n)) {
+    update('default_value', n as unknown as TypeOutputColumnV1['default_value'])
+  }
+}
+
+function setBoolDefault(v: boolean | null) {
+  update('default_value', (v ?? false) as unknown as TypeOutputColumnV1['default_value'])
+}
 
 const colTypeKinds = ['string', 'integer', 'float', 'boolean', 'datetime']
 const datetimeTypes = [
@@ -118,18 +146,6 @@ const datetimeTypes = [
             required
             @update:model-value="update('name', $event)"
           />
-          <v-text-field
-            :model-value="modelValue.canonical ?? ''"
-            label="Canonical"
-            variant="outlined"
-            density="compact"
-            class="flex-grow-1"
-            style="min-width: 180px"
-            @update:model-value="update('canonical', $event || null)"
-          />
-        </div>
-
-        <div class="d-flex ga-3 flex-wrap mt-2">
           <v-select
             :model-value="colTypeKind"
             :items="colTypeKinds"
@@ -140,6 +156,9 @@ const datetimeTypes = [
             class="flex-grow-0"
             @update:model-value="setColTypeKind($event)"
           />
+        </div>
+
+        <div class="d-flex ga-3 flex-wrap mt-2">
           <v-select
             v-if="colTypeKind === 'datetime'"
             :model-value="datetimeType"
@@ -162,22 +181,61 @@ const datetimeTypes = [
             class="flex-grow-1"
             @update:model-value="setDatetimePattern($event)"
           />
+
           <v-text-field
-            :model-value="defaultValueText"
-            label="Default value (JSON)"
+            v-if="colTypeKind === 'string'"
+            :model-value="defaultStr"
+            label="Default value"
             variant="outlined"
             density="compact"
-            placeholder='"text" / 42 / true / null'
             style="min-width: 180px"
             class="flex-grow-1"
-            @update:model-value="setDefaultValue($event)"
+            @update:model-value="setStringDefault($event)"
           />
-          <v-checkbox
-            :model-value="modelValue.extra ?? false"
-            label="Extra (synthesized)"
+          <v-text-field
+            v-if="colTypeKind === 'integer'"
+            :model-value="defaultNum ?? ''"
+            type="number"
+            step="1"
+            label="Default value"
+            variant="outlined"
+            density="compact"
+            style="min-width: 180px"
+            class="flex-grow-1"
+            @update:model-value="setIntegerDefault($event)"
+          />
+          <v-text-field
+            v-if="colTypeKind === 'float'"
+            :model-value="defaultNum ?? ''"
+            type="number"
+            step="any"
+            label="Default value"
+            variant="outlined"
+            density="compact"
+            style="min-width: 180px"
+            class="flex-grow-1"
+            @update:model-value="setFloatDefault($event)"
+          />
+          <v-switch
+            v-if="colTypeKind === 'boolean'"
+            :model-value="defaultBool"
+            label="Default value"
+            color="primary"
             density="compact"
             hide-details
-            @update:model-value="update('extra', $event ?? false)"
+            inset
+            @update:model-value="setBoolDefault($event)"
+          />
+          <v-text-field
+            v-if="colTypeKind === 'datetime'"
+            :model-value="defaultStr"
+            label="Default value"
+            placeholder="2026-01-01T00:00:00Z"
+            variant="outlined"
+            density="compact"
+            style="min-width: 200px"
+            class="flex-grow-1"
+            @update:model-value="setStringDefault($event)"
           />
         </div>
       </div>

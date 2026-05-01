@@ -23,8 +23,7 @@ const navigationItems = [
   {
     title: 'Output Formats',
     icon: 'mdi-file-cog',
-    to: '/admin/formats',
-    roles: [TypeRoleV1.EnumAdmin],
+    to: '/formats',
   },
 ]
 

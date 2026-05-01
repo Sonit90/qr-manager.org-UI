@@ -1,15 +1,18 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { VueDraggable } from 'vue-draggable-plus'
 import type {
   TypeOutputColumnV1,
   TypeOutputStepV1,
-  TypeStepScopeV1,
+  TypeFilterItemV1,
+  TypeTransformItemV1,
 } from '@/api/__generated__/v1/data-contracts.ts'
-import ExprEditor from '@/modules/admin/formats/components/ExprEditor.vue'
+import { TypeStepScopeV1 } from '@/api/__generated__/v1/data-contracts.ts'
+import FilterItemRow from '@/modules/admin/formats/components/FilterItemRow.vue'
+import TransformItemRow from '@/modules/admin/formats/components/TransformItemRow.vue'
 import {
-  type Expr,
-  forbiddenOpsForColType,
-  makeDefaultExpr,
+  defaultLiteralExprForColType,
+  makeFilterCondition,
 } from '@/modules/admin/formats/types.ts'
 
 const props = defineProps<{
@@ -23,81 +26,94 @@ const emit = defineEmits<{
   remove: []
 }>()
 
-const stepKind = computed(() => props.modelValue.kind)
+const fieldNames = computed(() => props.columns.map((c) => c.name).filter((n) => n.length > 0))
 
-const filterScope = computed(() => {
-  if (props.modelValue.kind === 'filter') return props.modelValue.scope
-  return 'file'
-})
+function firstField(): string {
+  return fieldNames.value[0] ?? ''
+}
 
-const transformField = computed(() => {
-  if (props.modelValue.kind === 'transform') return props.modelValue.field
-  return ''
-})
-
-const fieldNames = computed(() =>
-  props.columns.map((c) => c.canonical || c.name).filter((n) => n.length > 0),
-)
-
-const transformForbiddenOps = computed(() => {
-  if (props.modelValue.kind !== 'transform') return undefined
-  const field = props.modelValue.field
-  const targetCol = props.columns.find((c) => (c.canonical || c.name) === field)
-  return forbiddenOpsForColType(targetCol?.col_type)
-})
-
-const exprValue = computed<Expr>(() => props.modelValue.expr as Expr)
-
-function setKind(kind: 'filter' | 'transform') {
-  if (kind === 'filter') {
-    emit('update:modelValue', {
-      kind: 'filter',
-      scope: 'file' as TypeStepScopeV1,
-      expr: makeDefaultExpr('bool'),
-    })
-  } else {
-    emit('update:modelValue', {
-      kind: 'transform',
-      field: fieldNames.value[0] ?? '',
-      expr: makeDefaultExpr('str'),
-    })
+function buildFilterItem(): TypeFilterItemV1 {
+  const field = firstField()
+  const col = props.columns.find((c) => c.name === field)
+  const valueExpr = defaultLiteralExprForColType(col?.col_type)
+  return {
+    scope: TypeStepScopeV1.EnumFile,
+    expr: makeFilterCondition(field, '==', valueExpr) as unknown as object,
   }
 }
 
-function setScope(scope: TypeStepScopeV1) {
-  if (props.modelValue.kind !== 'filter') return
-  emit('update:modelValue', { ...props.modelValue, scope })
+function buildTransformItem(): TypeTransformItemV1 {
+  const field = firstField()
+  const col = props.columns.find((c) => c.name === field)
+  const expr = defaultLiteralExprForColType(col?.col_type)
+  return { field, expr: expr as unknown as object }
 }
 
-function setField(field: string) {
-  if (props.modelValue.kind !== 'transform') return
-  emit('update:modelValue', { ...props.modelValue, field })
+function addFilterItem() {
+  if (props.modelValue.kind !== 'filters') return
+  const items = [...props.modelValue.items, buildFilterItem()]
+  emit('update:modelValue', { kind: 'filters', items })
 }
 
-function setExpr(expr: Expr) {
-  emit('update:modelValue', { ...props.modelValue, expr })
+function addTransformItem() {
+  if (props.modelValue.kind !== 'transforms') return
+  const items = [...props.modelValue.items, buildTransformItem()]
+  emit('update:modelValue', { kind: 'transforms', items })
 }
 
-const kindItems = [
-  { title: 'Filter (drop rows)', value: 'filter' },
-  { title: 'Transform (set field)', value: 'transform' },
-]
+function updateFilterItem(idx: number, item: TypeFilterItemV1) {
+  if (props.modelValue.kind !== 'filters') return
+  const items = [...props.modelValue.items]
+  items[idx] = item
+  emit('update:modelValue', { kind: 'filters', items })
+}
 
-const scopeItems = [
-  { title: 'Per file (before merge)', value: 'file' },
-  { title: 'Global (after merge)', value: 'global' },
-]
+function updateTransformItem(idx: number, item: TypeTransformItemV1) {
+  if (props.modelValue.kind !== 'transforms') return
+  const items = [...props.modelValue.items]
+  items[idx] = item
+  emit('update:modelValue', { kind: 'transforms', items })
+}
+
+function removeFilterItem(idx: number) {
+  if (props.modelValue.kind !== 'filters') return
+  const items = [...props.modelValue.items]
+  items.splice(idx, 1)
+  emit('update:modelValue', { kind: 'filters', items })
+}
+
+function removeTransformItem(idx: number) {
+  if (props.modelValue.kind !== 'transforms') return
+  const items = [...props.modelValue.items]
+  items.splice(idx, 1)
+  emit('update:modelValue', { kind: 'transforms', items })
+}
+
+function reorderFilters(items: TypeFilterItemV1[]) {
+  emit('update:modelValue', { kind: 'filters', items })
+}
+
+function reorderTransforms(items: TypeTransformItemV1[]) {
+  emit('update:modelValue', { kind: 'transforms', items })
+}
+
+const headerLabel = computed(() => {
+  const count = props.modelValue.items.length
+  const word = props.modelValue.kind === 'filters' ? 'Filters' : 'Transforms'
+  return `${word} (${count})`
+})
 </script>
 
 <template>
-  <v-card variant="outlined" class="step-row pa-3 mb-2">
+  <v-card variant="outlined" class="step-row pa-3 mb-3">
     <div class="d-flex align-start ga-2">
-      <v-icon class="drag-handle mt-3" icon="mdi-drag-vertical" />
+      <v-icon class="step-drag-handle mt-3" icon="mdi-drag-vertical" />
       <div class="flex-grow-1">
-        <div class="d-flex align-center mb-2">
+        <div class="d-flex align-center mb-3">
           <v-chip color="primary" size="small" variant="flat" class="mr-2">
             Step {{ index + 1 }}
           </v-chip>
+          <span class="text-subtitle-2">{{ headerLabel }}</span>
           <v-spacer />
           <v-btn
             size="small"
@@ -109,66 +125,67 @@ const scopeItems = [
           />
         </div>
 
-        <div class="d-flex ga-3 flex-wrap mb-3">
-          <v-select
-            :model-value="stepKind"
-            :items="kindItems"
-            label="Kind"
-            variant="outlined"
-            density="compact"
-            style="min-width: 220px"
-            class="flex-grow-0"
-            hide-details
-            @update:model-value="setKind($event)"
+        <template v-if="modelValue.kind === 'filters'">
+          <VueDraggable
+            :model-value="modelValue.items"
+            handle=".item-drag-handle"
+            ghost-class="sortable-ghost"
+            @update:model-value="reorderFilters"
+          >
+            <FilterItemRow
+              v-for="(item, idx) in modelValue.items"
+              :key="idx"
+              :model-value="item"
+              :index="idx"
+              :columns="columns"
+              @update:model-value="updateFilterItem(idx, $event)"
+              @remove="removeFilterItem(idx)"
+            />
+          </VueDraggable>
+          <v-btn
+            class="mt-2"
+            size="small"
+            variant="tonal"
+            prepend-icon="mdi-plus"
+            text="Add filter"
+            @click="addFilterItem()"
           />
-          <v-select
-            v-if="stepKind === 'filter'"
-            :model-value="filterScope"
-            :items="scopeItems"
-            label="Scope"
-            variant="outlined"
-            density="compact"
-            style="min-width: 220px"
-            class="flex-grow-0"
-            hide-details
-            @update:model-value="setScope($event as TypeStepScopeV1)"
-          />
-          <v-select
-            v-if="stepKind === 'transform'"
-            :model-value="transformField"
-            :items="fieldNames"
-            label="Target field"
-            variant="outlined"
-            density="compact"
-            style="min-width: 220px"
-            class="flex-grow-1"
-            hide-details
-            :rules="[(v: string) => !!v || 'Field is required']"
-            @update:model-value="setField($event)"
-          />
-        </div>
+        </template>
 
-        <div class="text-caption text-medium-emphasis mb-1">Expression</div>
-        <div class="expr-wrapper pa-2">
-          <ExprEditor
-            :model-value="exprValue"
-            :fields="fieldNames"
-            :forbidden-ops="transformForbiddenOps"
-            @update:model-value="setExpr($event)"
+        <template v-else-if="modelValue.kind === 'transforms'">
+          <VueDraggable
+            :model-value="modelValue.items"
+            handle=".item-drag-handle"
+            ghost-class="sortable-ghost"
+            @update:model-value="reorderTransforms"
+          >
+            <TransformItemRow
+              v-for="(item, idx) in modelValue.items"
+              :key="idx"
+              :model-value="item"
+              :index="idx"
+              :columns="columns"
+              @update:model-value="updateTransformItem(idx, $event)"
+              @remove="removeTransformItem(idx)"
+            />
+          </VueDraggable>
+          <v-btn
+            class="mt-2"
+            size="small"
+            variant="tonal"
+            prepend-icon="mdi-plus"
+            text="Add transform"
+            @click="addTransformItem()"
           />
-        </div>
+        </template>
       </div>
     </div>
   </v-card>
 </template>
 
 <style scoped>
-.drag-handle {
+.step-drag-handle {
   cursor: grab;
-}
-.expr-wrapper {
-  background: rgba(var(--v-theme-on-surface), 0.04);
-  border-radius: 4px;
 }
 .step-row.sortable-ghost {
   opacity: 0.5;

@@ -12,8 +12,8 @@ export function generateFormat(overrides: Partial<TypeOutputFormatV1> = {}): Typ
     description: faker.lorem.sentence(),
     output_extension: TypeFileKindV1.EnumXlsx,
     columns: [
-      { name: 'SKU', canonical: 'sku', extra: false, col_type: { kind: 'string' } },
-      { name: 'Price', canonical: 'price', extra: false, col_type: { kind: 'float' } },
+      { name: 'SKU', col_type: { kind: 'string' } },
+      { name: 'Price', col_type: { kind: 'float' } },
     ],
     steps: [],
     created_at: faker.date.past().toISOString(),

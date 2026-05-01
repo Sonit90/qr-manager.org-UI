@@ -78,30 +78,27 @@ export const routes = [
         },
       },
       {
-        path: '/admin/formats',
+        path: '/formats',
         name: 'formats',
         component: () => import('@/modules/admin/formats/AdminFormats.vue'),
         meta: {
           requiresAuth: true,
-          roles: [TypeRoleV1.EnumAdmin],
         },
       },
       {
-        path: '/admin/formats/new',
+        path: '/formats/new',
         name: 'format-create',
         component: () => import('@/modules/admin/formats/FormatCreate.vue'),
         meta: {
           requiresAuth: true,
-          roles: [TypeRoleV1.EnumAdmin],
         },
       },
       {
-        path: '/admin/formats/:id',
+        path: '/formats/:id',
         name: 'format-detail',
         component: () => import('@/modules/admin/formats/FormatDetail.vue'),
         meta: {
           requiresAuth: true,
-          roles: [TypeRoleV1.EnumAdmin],
         },
       },
       {

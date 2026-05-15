@@ -5,7 +5,6 @@ import { notify } from '@kyvg/vue3-notification'
 import { handleApiError } from '@/api/helpers/handleApiError.ts'
 import {
   useQr,
-  useQrImage,
   useQrStats,
   useToggleEnabled,
   useUpdateTarget,
@@ -17,7 +16,6 @@ const router = useRouter()
 const id = computed(() => route.params.id as string)
 
 const { data: qr, isLoading } = useQr(id)
-const { data: imageUrl } = useQrImage(id)
 const { data: stats, isLoading: statsLoading, refetch: refetchStats } = useQrStats(id)
 
 const toggleMutation = useToggleEnabled()
@@ -115,8 +113,13 @@ function copyShort() {
         <v-card>
           <v-card-title>QR Image</v-card-title>
           <v-card-text class="d-flex justify-center">
-            <img v-if="imageUrl" :src="imageUrl" alt="QR" style="max-width: 100%; height: auto" />
-            <v-progress-circular v-else indeterminate />
+            <img
+              v-if="qr.image_url"
+              :src="qr.image_url"
+              alt="QR"
+              style="max-width: 100%; height: auto"
+            />
+            <v-icon v-else size="120" color="grey-lighten-1">mdi-qrcode</v-icon>
           </v-card-text>
           <v-card-text>
             <div class="text-caption">Short link</div>

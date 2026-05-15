@@ -21,6 +21,7 @@ const toggleMutation = useToggleEnabled()
 const createOpen = ref(false)
 
 const headers = [
+  { title: 'Preview', key: 'image_url', sortable: false, width: 64 },
   { title: 'Code', key: 'code' },
   { title: 'Target URL', key: 'target_url' },
   { title: 'Scans', key: 'scan_count', align: 'end' as const },
@@ -87,6 +88,17 @@ function copyShortLink(qr: TypeQrQrCodeResponse) {
         density="comfortable"
         mobile-breakpoint="sm"
       >
+        <template #item.image_url="{ item }">
+          <img
+            v-if="item.image_url"
+            :src="item.image_url"
+            alt="QR preview"
+            width="40"
+            height="40"
+            style="display: block"
+          />
+          <v-icon v-else size="32" color="grey-lighten-1">mdi-qrcode</v-icon>
+        </template>
         <template #item.code="{ item }">
           <code>{{ item.code }}</code>
         </template>

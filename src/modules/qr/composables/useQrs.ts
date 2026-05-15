@@ -93,14 +93,3 @@ export function useUpdateTarget() {
 }
 
 type TypeQrCodeResponseLike = TypeQrQrCodeResponse | undefined
-
-export function useQrImage(id: MaybeRef<string>) {
-  return useQuery({
-    queryKey: ['qr-image', id] as const,
-    queryFn: async () => {
-      const blob = (await ApiClientQr.getQrImage(unref(id))) as unknown as Blob
-      return URL.createObjectURL(blob)
-    },
-    staleTime: 5 * 60 * 1000,
-  })
-}

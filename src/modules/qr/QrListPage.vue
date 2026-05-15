@@ -71,7 +71,12 @@ function copyShortLink(qr: TypeQrQrCodeResponse) {
       <v-btn color="primary" prepend-icon="mdi-plus" @click="createOpen = true">
         New QR
       </v-btn>
-      <v-btn icon="mdi-refresh" variant="text" @click="refetch()" />
+      <v-btn
+        icon="mdi-refresh"
+        variant="text"
+        data-testid="qr-refresh"
+        @click="refetch()"
+      />
     </v-card-title>
     <v-card-text>
       <v-data-table
@@ -107,6 +112,7 @@ function copyShortLink(qr: TypeQrQrCodeResponse) {
             color="primary"
             hide-details
             density="compact"
+            :aria-label="`Toggle ${item.name || item.code}`"
             @update:model-value="(v) => onToggle(item, !!v)"
           />
         </template>
@@ -114,8 +120,21 @@ function copyShortLink(qr: TypeQrQrCodeResponse) {
           {{ new Date(item.created_at).toLocaleString() }}
         </template>
         <template #item.actions="{ item }">
-          <v-btn icon="mdi-content-copy" variant="text" size="small" @click="copyShortLink(item)" />
-          <v-btn icon="mdi-delete" variant="text" size="small" color="error" @click="onDelete(item)" />
+          <v-btn
+            icon="mdi-content-copy"
+            variant="text"
+            size="small"
+            data-testid="qr-copy-link"
+            @click="copyShortLink(item)"
+          />
+          <v-btn
+            icon="mdi-delete"
+            variant="text"
+            size="small"
+            color="error"
+            data-testid="qr-delete"
+            @click="onDelete(item)"
+          />
         </template>
       </v-data-table>
     </v-card-text>

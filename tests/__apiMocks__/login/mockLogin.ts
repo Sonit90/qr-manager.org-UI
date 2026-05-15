@@ -1,6 +1,6 @@
 import { vi } from 'vitest'
 import { ApiClientV1 } from '@/api/v1/ApiClientV1.ts'
-import { type TypeTokenPairV1 } from '@/api/__generated__/v1/data-contracts.ts'
+import type { TypeTokenPairV1 } from '@/api/__generated__/v1/data-contracts.ts'
 import { generateMockTokenResponse } from '@tests/__apiMocks__/login/generateLoginData.ts'
 
 export function mockLogin(response?: TypeTokenPairV1) {

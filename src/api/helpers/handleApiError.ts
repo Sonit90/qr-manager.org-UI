@@ -11,8 +11,9 @@ export function handleApiError(error: unknown, { title, text }: { title?: string
   if (error instanceof Error && !isAxiosError(error)) {
     notification.text = error.message || 'Something went wrong'
   } else if (isAxiosError(error)) {
-    const { response } = error
-    notification.text = response?.data?.error?.message || notification.text
+    const data = error.response?.data
+    const detail = typeof data?.detail === 'string' ? data.detail : undefined
+    notification.text = data?.error?.message || detail || data?.message || notification.text
   }
 
   notify(notification)

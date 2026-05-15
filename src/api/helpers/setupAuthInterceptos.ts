@@ -14,6 +14,22 @@ interface RequestQueueItem {
   resolve: (value: any) => void
   reject: (error: any) => void
   config: AxiosRequestConfig
+  instance: AxiosInstance
+}
+
+let isRefreshing = false
+let refreshPromise: Promise<void> | null = null
+const requestQueue: RequestQueueItem[] = []
+
+const processQueue = (error: any = null) => {
+  requestQueue.forEach(({ resolve, reject, config, instance }) => {
+    if (error) {
+      reject(error)
+    } else {
+      resolve(instance(config))
+    }
+  })
+  requestQueue.length = 0
 }
 
 export function setupAuthInterceptors(
@@ -26,22 +42,6 @@ export function setupAuthInterceptors(
     refreshEndpoint = '/api/v1/auth/refresh',
     loginRoute = '/login',
   } = options
-
-  let isRefreshing = false
-  let refreshPromise: Promise<void> | null = null
-  const requestQueue: RequestQueueItem[] = []
-
-  // Helper function to process queued requests
-  const processQueue = (error: any = null) => {
-    requestQueue.forEach(({ resolve, reject, config }) => {
-      if (error) {
-        reject(error)
-      } else {
-        resolve(apiClient.instance(config))
-      }
-    })
-    requestQueue.length = 0
-  }
 
   // Request interceptor - adds auth header
   const requestInterceptor = apiClient.instance.interceptors.request.use(
@@ -97,6 +97,7 @@ export function setupAuthInterceptors(
                   [headerName]: `${tokenPrefix} ${access_token.value}`,
                 },
               },
+              instance: apiClient.instance,
             })
           })
         }
@@ -137,14 +138,8 @@ export function setupAuthInterceptors(
     },
   )
 
-  // Return cleanup function
   return () => {
     apiClient.instance.interceptors.request.eject(requestInterceptor)
     apiClient.instance.interceptors.response.eject(responseInterceptor)
-
-    // Clean up any pending state
-    isRefreshing = false
-    refreshPromise = null
-    requestQueue.length = 0
   }
 }

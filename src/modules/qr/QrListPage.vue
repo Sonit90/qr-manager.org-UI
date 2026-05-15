@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
 import { notify } from '@kyvg/vue3-notification'
 import { handleApiError } from '@/api/helpers/handleApiError.ts'
 import {
@@ -12,7 +11,6 @@ import {
 import QrCreateDialog from '@/modules/qr/QrCreateDialog.vue'
 import type { TypeQrQrCodeResponse } from '@/api/__generated__/qr/data-contracts.ts'
 
-const router = useRouter()
 const { data: qrs, isLoading, refetch } = useQrList()
 const createMutation = useCreateQr()
 const deleteMutation = useDeleteQr()
@@ -21,8 +19,8 @@ const toggleMutation = useToggleEnabled()
 const createOpen = ref(false)
 
 const headers = [
-  { title: 'Preview', key: 'image_url', sortable: false, width: 64 },
-  { title: 'Code', key: 'code' },
+  { title: 'Preview', key: 'image_url', sortable: false, width: 120 },
+  { title: 'Name', key: 'name' },
   { title: 'Target URL', key: 'target_url' },
   { title: 'Scans', key: 'scan_count', align: 'end' as const },
   { title: 'Enabled', key: 'enabled' },
@@ -30,9 +28,9 @@ const headers = [
   { title: 'Actions', key: 'actions', sortable: false, align: 'end' as const },
 ]
 
-async function onCreate(target_url: string) {
+async function onCreate(payload: { target_url: string; name: string | null }) {
   try {
-    await createMutation.mutateAsync({ target_url })
+    await createMutation.mutateAsync(payload)
     notify({ type: 'success', title: 'QR created' })
     createOpen.value = false
   } catch (e) {
@@ -56,10 +54,6 @@ async function onDelete(qr: TypeQrQrCodeResponse) {
   } catch (e) {
     handleApiError(e, { title: 'Delete QR' })
   }
-}
-
-function goDetail(qr: TypeQrQrCodeResponse) {
-  router.push({ name: 'qr-detail', params: { id: qr.id } })
 }
 
 function copyShortLink(qr: TypeQrQrCodeResponse) {
@@ -93,14 +87,16 @@ function copyShortLink(qr: TypeQrQrCodeResponse) {
             v-if="item.image_url"
             :src="item.image_url"
             alt="QR preview"
-            width="40"
-            height="40"
+            width="100"
+            height="100"
             style="display: block"
           />
-          <v-icon v-else size="32" color="grey-lighten-1">mdi-qrcode</v-icon>
+          <v-icon v-else size="80" color="grey-lighten-1">mdi-qrcode</v-icon>
         </template>
-        <template #item.code="{ item }">
-          <code>{{ item.code }}</code>
+        <template #item.name="{ item }">
+          <router-link :to="{ name: 'qr-detail', params: { id: item.id } }">
+            {{ item.name || item.code }}
+          </router-link>
         </template>
         <template #item.target_url="{ item }">
           <a :href="item.target_url" target="_blank" rel="noopener">{{ item.target_url }}</a>
@@ -119,7 +115,6 @@ function copyShortLink(qr: TypeQrQrCodeResponse) {
         </template>
         <template #item.actions="{ item }">
           <v-btn icon="mdi-content-copy" variant="text" size="small" @click="copyShortLink(item)" />
-          <v-btn icon="mdi-eye" variant="text" size="small" @click="goDetail(item)" />
           <v-btn icon="mdi-delete" variant="text" size="small" color="error" @click="onDelete(item)" />
         </template>
       </v-data-table>

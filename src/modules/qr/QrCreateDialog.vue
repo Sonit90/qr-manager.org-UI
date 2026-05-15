@@ -11,10 +11,11 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   'update:open': [value: boolean]
-  submit: [target_url: string]
+  submit: [payload: { target_url: string; name: string | null }]
 }>()
 
 const targetUrl = ref('')
+const name = ref('')
 const formValid = ref(false)
 
 watch(
@@ -22,6 +23,7 @@ watch(
   (v) => {
     if (v) {
       targetUrl.value = ''
+      name.value = ''
     }
   },
 )
@@ -42,7 +44,8 @@ function close() {
 
 function submit() {
   if (!formValid.value) return
-  emit('submit', targetUrl.value)
+  const trimmed = name.value.trim()
+  emit('submit', { target_url: targetUrl.value, name: trimmed ? trimmed : null })
 }
 </script>
 
@@ -57,12 +60,12 @@ function submit() {
       <v-card-title>New QR</v-card-title>
       <v-card-text>
         <v-form v-model="formValid" @submit.prevent="submit">
+          <v-text-field v-model="name" label="Name (optional)" autofocus />
           <v-text-field
             v-model="targetUrl"
             label="Target URL"
             placeholder="https://example.com"
             :rules="[rules]"
-            autofocus
             required
           />
         </v-form>
@@ -70,12 +73,7 @@ function submit() {
       <v-card-actions>
         <v-spacer />
         <v-btn variant="text" :disabled="loading" @click="close">Cancel</v-btn>
-        <v-btn
-          color="primary"
-          :loading="loading"
-          :disabled="!formValid"
-          @click="submit"
-        >
+        <v-btn color="primary" :loading="loading" :disabled="!formValid" @click="submit">
           Create
         </v-btn>
       </v-card-actions>

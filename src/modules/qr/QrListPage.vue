@@ -70,13 +70,13 @@ function copyShortLink(qr: TypeQrQrCodeResponse) {
 
 <template>
   <v-card>
-    <v-card-title class="d-flex align-center">
-      <h1 class="text-h4">My QRs</h1>
+    <v-card-title class="d-flex flex-wrap align-center ga-2">
+      <h1 class="text-h5 text-sm-h4">My QRs</h1>
       <v-spacer />
       <v-btn color="primary" prepend-icon="mdi-plus" @click="createOpen = true">
         New QR
       </v-btn>
-      <v-btn class="ml-2" icon="mdi-refresh" variant="text" @click="refetch()" />
+      <v-btn icon="mdi-refresh" variant="text" @click="refetch()" />
     </v-card-title>
     <v-card-text>
       <v-data-table
@@ -85,6 +85,7 @@ function copyShortLink(qr: TypeQrQrCodeResponse) {
         :loading="isLoading"
         item-value="id"
         density="comfortable"
+        mobile-breakpoint="sm"
       >
         <template #item.code="{ item }">
           <code>{{ item.code }}</code>

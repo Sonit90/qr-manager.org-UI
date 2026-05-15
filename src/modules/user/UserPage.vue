@@ -23,7 +23,8 @@ const { isLoading, data: user } = useUser()
   <v-card
     v-else
     data-testid="user-info-container"
-    class="user-info-widget"
+    class="user-info-widget mx-auto"
+    width="100%"
     max-width="400"
     elevation="2"
   >

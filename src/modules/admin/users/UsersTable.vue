@@ -27,6 +27,7 @@ const headers = [
     :headers="headers"
     :items="users"
     :items-per-page="10"
+    mobile-breakpoint="sm"
     class="elevation-1"
   >
     <template #item.created_at="{ item }">

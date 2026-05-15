@@ -61,7 +61,7 @@ const resendActivation = () => {
   <v-container class="activation-container fill-height" fluid>
     <v-row justify="center" align="center" class="fill-height">
       <v-col cols="12" sm="8" md="6" lg="4">
-        <v-card class="pa-6" elevation="8" rounded="lg">
+        <v-card class="pa-4 pa-sm-6" elevation="8" rounded="lg">
           <GenericState
             :error-message="errorMessage"
             :is-resending="isResending"

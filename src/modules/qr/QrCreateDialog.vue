@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import { useDisplay } from 'vuetify'
+
+const { smAndDown } = useDisplay()
 
 const props = defineProps<{
   open: boolean
@@ -44,7 +47,12 @@ function submit() {
 </script>
 
 <template>
-  <v-dialog :model-value="open" max-width="500" @update:model-value="emit('update:open', $event)">
+  <v-dialog
+    :model-value="open"
+    :max-width="smAndDown ? undefined : 500"
+    :fullscreen="smAndDown"
+    @update:model-value="emit('update:open', $event)"
+  >
     <v-card>
       <v-card-title>New QR</v-card-title>
       <v-card-text>

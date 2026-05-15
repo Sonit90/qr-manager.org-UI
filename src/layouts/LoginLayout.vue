@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex align-center justify-center pa-5 login-gradient">
+  <div class="d-flex align-center justify-center pa-2 pa-sm-5 login-gradient">
     <div class="login-layout">
       <router-view />
     </div>

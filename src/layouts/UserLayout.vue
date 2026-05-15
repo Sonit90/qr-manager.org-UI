@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useDisplay } from 'vuetify'
 import { useUserStore } from '@/stores/userStore.ts'
 import { useRouter } from 'vue-router'
 import { notify } from '@kyvg/vue3-notification'
@@ -10,7 +11,9 @@ import VersionInfo from '@/components/version/VersionInfo.vue'
 import LogoIcon from '@/assets/logo.svg'
 import { TypeRoleV1 } from '@/api/__generated__/v1/data-contracts.ts'
 
-const drawer = ref(true)
+const { mdAndDown, smAndDown, mdAndUp } = useDisplay()
+
+const drawer = ref(!mdAndDown.value)
 const rail = ref(false)
 
 const userStore = useUserStore()
@@ -67,7 +70,12 @@ async function logout() {
       :close-on-content-click="false"
     >
       <template #activator="{ props }">
-        <v-btn v-bind="props" prepend-icon="mdi-information-outline" text="Version Info" />
+        <v-btn
+          v-bind="props"
+          :icon="smAndDown ? 'mdi-information-outline' : undefined"
+          :prepend-icon="mdAndUp ? 'mdi-information-outline' : undefined"
+          :text="mdAndUp ? 'Version Info' : undefined"
+        />
       </template>
       <VersionInfo />
     </v-menu>
@@ -75,8 +83,8 @@ async function logout() {
     <!-- User Menu -->
     <v-menu offset-y>
       <template #activator="{ props }">
-        <v-btn v-bind="props" class="me-2">
-          {{ user?.email || user?.display_name }}
+        <v-btn v-bind="props" class="me-2" :icon="smAndDown">
+          <span v-if="mdAndUp">{{ user?.email || user?.display_name }}</span>
           <v-avatar size="32">
             <v-icon>mdi-account</v-icon>
           </v-avatar>
@@ -102,8 +110,15 @@ async function logout() {
   </v-app-bar>
 
   <!-- Navigation Drawer -->
-  <v-navigation-drawer v-model="drawer" :rail="rail" permanent app>
+  <v-navigation-drawer
+    v-model="drawer"
+    :rail="rail && !mdAndDown"
+    :permanent="!mdAndDown"
+    :temporary="mdAndDown"
+    app
+  >
     <v-btn
+      v-if="!mdAndDown"
       class="rail-btn"
       variant="elevated"
       :icon="rail ? 'mdi-chevron-right' : 'mdi-chevron-left'"
@@ -134,7 +149,7 @@ async function logout() {
     </template>
   </v-navigation-drawer>
 
-  <v-container fluid class="pa-6">
+  <v-container fluid class="pa-2 pa-sm-4 pa-md-6">
     <router-view />
   </v-container>
 </template>

@@ -130,8 +130,8 @@ function copyShort() {
 
       <v-col cols="12" md="8">
         <v-card>
-          <v-card-title class="d-flex align-center">
-            <span>{{ qr.code }}</span>
+          <v-card-title class="d-flex flex-wrap align-center ga-2">
+            <span class="text-truncate">{{ qr.code }}</span>
             <v-spacer />
             <v-switch
               :model-value="qr.enabled"
@@ -142,7 +142,6 @@ function copyShort() {
               @update:model-value="(v) => onToggle(!!v)"
             />
             <v-btn
-              class="ml-4"
               color="error"
               variant="text"
               prepend-icon="mdi-delete"
@@ -160,21 +159,23 @@ function copyShort() {
               </a>
               <v-btn icon="mdi-pencil" variant="text" size="small" @click="editing = true" />
             </div>
-            <div v-else class="d-flex align-center ga-2">
+            <div v-else class="d-flex flex-column flex-sm-row align-stretch align-sm-center ga-2">
               <v-text-field
                 v-model="targetDraft"
                 density="compact"
                 hide-details
                 autofocus
               />
-              <v-btn
-                color="primary"
-                :loading="updateMutation.isPending.value"
-                @click="saveTarget"
-              >
-                Save
-              </v-btn>
-              <v-btn variant="text" @click="cancelEdit">Cancel</v-btn>
+              <div class="d-flex ga-2">
+                <v-btn
+                  color="primary"
+                  :loading="updateMutation.isPending.value"
+                  @click="saveTarget"
+                >
+                  Save
+                </v-btn>
+                <v-btn variant="text" @click="cancelEdit">Cancel</v-btn>
+              </div>
             </div>
 
             <v-divider class="my-4" />
@@ -256,25 +257,27 @@ function copyShort() {
               <v-divider class="my-4" />
 
               <div class="text-subtitle-2 mb-2">Recent scans</div>
-              <v-table v-if="stats.recent_logs.length" density="compact">
-                <thead>
-                  <tr>
-                    <th>Time</th>
-                    <th>IP</th>
-                    <th>Device</th>
-                    <th>Browser</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="(log, idx) in stats.recent_logs" :key="idx">
-                    <td>{{ new Date(log.timestamp).toLocaleString() }}</td>
-                    <td>{{ log.ip ?? '—' }}</td>
-                    <td>{{ log.device_type ?? '—' }}</td>
-                    <td>{{ log.browser ?? '—' }}</td>
-                  </tr>
-                </tbody>
-              </v-table>
-              <div v-else class="text-medium-emphasis">No scans yet</div>
+              <div class="overflow-x-auto">
+                <v-table v-if="stats.recent_logs.length" density="compact">
+                  <thead>
+                    <tr>
+                      <th>Time</th>
+                      <th>IP</th>
+                      <th>Device</th>
+                      <th>Browser</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="(log, idx) in stats.recent_logs" :key="idx">
+                      <td>{{ new Date(log.timestamp).toLocaleString() }}</td>
+                      <td>{{ log.ip ?? '—' }}</td>
+                      <td>{{ log.device_type ?? '—' }}</td>
+                      <td>{{ log.browser ?? '—' }}</td>
+                    </tr>
+                  </tbody>
+                </v-table>
+                <div v-else class="text-medium-emphasis">No scans yet</div>
+              </div>
             </template>
           </v-card-text>
         </v-card>

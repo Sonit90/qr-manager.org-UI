@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { ref, reactive, type Ref, watch } from 'vue'
+import { useDisplay } from 'vuetify'
 import { handleApiError } from '@/api/helpers/handleApiError.ts'
 import { TypeRoleV1, type TypeUserV1 } from '@/api/__generated__/v1/data-contracts.ts'
 import { useAdminUsers } from '@/modules/admin/users/composables/useAdminUsers.ts'
+
+const { smAndDown } = useDisplay()
 
 const dialog = defineModel<boolean>('dialog')
 
@@ -67,7 +70,7 @@ const roleItems = [
 </script>
 
 <template>
-  <v-dialog v-model="dialog" max-width="500">
+  <v-dialog v-model="dialog" :max-width="smAndDown ? undefined : 500" :fullscreen="smAndDown">
     <v-card data-testid="user-form">
       <v-card-title class="d-flex justify-space-between align-center py-1">
         <div class="text-h5 text-medium-emphasis">Edit User</div>

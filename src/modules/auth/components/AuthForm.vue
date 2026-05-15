@@ -13,11 +13,11 @@ const hasAppendSlot = computed(() => !!slots.append)
 
 <template>
   <div>
-    <div class="text-center py-10 pb-5">
+    <div class="text-center py-6 py-sm-10 pb-3 pb-sm-5">
       <h1 class="mb-2">{{ title }}</h1>
       <p v-if="subtitle" class="text-sm">{{ subtitle }}</p>
     </div>
-    <div class="pa-4">
+    <div class="pa-3 pa-sm-4">
       <slot />
       <div v-if="hasAppendSlot" class="my-4 text-center">
         <span>or</span>

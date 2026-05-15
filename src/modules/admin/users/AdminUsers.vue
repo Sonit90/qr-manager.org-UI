@@ -25,8 +25,8 @@ function onCancel() {
 
 <template>
   <v-card class="mb-4">
-    <v-card-title class="d-flex">
-      <h1 class="text-h4">All users</h1>
+    <v-card-title class="d-flex flex-wrap align-center ga-2">
+      <h1 class="text-h5 text-sm-h4">All users</h1>
     </v-card-title>
     <v-card-text>
       <UsersTable :loading="loading" :users="users" @edit="onEdit($event)" />

@@ -5,18 +5,17 @@ import { notify } from '@kyvg/vue3-notification'
 import { handleApiError } from '@/api/helpers/handleApiError.ts'
 import {
   useQr,
-  useQrStats,
   useToggleEnabled,
   useUpdateTarget,
   useDeleteQr,
 } from '@/modules/qr/composables/useQrs.ts'
+import ScanStats from '@/modules/qr/ScanStats.vue'
 
 const route = useRoute()
 const router = useRouter()
 const id = computed(() => route.params.id as string)
 
 const { data: qr, isLoading } = useQr(id)
-const { data: stats, isLoading: statsLoading, refetch: refetchStats } = useQrStats(id)
 
 const toggleMutation = useToggleEnabled()
 const updateMutation = useUpdateTarget()
@@ -35,19 +34,6 @@ watch(
 
 const shortLink = computed(() =>
   qr.value ? `${import.meta.env.VITE_QR_API_URL}/r/${qr.value.code}` : '',
-)
-
-const browserRows = computed(() =>
-  Object.entries(stats.value?.browser_breakdown ?? {}).map(([browser, count]) => ({
-    browser,
-    count,
-  })),
-)
-const deviceRows = computed(() =>
-  Object.entries(stats.value?.device_breakdown ?? {}).map(([device, count]) => ({
-    device,
-    count,
-  })),
 )
 
 async function onToggle(enabled: boolean) {
@@ -81,7 +67,7 @@ async function onDelete() {
   try {
     await deleteMutation.mutateAsync(qr.value.id)
     notify({ type: 'success', title: 'QR deleted' })
-    router.push({ name: 'qrs' })
+    await router.push({ name: 'qrs' })
   } catch (e) {
     handleApiError(e, { title: 'Delete QR' })
   }
@@ -144,12 +130,7 @@ function copyShort() {
               :label="qr.enabled ? 'Enabled' : 'Disabled'"
               @update:model-value="(v) => onToggle(!!v)"
             />
-            <v-btn
-              color="error"
-              variant="text"
-              prepend-icon="mdi-delete"
-              @click="onDelete"
-            >
+            <v-btn color="error" variant="text" prepend-icon="mdi-delete" @click="onDelete">
               Delete
             </v-btn>
           </v-card-title>
@@ -163,12 +144,7 @@ function copyShort() {
               <v-btn icon="mdi-pencil" variant="text" size="small" @click="editing = true" />
             </div>
             <div v-else class="d-flex flex-column flex-sm-row align-stretch align-sm-center ga-2">
-              <v-text-field
-                v-model="targetDraft"
-                density="compact"
-                hide-details
-                autofocus
-              />
+              <v-text-field v-model="targetDraft" density="compact" hide-details autofocus />
               <div class="d-flex ga-2">
                 <v-btn
                   color="primary"
@@ -200,90 +176,9 @@ function copyShort() {
           </v-card-text>
         </v-card>
 
-        <v-card class="mt-4">
-          <v-card-title class="d-flex align-center">
-            <span>Scan Statistics</span>
-            <v-spacer />
-            <v-btn icon="mdi-refresh" variant="text" size="small" @click="refetchStats()" />
-          </v-card-title>
-          <v-card-text>
-            <div v-if="statsLoading" class="d-flex justify-center pa-4">
-              <v-progress-circular indeterminate />
-            </div>
-            <template v-else-if="stats">
-              <div class="d-flex flex-wrap ga-6 mb-4">
-                <div>
-                  <div class="text-caption">Total scans</div>
-                  <div class="text-h5">{{ stats.total_scans }}</div>
-                </div>
-              </div>
-
-              <v-row>
-                <v-col cols="12" md="6">
-                  <div class="text-subtitle-2 mb-2">Device breakdown</div>
-                  <v-table v-if="deviceRows.length" density="compact">
-                    <thead>
-                      <tr>
-                        <th>Device</th>
-                        <th class="text-right">Count</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr v-for="row in deviceRows" :key="row.device">
-                        <td>{{ row.device }}</td>
-                        <td class="text-right">{{ row.count }}</td>
-                      </tr>
-                    </tbody>
-                  </v-table>
-                  <div v-else class="text-medium-emphasis">No data</div>
-                </v-col>
-                <v-col cols="12" md="6">
-                  <div class="text-subtitle-2 mb-2">Browser breakdown</div>
-                  <v-table v-if="browserRows.length" density="compact">
-                    <thead>
-                      <tr>
-                        <th>Browser</th>
-                        <th class="text-right">Count</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr v-for="row in browserRows" :key="row.browser">
-                        <td>{{ row.browser }}</td>
-                        <td class="text-right">{{ row.count }}</td>
-                      </tr>
-                    </tbody>
-                  </v-table>
-                  <div v-else class="text-medium-emphasis">No data</div>
-                </v-col>
-              </v-row>
-
-              <v-divider class="my-4" />
-
-              <div class="text-subtitle-2 mb-2">Recent scans</div>
-              <div class="overflow-x-auto">
-                <v-table v-if="stats.recent_logs.length" density="compact">
-                  <thead>
-                    <tr>
-                      <th>Time</th>
-                      <th>IP</th>
-                      <th>Device</th>
-                      <th>Browser</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-for="(log, idx) in stats.recent_logs" :key="idx">
-                      <td>{{ new Date(log.timestamp).toLocaleString() }}</td>
-                      <td>{{ log.ip ?? '—' }}</td>
-                      <td>{{ log.device_type ?? '—' }}</td>
-                      <td>{{ log.browser ?? '—' }}</td>
-                    </tr>
-                  </tbody>
-                </v-table>
-                <div v-else class="text-medium-emphasis">No scans yet</div>
-              </div>
-            </template>
-          </v-card-text>
-        </v-card>
+        <div class="mt-4">
+          <ScanStats :id="id" />
+        </div>
       </v-col>
     </v-row>
   </div>

@@ -47,23 +47,28 @@ export const routes = [
     children: [
       {
         path: '',
-        meta: {
-          requiresAuth: true,
-        },
+        redirect: '/qrs',
+      },
+      {
+        path: '/profile',
+        name: 'profile',
         component: () => import('@/modules/user/UserPage.vue'),
-      },
-      {
-        path: '/my-files',
-        name: 'my-files',
-        component: () => import('@/modules/userFiles/UserFilesPage.vue'),
         meta: {
           requiresAuth: true,
         },
       },
       {
-        path: '/merges',
-        name: 'merges',
-        component: () => import('@/modules/merges/MergeProcesses.vue'),
+        path: '/qrs',
+        name: 'qrs',
+        component: () => import('@/modules/qr/QrListPage.vue'),
+        meta: {
+          requiresAuth: true,
+        },
+      },
+      {
+        path: '/qrs/:id',
+        name: 'qr-detail',
+        component: () => import('@/modules/qr/QrDetailPage.vue'),
         meta: {
           requiresAuth: true,
         },
@@ -76,35 +81,6 @@ export const routes = [
           requiresAuth: true,
           roles: [TypeRoleV1.EnumAdmin],
         },
-      },
-      {
-        path: '/formats',
-        name: 'formats',
-        component: () => import('@/modules/admin/formats/AdminFormats.vue'),
-        meta: {
-          requiresAuth: true,
-        },
-      },
-      {
-        path: '/formats/new',
-        name: 'format-create',
-        component: () => import('@/modules/admin/formats/FormatCreate.vue'),
-        meta: {
-          requiresAuth: true,
-        },
-      },
-      {
-        path: '/formats/:id',
-        name: 'format-detail',
-        component: () => import('@/modules/admin/formats/FormatDetail.vue'),
-        meta: {
-          requiresAuth: true,
-        },
-      },
-      {
-        path: '/files',
-        name: 'files',
-        component: () => import('@/modules/files/FilesView.vue'),
       },
     ],
     meta: {

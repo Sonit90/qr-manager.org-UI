@@ -1,0 +1,76 @@
+<script setup lang="ts">
+import { ref, watch } from 'vue'
+
+const props = defineProps<{
+  open: boolean
+  loading?: boolean
+}>()
+
+const emit = defineEmits<{
+  'update:open': [value: boolean]
+  submit: [target_url: string]
+}>()
+
+const targetUrl = ref('')
+const formValid = ref(false)
+
+watch(
+  () => props.open,
+  (v) => {
+    if (v) {
+      targetUrl.value = ''
+    }
+  },
+)
+
+function rules(v: string) {
+  if (!v) return 'Required'
+  try {
+    new URL(v)
+    return true
+  } catch {
+    return 'Must be a valid URL'
+  }
+}
+
+function close() {
+  emit('update:open', false)
+}
+
+function submit() {
+  if (!formValid.value) return
+  emit('submit', targetUrl.value)
+}
+</script>
+
+<template>
+  <v-dialog :model-value="open" max-width="500" @update:model-value="emit('update:open', $event)">
+    <v-card>
+      <v-card-title>New QR</v-card-title>
+      <v-card-text>
+        <v-form v-model="formValid" @submit.prevent="submit">
+          <v-text-field
+            v-model="targetUrl"
+            label="Target URL"
+            placeholder="https://example.com"
+            :rules="[rules]"
+            autofocus
+            required
+          />
+        </v-form>
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer />
+        <v-btn variant="text" :disabled="loading" @click="close">Cancel</v-btn>
+        <v-btn
+          color="primary"
+          :loading="loading"
+          :disabled="!formValid"
+          @click="submit"
+        >
+          Create
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+</template>

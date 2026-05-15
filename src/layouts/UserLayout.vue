@@ -16,15 +16,8 @@ const rail = ref(false)
 const userStore = useUserStore()
 
 const navigationItems = [
-  { title: 'My Files', icon: 'mdi-file-multiple', to: '/my-files' },
-  { title: 'Transformations', icon: 'mdi-file-excel', to: '/merges' },
-  { title: 'Files WIP', icon: 'mdi-file-excel', to: '/files' },
+  { title: 'My QRs', icon: 'mdi-qrcode', to: '/qrs' },
   { title: 'Users', icon: 'mdi-account-group', to: '/admin/users', roles: [TypeRoleV1.EnumAdmin] },
-  {
-    title: 'Output Formats',
-    icon: 'mdi-file-cog',
-    to: '/formats',
-  },
 ]
 
 const { hasRole } = useUserRoles()
@@ -83,7 +76,7 @@ async function logout() {
     <v-menu offset-y>
       <template #activator="{ props }">
         <v-btn v-bind="props" class="me-2">
-          {{ user?.email || user?.full_name }}
+          {{ user?.email || user?.display_name }}
           <v-avatar size="32">
             <v-icon>mdi-account</v-icon>
           </v-avatar>
@@ -91,7 +84,7 @@ async function logout() {
       </template>
 
       <v-list>
-        <v-list-item to="/user">
+        <v-list-item to="/profile">
           <template #prepend>
             <v-icon>mdi-account-circle</v-icon>
           </template>

@@ -238,12 +238,12 @@
         ]
       }
     },
-    "/api/v1/qr/{id}/image": {
-      "get": {
+    "/api/v1/qr/{id}/name": {
+      "patch": {
         "tags": [
           "QR"
         ],
-        "operationId": "get_qr_image",
+        "operationId": "update_name",
         "parameters": [
           {
             "name": "id",
@@ -256,11 +256,25 @@
             }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateNameRequest"
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
           "200": {
-            "description": "PNG image",
+            "description": "Name updated",
             "content": {
-              "image/png": {}
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateNameResponse"
+                }
+              }
             }
           },
           "401": {
@@ -418,6 +432,12 @@
           "target_url"
         ],
         "properties": {
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
           "target_url": {
             "type": "string"
           }
@@ -448,6 +468,18 @@
           "id": {
             "type": "string",
             "format": "uuid"
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "scan_count": {
             "type": "integer",
@@ -579,6 +611,38 @@
           "id": {
             "type": "string",
             "format": "uuid"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "UpdateNameRequest": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "UpdateNameResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "updated_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
           },
           "updated_at": {
             "type": "string",

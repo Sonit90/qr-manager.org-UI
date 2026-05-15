@@ -2,7 +2,7 @@ import { writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { spawnSync } from 'node:child_process'
 
-const SCHEMA_URL = 'http://localhost:8080/api/docs/openapi.json'
+const SCHEMA_URL = `${import.meta.env.VITE_API_URL}/api/docs/openapi.json`
 const SCHEMA_PATH = resolve(import.meta.dir, 'openapi.json')
 
 console.log(`Fetching ${SCHEMA_URL}...`)

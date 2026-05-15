@@ -28,6 +28,7 @@ const headers = [
     :items="users"
     :items-per-page="10"
     mobile-breakpoint="sm"
+    disable-sort
     class="elevation-1"
   >
     <template #item.created_at="{ item }">

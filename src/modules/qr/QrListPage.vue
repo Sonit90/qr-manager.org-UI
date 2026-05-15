@@ -86,6 +86,7 @@ function copyShortLink(qr: TypeQrQrCodeResponse) {
         item-value="id"
         density="comfortable"
         mobile-breakpoint="sm"
+        disable-sort
       >
         <template #item.image_url="{ item }">
           <img

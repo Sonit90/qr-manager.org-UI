@@ -35,6 +35,7 @@ const items = computed(() =>
       density="compact"
       hide-default-footer
       mobile-breakpoint="sm"
+      disable-sort
     />
   </div>
 </template>

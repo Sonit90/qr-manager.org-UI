@@ -25,6 +25,7 @@ const rows = computed(() => props.items.map((item, idx) => ({ id: idx, ...item }
       density="compact"
       hide-default-footer
       mobile-breakpoint="sm"
+      disable-sort
     />
   </div>
 </template>

@@ -42,6 +42,12 @@ export const routes = [
   },
 
   {
+    path: '/qr-disabled',
+    name: 'qr-disabled',
+    component: () => import('@/modules/qr/QrDisabledPage.vue'),
+  },
+
+  {
     path: '/user',
     component: () => import('@/layouts/UserLayout.vue'),
     children: [

@@ -49,10 +49,6 @@ describe('QrListPage Integration Tests', () => {
 
     view.getByText('Marketing QR')
     view.getByText('Sales QR')
-    expect(view.getByRole('link', { name: 'Marketing QR' })).toHaveAttribute(
-      'href',
-      `/qrs/${qrs[0].id}`,
-    )
   })
 
   test('should fall back to code when name is null', async () => {
@@ -63,7 +59,7 @@ describe('QrListPage Integration Tests', () => {
 
     await flushPromises()
 
-    expect(view.getByRole('link', { name: 'ABC123' })).toHaveAttribute('href', `/qrs/${qrs[0].id}`)
+    view.getByText('ABC123')
   })
 
   test('should render QR preview image when image_url is present', async () => {
@@ -102,6 +98,21 @@ describe('QrListPage Integration Tests', () => {
 
     await waitFor(() => {
       expect(view.queryByRole('progressbar')).not.toBeInTheDocument()
+    })
+  })
+
+  test('should navigate to detail page when view icon is clicked', async () => {
+    const qr = generateQr()
+    mockListQrs([qr])
+
+    const { view, user } = await visitRoute('/qrs')
+
+    await flushPromises()
+
+    await user.click(view.getByTestId('qr-view'))
+
+    await waitFor(() => {
+      expect(window.location.pathname).toBe(`/qrs/${qr.id}`)
     })
   })
 

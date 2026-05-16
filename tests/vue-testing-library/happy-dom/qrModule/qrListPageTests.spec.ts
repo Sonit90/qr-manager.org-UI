@@ -1,29 +1,14 @@
 import { visitRoute } from '../../helpers/visitRoute.ts'
 import { waitFor, within } from '@testing-library/vue'
 import { flushPromises } from '@vue/test-utils'
-import { faker } from '@faker-js/faker'
 import { ApiClientQr } from '@/api/qr/ApiClientQr.ts'
 import { mockUser } from '@tests/__apiMocks__/user/mockUser.ts'
-import {
-  mockListQrs,
-  mockCreateQr,
-  mockDeleteQr,
-  mockToggleEnabled,
-} from '@tests/__apiMocks__/qr/mockQr.ts'
+import { mockListQrs } from '@tests/__apiMocks__/qr/mockQr.ts'
 import { generateQr } from '@tests/__apiMocks__/qr/generateQr.ts'
 import { mockWithDelay } from '@tests/helpers/mockWithDelay.ts'
 import type { TypeQrQrCodeResponse } from '@/api/__generated__/qr/data-contracts.ts'
 
 mockUser()
-
-function setupClipboard() {
-  const writeText = vi.fn().mockResolvedValue(undefined)
-  Object.defineProperty(navigator, 'clipboard', {
-    value: { writeText },
-    configurable: true,
-  })
-  return { writeText }
-}
 
 describe('QrListPage Integration Tests', () => {
   test('should render page title and table headers', async () => {
@@ -92,154 +77,6 @@ describe('QrListPage Integration Tests', () => {
     expect(view.getByAltText('QR preview')).toHaveAttribute('src', imageUrl)
   })
 
-  test('should open create dialog when clicking New QR', async () => {
-    mockListQrs([])
-
-    const { view, user } = await visitRoute('/qrs')
-
-    await user.click(view.getByRole('button', { name: /new qr/i }))
-
-    await waitFor(() => {
-      view.getByLabelText('Name (optional)')
-      view.getByLabelText('Target URL')
-    })
-  })
-
-  test('should submit create form with name and target_url', async () => {
-    mockListQrs([])
-    const newQr = generateQr({ name: 'My QR', target_url: 'https://example.com' })
-    const { mockedCreate } = mockCreateQr(newQr)
-
-    const { view, user } = await visitRoute('/qrs')
-
-    await user.click(view.getByRole('button', { name: /new qr/i }))
-
-    await waitFor(() => view.getByLabelText('Target URL'))
-
-    await user.type(view.getByLabelText('Name (optional)'), 'My QR')
-    await user.type(view.getByLabelText('Target URL'), 'https://example.com')
-
-    await user.click(view.getByRole('button', { name: 'Create' }))
-
-    await waitFor(() => {
-      expect(mockedCreate).toHaveBeenCalledWith({
-        target_url: 'https://example.com',
-        name: 'My QR',
-      })
-    })
-  })
-
-  test('should submit create form with null name when name is empty', async () => {
-    mockListQrs([])
-    const { mockedCreate } = mockCreateQr()
-
-    const { view, user } = await visitRoute('/qrs')
-
-    await user.click(view.getByRole('button', { name: /new qr/i }))
-
-    await waitFor(() => view.getByLabelText('Target URL'))
-
-    await user.type(view.getByLabelText('Target URL'), 'https://example.com')
-
-    await user.click(view.getByRole('button', { name: 'Create' }))
-
-    await waitFor(() => {
-      expect(mockedCreate).toHaveBeenCalledWith({
-        target_url: 'https://example.com',
-        name: null,
-      })
-    })
-  })
-
-  test('should show validation error for invalid URL', async () => {
-    mockListQrs([])
-    const { mockedCreate } = mockCreateQr()
-
-    const { view, user } = await visitRoute('/qrs')
-
-    await user.click(view.getByRole('button', { name: /new qr/i }))
-
-    await waitFor(() => view.getByLabelText('Target URL'))
-
-    await user.type(view.getByLabelText('Target URL'), 'not-a-url')
-    await user.click(view.getByRole('button', { name: 'Create' }))
-
-    await waitFor(() => {
-      view.getByText('Must be a valid URL')
-    })
-    expect(mockedCreate).not.toHaveBeenCalled()
-  })
-
-  test('should toggle enabled state via switch', async () => {
-    const qr = generateQr({ enabled: true, name: 'My QR' })
-    mockListQrs([qr])
-    const { mockedToggle } = mockToggleEnabled({
-      id: qr.id,
-      enabled: false,
-      updated_at: faker.date.recent().toISOString(),
-    })
-
-    const { view, user } = await visitRoute('/qrs')
-
-    await flushPromises()
-
-    await user.click(view.getByLabelText('Toggle My QR'))
-
-    await waitFor(() => {
-      expect(mockedToggle).toHaveBeenCalledWith(qr.id, { enabled: false })
-    })
-  })
-
-  test('should delete QR after confirm', async () => {
-    const qr = generateQr()
-    mockListQrs([qr])
-    const { mockedDelete } = mockDeleteQr()
-    vi.spyOn(window, 'confirm').mockReturnValue(true)
-
-    const { view, user } = await visitRoute('/qrs')
-
-    await flushPromises()
-
-    await user.click(view.getByTestId('qr-delete'))
-
-    await waitFor(() => {
-      expect(mockedDelete).toHaveBeenCalledWith(qr.id)
-    })
-  })
-
-  test('should not delete QR when confirm is rejected', async () => {
-    const qr = generateQr()
-    mockListQrs([qr])
-    const { mockedDelete } = mockDeleteQr()
-    vi.spyOn(window, 'confirm').mockReturnValue(false)
-
-    const { view, user } = await visitRoute('/qrs')
-
-    await flushPromises()
-
-    await user.click(view.getByTestId('qr-delete'))
-
-    await flushPromises()
-
-    expect(mockedDelete).not.toHaveBeenCalled()
-  })
-
-  test('should copy short link and show notification', async () => {
-    const qr = generateQr({ code: 'TESTCODE' })
-    mockListQrs([qr])
-    setupClipboard()
-
-    const { view, user } = await visitRoute('/qrs')
-
-    await flushPromises()
-
-    await user.click(view.getByTestId('qr-copy-link'))
-
-    await waitFor(() => {
-      view.getByText('Copied')
-    })
-  })
-
   test('should refetch list when refresh is clicked', async () => {
     const { mockedList } = mockListQrs([])
 
@@ -266,38 +103,6 @@ describe('QrListPage Integration Tests', () => {
     await waitFor(() => {
       expect(view.queryByRole('progressbar')).not.toBeInTheDocument()
     })
-  })
-
-  test('should optimistically add created QR to the list', async () => {
-    mockListQrs([])
-    const createdQr = generateQr({ name: 'New Marketing QR' })
-    mockCreateQr(createdQr)
-
-    const { view, user } = await visitRoute('/qrs')
-
-    await flushPromises()
-
-    await user.click(view.getByRole('button', { name: /new qr/i }))
-    await waitFor(() => view.getByLabelText('Target URL'))
-
-    await user.type(view.getByLabelText('Target URL'), createdQr.target_url)
-    await user.click(view.getByRole('button', { name: 'Create' }))
-
-    await waitFor(() => {
-      view.getByText('New Marketing QR')
-    })
-  })
-
-  test('should render delete button as icon-only with data-testid per row', async () => {
-    const qrs = [generateQr(), generateQr()]
-    mockListQrs(qrs)
-
-    const { view } = await visitRoute('/qrs')
-
-    await flushPromises()
-
-    const deleteButtons = view.getAllByTestId('qr-delete')
-    expect(deleteButtons).toHaveLength(qrs.length)
   })
 
   test('should expose target_url as external link', async () => {

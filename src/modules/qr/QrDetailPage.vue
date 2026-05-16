@@ -111,7 +111,13 @@ function copyShort() {
             <div class="text-caption">Short link</div>
             <div class="d-flex align-center">
               <code class="flex-grow-1 text-truncate">{{ shortLink }}</code>
-              <v-btn icon="mdi-content-copy" variant="text" size="small" @click="copyShort" />
+              <v-btn
+                icon="mdi-content-copy"
+                variant="text"
+                size="small"
+                data-testid="qr-detail-copy"
+                @click="copyShort"
+              />
             </div>
           </v-card-text>
         </v-card>
@@ -141,7 +147,13 @@ function copyShort() {
               <a :href="qr.target_url" target="_blank" rel="noopener" class="flex-grow-1">
                 {{ qr.target_url }}
               </a>
-              <v-btn icon="mdi-pencil" variant="text" size="small" @click="editing = true" />
+              <v-btn
+                icon="mdi-pencil"
+                variant="text"
+                size="small"
+                data-testid="qr-detail-edit"
+                @click="editing = true"
+              />
             </div>
             <div v-else class="d-flex flex-column flex-sm-row align-stretch align-sm-center ga-2">
               <v-text-field v-model="targetDraft" density="compact" hide-details autofocus />

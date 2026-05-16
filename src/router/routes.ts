@@ -2,33 +2,37 @@ import { TypeRoleV1 } from '@/api/__generated__/v1/data-contracts.ts'
 
 export const routes = [
   {
-    path: '',
-    redirect: '/login',
+    path: '/',
+    name: 'landing',
+    component: () => import('@/modules/landing/LandingPage.vue'),
+  },
+  {
+    path: '/auth',
     component: () => import('@/layouts/LoginLayout.vue'),
     children: [
       {
-        path: 'login',
+        path: '/login',
         component: () => import('@/modules/auth/LoginPage.vue'),
         meta: {
           disallowAuthenticated: true,
         },
       },
       {
-        path: 'register',
+        path: '/register',
         component: () => import('@/modules/auth/RegisterPage.vue'),
         meta: {
           disallowAuthenticated: true,
         },
       },
       {
-        path: 'forgot-password',
+        path: '/forgot-password',
         component: () => import('@/modules/auth/forgot-password/ForgotPasswordRequestPage.vue'),
         meta: {
           disallowAuthenticated: true,
         },
       },
       {
-        path: 'reset-password',
+        path: '/reset-password',
         component: () => import('@/modules/auth/forgot-password/ResetPasswordWithToken.vue'),
       },
     ],

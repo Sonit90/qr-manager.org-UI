@@ -13,34 +13,40 @@ import { generateQr } from '@tests/__apiMocks__/qr/generateQr.ts'
 mockUser()
 
 describe('QR Delete Integration Tests', () => {
-  test('should delete QR from list after user confirms', async () => {
+  test('should delete QR from list after user confirms in modal', async () => {
     const qr = generateQr()
     mockListQrs([qr])
     const { mockedDelete } = mockDeleteQr()
-    vi.spyOn(window, 'confirm').mockReturnValue(true)
 
     const { view, user } = await visitRoute('/qrs')
 
     await flushPromises()
 
     await user.click(view.getByTestId('qr-delete'))
+
+    await waitFor(() => view.getByTestId('confirm-accept'))
+
+    await user.click(view.getByTestId('confirm-accept'))
 
     await waitFor(() => {
       expect(mockedDelete).toHaveBeenCalledWith(qr.id)
     })
   })
 
-  test('should not delete QR from list when user rejects confirm', async () => {
+  test('should not delete QR from list when user cancels modal', async () => {
     const qr = generateQr()
     mockListQrs([qr])
     const { mockedDelete } = mockDeleteQr()
-    vi.spyOn(window, 'confirm').mockReturnValue(false)
 
     const { view, user } = await visitRoute('/qrs')
 
     await flushPromises()
 
     await user.click(view.getByTestId('qr-delete'))
+
+    await waitFor(() => view.getByTestId('confirm-cancel'))
+
+    await user.click(view.getByTestId('confirm-cancel'))
 
     await flushPromises()
 
@@ -52,7 +58,6 @@ describe('QR Delete Integration Tests', () => {
     const target = generateQr({ name: 'Delete Me' })
     mockListQrs([remaining, target])
     mockDeleteQr()
-    vi.spyOn(window, 'confirm').mockReturnValue(true)
 
     const { view, user } = await visitRoute('/qrs')
 
@@ -61,42 +66,49 @@ describe('QR Delete Integration Tests', () => {
     const deleteButtons = view.getAllByTestId('qr-delete')
     await user.click(deleteButtons[1])
 
+    await waitFor(() => view.getByTestId('confirm-accept'))
+    await user.click(view.getByTestId('confirm-accept'))
+
     await waitFor(() => {
       expect(view.queryByText('Delete Me')).not.toBeInTheDocument()
     })
     view.getByText('Keep Me')
   })
 
-  test('should delete QR from detail page after confirm', async () => {
+  test('should delete QR from detail page after modal confirm', async () => {
     const qr = generateQr()
     mockGetQr(qr)
     mockGetScanLogs()
     const { mockedDelete } = mockDeleteQr()
-    vi.spyOn(window, 'confirm').mockReturnValue(true)
 
     const { view, user } = await visitRoute(`/qrs/${qr.id}`)
 
     await flushPromises()
 
-    await user.click(view.getByRole('button', { name: /delete/i }))
+    await user.click(view.getByTestId('qr-detail-delete'))
+
+    await waitFor(() => view.getByTestId('confirm-accept'))
+    await user.click(view.getByTestId('confirm-accept'))
 
     await waitFor(() => {
       expect(mockedDelete).toHaveBeenCalledWith(qr.id)
     })
   })
 
-  test('should not delete QR from detail page when confirm rejected', async () => {
+  test('should not delete QR from detail page when modal cancelled', async () => {
     const qr = generateQr()
     mockGetQr(qr)
     mockGetScanLogs()
     const { mockedDelete } = mockDeleteQr()
-    vi.spyOn(window, 'confirm').mockReturnValue(false)
 
     const { view, user } = await visitRoute(`/qrs/${qr.id}`)
 
     await flushPromises()
 
-    await user.click(view.getByRole('button', { name: /delete/i }))
+    await user.click(view.getByTestId('qr-detail-delete'))
+
+    await waitFor(() => view.getByTestId('confirm-cancel'))
+    await user.click(view.getByTestId('confirm-cancel'))
 
     await flushPromises()
 

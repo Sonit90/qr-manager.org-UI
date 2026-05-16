@@ -37,19 +37,19 @@ const isLoading = ref(false)
 const isValid = ref(false)
 const userForm = ref<Ref | null>(null)
 
-function $reset() {
+function close() {
   dialog.value = false
 }
 
 async function onSubmit() {
-  await userForm.value.validate()
+  await userForm.value?.validate()
   if (!isValid.value) return
 
   try {
     isLoading.value = true
     await updateUser(props.user, { role: form.role, active: form.active })
     emit('updated', { ...props.user, role: form.role, is_active: form.active })
-    $reset()
+    close()
   } catch (e) {
     handleApiError(e, { title: 'Update User' })
   } finally {
@@ -58,7 +58,7 @@ async function onSubmit() {
 }
 
 function onCancel() {
-  $reset()
+  close()
   emit('cancel')
 }
 
@@ -70,15 +70,32 @@ const roleItems = [
 </script>
 
 <template>
-  <v-dialog v-model="dialog" :max-width="smAndDown ? undefined : 500" :fullscreen="smAndDown">
+  <v-dialog
+    v-model="dialog"
+    :max-width="smAndDown ? undefined : 480"
+    :fullscreen="smAndDown"
+    class="app-dialog"
+  >
     <v-card data-testid="user-form">
-      <v-card-title class="d-flex justify-space-between align-center py-1">
-        <div class="text-h5 text-medium-emphasis">Edit User</div>
-        <v-btn icon="mdi-close" variant="text" @click="dialog = false" />
-      </v-card-title>
-      <v-card-text>
-        <div class="mb-4 text-body-2 text-medium-emphasis">{{ user.email }}</div>
-        <v-form ref="userForm" v-model="isValid">
+      <div class="app-dialog-title">
+        <div>
+          <span class="app-eyebrow">Admin</span>
+          <h3>Edit User</h3>
+        </div>
+        <v-btn icon="mdi-close" variant="text" size="small" @click="dialog = false" />
+      </div>
+      <div class="app-dialog-body">
+        <div class="user-meta">
+          <span class="user-avatar">
+            {{ (user.email || user.display_name || '?').charAt(0).toUpperCase() }}
+          </span>
+          <div>
+            <div class="user-email">{{ user.email }}</div>
+            <div class="user-sub">{{ user.display_name || 'No display name' }}</div>
+          </div>
+        </div>
+
+        <v-form ref="userForm" v-model="isValid" class="form-fields">
           <v-select
             v-model="form.role"
             label="Role"
@@ -88,22 +105,70 @@ const roleItems = [
             :items="roleItems"
             :rules="[(v) => !!v || 'Role is required']"
           />
-          <v-switch v-model="form.active" color="primary" label="Is Active" />
+          <v-switch v-model="form.active" color="primary" label="Is Active" hide-details />
         </v-form>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer />
-        <v-btn text="Cancel" variant="text" @click="onCancel()" />
-        <v-btn
-          :disabled="!isValid"
-          text="Update User"
-          :loading="isLoading"
-          color="primary"
-          variant="tonal"
-          append-icon="mdi-account-edit"
-          @click="onSubmit()"
-        />
-      </v-card-actions>
+      </div>
+      <div class="app-dialog-actions">
+        <button
+          type="button"
+          class="app-btn app-btn-ghost"
+          :disabled="isLoading"
+          @click="onCancel"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="app-btn app-btn-primary"
+          :disabled="!isValid || isLoading"
+          @click="onSubmit"
+        >
+          <v-progress-circular v-if="isLoading" size="14" width="2" indeterminate />
+          Update User
+        </button>
+      </div>
     </v-card>
   </v-dialog>
 </template>
+
+<style scoped>
+.user-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  margin-bottom: 18px;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--gradient);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+.user-email {
+  font-weight: 600;
+  color: var(--ink);
+  font-size: 14.5px;
+}
+
+.user-sub {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+</style>

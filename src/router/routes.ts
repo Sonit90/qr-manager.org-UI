@@ -53,7 +53,7 @@ export const routes = [
 
   {
     path: '/user',
-    component: () => import('@/layouts/UserLayout.vue'),
+    component: () => import('@/components/layout/AppLayout.vue'),
     children: [
       {
         path: '',

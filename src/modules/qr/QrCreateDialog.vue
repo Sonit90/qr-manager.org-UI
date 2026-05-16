@@ -52,31 +52,77 @@ function submit() {
 <template>
   <v-dialog
     :model-value="open"
-    :max-width="smAndDown ? undefined : 500"
+    :max-width="smAndDown ? undefined : 480"
     :fullscreen="smAndDown"
+    class="app-dialog"
     @update:model-value="emit('update:open', $event)"
   >
     <v-card>
-      <v-card-title>New QR</v-card-title>
-      <v-card-text>
-        <v-form v-model="formValid" @submit.prevent="submit">
-          <v-text-field v-model="name" label="Name (optional)" autofocus />
+      <div class="app-dialog-title">
+        <div>
+          <span class="app-eyebrow">New</span>
+          <h3>Create QR code</h3>
+        </div>
+        <v-btn icon="mdi-close" variant="text" size="small" @click="close" />
+      </div>
+      <div class="app-dialog-body">
+        <p class="dialog-sub">Give your QR a memorable name and point it anywhere.</p>
+        <v-form v-model="formValid" class="form-fields" @submit.prevent="submit">
+          <v-text-field
+            v-model="name"
+            label="Name (optional)"
+            variant="outlined"
+            color="primary"
+            prepend-inner-icon="mdi-tag-outline"
+            autofocus
+            hide-details="auto"
+          />
           <v-text-field
             v-model="targetUrl"
             label="Target URL"
             placeholder="https://example.com"
+            variant="outlined"
+            color="primary"
+            prepend-inner-icon="mdi-link-variant"
             :rules="[rules]"
             required
+            hide-details="auto"
           />
         </v-form>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer />
-        <v-btn variant="text" :disabled="loading" @click="close">Cancel</v-btn>
-        <v-btn color="primary" :loading="loading" :disabled="!formValid" @click="submit">
+      </div>
+      <div class="app-dialog-actions">
+        <button
+          type="button"
+          class="app-btn app-btn-ghost"
+          :disabled="loading"
+          @click="close"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="app-btn app-btn-primary"
+          :disabled="!formValid || loading"
+          @click="submit"
+        >
+          <v-progress-circular v-if="loading" size="14" width="2" indeterminate />
           Create
-        </v-btn>
-      </v-card-actions>
+        </button>
+      </div>
     </v-card>
   </v-dialog>
 </template>
+
+<style scoped>
+.dialog-sub {
+  margin: 0 0 18px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+</style>

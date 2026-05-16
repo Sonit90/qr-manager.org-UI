@@ -1,18 +1,12 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useUserStore } from '@/stores/userStore.ts'
 import { storeToRefs } from 'pinia'
+import AppHeader from '@/components/layout/AppHeader.vue'
+import AppFooter from '@/components/layout/AppFooter.vue'
 
 const userStore = useUserStore()
 const { isAuthenticated } = storeToRefs(userStore)
-
-const drawer = ref(false)
-
-const navLinks = [
-  { label: 'Features', href: '#features' },
-  { label: 'Pricing', href: '#pricing' },
-  { label: 'FAQ', href: '#faq' },
-]
 
 const features = [
   {
@@ -92,7 +86,6 @@ const finalCtaLabel = computed(() =>
 )
 
 function scrollTo(hash: string) {
-  drawer.value = false
   const el = document.querySelector(hash)
   if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
@@ -100,58 +93,7 @@ function scrollTo(hash: string) {
 
 <template>
   <div class="landing">
-    <!-- HEADER -->
-    <header class="site-header">
-      <div class="container header-inner">
-        <a href="/" class="logo" aria-label="QR Manager home">
-          <span class="logo-mark">
-            <v-icon icon="mdi-qrcode" size="22" />
-          </span>
-          <span class="logo-text">QR Manager</span>
-        </a>
-
-        <nav class="nav-links" aria-label="Primary">
-          <a
-            v-for="link in navLinks"
-            :key="link.href"
-            :href="link.href"
-            @click.prevent="scrollTo(link.href)"
-          >
-            {{ link.label }}
-          </a>
-        </nav>
-
-        <div class="header-cta">
-          <template v-if="isAuthenticated">
-            <a href="/qrs" class="btn btn-primary">Go to My QRs</a>
-          </template>
-          <template v-else>
-            <a href="/login" class="btn btn-ghost">Login</a>
-            <a href="/register" class="btn btn-primary">Register</a>
-          </template>
-        </div>
-
-        <button
-          class="hamburger"
-          aria-label="Open navigation"
-          data-testid="mobile-nav-toggle"
-          @click="drawer = !drawer"
-        >
-          <v-icon :icon="drawer ? 'mdi-close' : 'mdi-menu'" />
-        </button>
-      </div>
-
-      <div v-if="drawer" class="mobile-drawer">
-        <a
-          v-for="link in navLinks"
-          :key="link.href"
-          :href="link.href"
-          @click.prevent="scrollTo(link.href)"
-        >
-          {{ link.label }}
-        </a>
-      </div>
-    </header>
+    <AppHeader variant="marketing" />
 
     <!-- HERO -->
     <section class="hero">
@@ -159,7 +101,7 @@ function scrollTo(hash: string) {
       <div class="bg-blob blob-2" aria-hidden="true" />
       <div class="bg-grid" aria-hidden="true" />
 
-      <div class="container hero-inner">
+      <div class="app-container hero-inner">
         <div class="hero-copy">
           <span class="eyebrow">
             <span class="eyebrow-dot" />
@@ -174,13 +116,13 @@ function scrollTo(hash: string) {
             reactivate codes instantly, and manage unlimited QR codes from one dashboard.
           </p>
           <div class="hero-ctas">
-            <a :href="primaryCtaTo" class="btn btn-primary btn-lg">
+            <a :href="primaryCtaTo" class="app-btn app-btn-primary app-btn-lg">
               {{ primaryCtaLabel }}
               <v-icon icon="mdi-arrow-right" size="18" />
             </a>
             <a
               href="#how-it-works"
-              class="btn btn-ghost btn-lg"
+              class="app-btn app-btn-ghost app-btn-lg"
               @click.prevent="scrollTo('#how-it-works')"
             >
               See How It Works
@@ -193,7 +135,7 @@ function scrollTo(hash: string) {
               <span class="avatar" />
               <span class="avatar" />
             </div>
-            <span>Joined by 10,000+ creators & businesses</span>
+            <span>Joined by 10,000+ creators &amp; businesses</span>
           </div>
         </div>
 
@@ -322,9 +264,9 @@ function scrollTo(hash: string) {
 
     <!-- FEATURES -->
     <section id="features" class="section section-features">
-      <div class="container">
+      <div class="app-container">
         <div class="section-head">
-          <span class="section-eyebrow">Features</span>
+          <span class="app-eyebrow">Features</span>
           <h2 class="section-title">Everything you need, nothing you don't</h2>
           <p class="section-sub">
             Built for marketers, makers, and businesses who want full control over their QR codes.
@@ -345,9 +287,9 @@ function scrollTo(hash: string) {
 
     <!-- PRICING -->
     <section id="pricing" class="section section-pricing">
-      <div class="container">
+      <div class="app-container">
         <div class="section-head">
-          <span class="section-eyebrow">Pricing</span>
+          <span class="app-eyebrow">Pricing</span>
           <h2 class="section-title">Free forever. No catch.</h2>
           <p class="section-sub">
             One plan. Every feature. No credit card, no trial timers, no usage caps.
@@ -363,11 +305,11 @@ function scrollTo(hash: string) {
           <ul class="pricing-features">
             <li><v-icon icon="mdi-check-circle" size="18" /> Unlimited dynamic QR codes</li>
             <li><v-icon icon="mdi-check-circle" size="18" /> Editable destinations</li>
-            <li><v-icon icon="mdi-check-circle" size="18" /> Disable & reactivate anytime</li>
+            <li><v-icon icon="mdi-check-circle" size="18" /> Disable &amp; reactivate anytime</li>
             <li><v-icon icon="mdi-check-circle" size="18" /> Scan analytics</li>
             <li><v-icon icon="mdi-check-circle" size="18" /> 99.99% redirect uptime</li>
           </ul>
-          <a :href="primaryCtaTo" class="btn btn-primary btn-lg btn-block">
+          <a :href="primaryCtaTo" class="app-btn app-btn-primary app-btn-lg app-btn-block">
             {{ primaryCtaLabel }}
           </a>
         </div>
@@ -376,9 +318,9 @@ function scrollTo(hash: string) {
 
     <!-- HOW IT WORKS -->
     <section id="how-it-works" class="section section-how">
-      <div class="container">
+      <div class="app-container">
         <div class="section-head">
-          <span class="section-eyebrow">How it works</span>
+          <span class="app-eyebrow">How it works</span>
           <h2 class="section-title">From zero to live in 60 seconds</h2>
         </div>
 
@@ -397,7 +339,7 @@ function scrollTo(hash: string) {
 
     <!-- SOCIAL PROOF -->
     <section class="section section-stats">
-      <div class="container stats-grid">
+      <div class="app-container stats-grid">
         <div v-for="s in stats" :key="s.label" class="stat">
           <div class="stat-value">{{ s.value }}</div>
           <div class="stat-label">{{ s.label }}</div>
@@ -407,9 +349,9 @@ function scrollTo(hash: string) {
 
     <!-- FAQ -->
     <section id="faq" class="section section-faq">
-      <div class="container faq-container">
+      <div class="app-container faq-container">
         <div class="section-head">
-          <span class="section-eyebrow">FAQ</span>
+          <span class="app-eyebrow">FAQ</span>
           <h2 class="section-title">Questions, answered</h2>
         </div>
 
@@ -421,213 +363,25 @@ function scrollTo(hash: string) {
 
     <!-- FINAL CTA -->
     <section class="section section-final">
-      <div class="container final-inner">
+      <div class="app-container final-inner">
         <h2 class="final-title">Start Creating Dynamic QR Codes Today</h2>
         <p class="final-sub">No signup friction. Build your first QR code in under a minute.</p>
-        <a :href="primaryCtaTo" class="btn btn-primary btn-lg">
+        <a :href="primaryCtaTo" class="app-btn app-btn-primary app-btn-lg">
           {{ finalCtaLabel }}
           <v-icon icon="mdi-arrow-right" size="18" />
         </a>
       </div>
     </section>
 
-    <!-- FOOTER -->
-    <footer class="site-footer">
-      <div class="container footer-inner">
-        <div class="footer-brand">
-          <span class="logo-mark sm">
-            <v-icon icon="mdi-qrcode" size="18" />
-          </span>
-          <span>QR Manager</span>
-        </div>
-        <nav class="footer-links" aria-label="Footer">
-          <a href="/privacy">Privacy Policy</a>
-          <a href="/terms">Terms of Service</a>
-          <a href="/contact">Contact</a>
-        </nav>
-        <small class="footer-copy">&copy; {{ new Date().getFullYear() }} QR Manager. All rights reserved.</small>
-      </div>
-    </footer>
+    <AppFooter />
   </div>
 </template>
 
 <style scoped>
 .landing {
-  --accent: #6366f1;
-  --accent-2: #8b5cf6;
-  --accent-soft: rgba(99, 102, 241, 0.1);
-  --ink: #0f172a;
-  --ink-2: #334155;
-  --muted: #64748b;
-  --line: #e2e8f0;
-  --bg: #ffffff;
-  --bg-soft: #f8fafc;
-  --radius: 14px;
-
   color: var(--ink);
   background: var(--bg);
-  font-family:
-    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   line-height: 1.55;
-  scroll-behavior: smooth;
-}
-
-.container {
-  width: 100%;
-  max-width: 1180px;
-  margin: 0 auto;
-  padding: 0 24px;
-}
-
-/* HEADER */
-.site-header {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  backdrop-filter: saturate(180%) blur(12px);
-  background: rgba(255, 255, 255, 0.78);
-  border-bottom: 1px solid var(--line);
-}
-
-.header-inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 68px;
-  gap: 24px;
-}
-
-.logo {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  font-weight: 700;
-  color: var(--ink);
-  text-decoration: none;
-  font-size: 17px;
-}
-
-.logo-mark {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 9px;
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
-  color: #fff;
-}
-
-.logo-mark.sm {
-  width: 28px;
-  height: 28px;
-  border-radius: 7px;
-}
-
-.nav-links {
-  display: flex;
-  gap: 28px;
-}
-
-.nav-links a {
-  color: var(--ink-2);
-  text-decoration: none;
-  font-weight: 500;
-  font-size: 14.5px;
-  transition: color 0.2s ease;
-}
-
-.nav-links a:hover {
-  color: var(--accent);
-}
-
-.header-cta {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.hamburger {
-  display: none;
-  background: transparent;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  width: 40px;
-  height: 40px;
-  align-items: center;
-  justify-content: center;
-  color: var(--ink);
-  cursor: pointer;
-}
-
-.mobile-drawer {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 16px 24px 22px;
-  border-top: 1px solid var(--line);
-  background: #fff;
-}
-
-.mobile-drawer a {
-  color: var(--ink-2);
-  text-decoration: none;
-  font-weight: 500;
-  padding: 8px 0;
-}
-
-/* BUTTONS */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 10px 18px;
-  border-radius: 10px;
-  font-weight: 600;
-  font-size: 14.5px;
-  text-decoration: none;
-  cursor: pointer;
-  border: 1px solid transparent;
-  transition:
-    transform 0.18s ease,
-    box-shadow 0.25s ease,
-    background 0.2s ease,
-    color 0.2s ease,
-    border-color 0.2s ease;
-  white-space: nowrap;
-}
-
-.btn-lg {
-  padding: 14px 22px;
-  font-size: 15.5px;
-  border-radius: 12px;
-}
-
-.btn-block {
-  width: 100%;
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
-  color: #fff;
-  box-shadow: 0 6px 18px -6px rgba(99, 102, 241, 0.6);
-}
-
-.btn-primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 12px 24px -8px rgba(99, 102, 241, 0.7);
-}
-
-.btn-ghost {
-  background: transparent;
-  color: var(--ink);
-  border-color: var(--line);
-}
-
-.btn-ghost:hover {
-  background: var(--bg-soft);
-  border-color: #cbd5e1;
 }
 
 /* HERO */
@@ -676,7 +430,7 @@ function scrollTo(hash: string) {
 
 .title-accent {
   display: block;
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  background: var(--gradient);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -844,7 +598,7 @@ function scrollTo(hash: string) {
   width: 9px;
   height: 9px;
   border-radius: 50%;
-  background: #22c55e;
+  background: var(--success);
   box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.18);
 }
 
@@ -987,13 +741,7 @@ function scrollTo(hash: string) {
   margin: 0 auto 56px;
 }
 
-.section-eyebrow {
-  display: inline-block;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--accent);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+.section-head .app-eyebrow {
   margin-bottom: 14px;
 }
 
@@ -1031,8 +779,8 @@ function scrollTo(hash: string) {
 
 .feature-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 24px 40px -24px rgba(15, 23, 42, 0.18);
-  border-color: #cbd5e1;
+  box-shadow: var(--shadow-card);
+  border-color: var(--line-strong);
 }
 
 .feature-icon {
@@ -1140,7 +888,6 @@ function scrollTo(hash: string) {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 22px;
-  counter-reset: step;
 }
 
 .step {
@@ -1171,7 +918,7 @@ function scrollTo(hash: string) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  background: var(--gradient);
   color: #fff;
   margin-bottom: 16px;
 }
@@ -1240,7 +987,7 @@ function scrollTo(hash: string) {
 
 /* FINAL CTA */
 .section-final {
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  background: var(--gradient);
   color: #fff;
   padding: 88px 0;
   position: relative;
@@ -1276,75 +1023,18 @@ function scrollTo(hash: string) {
   margin: 0 0 28px;
 }
 
-.section-final .btn-primary {
+.section-final .app-btn-primary {
   background: #fff;
   color: var(--accent);
   box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.3);
 }
 
-.section-final .btn-primary :deep(.v-icon) {
+.section-final .app-btn-primary :deep(.v-icon) {
   color: var(--accent);
-}
-
-/* FOOTER */
-.site-footer {
-  background: #fff;
-  border-top: 1px solid var(--line);
-  padding: 32px 0;
-}
-
-.footer-inner {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 18px;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.footer-brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  font-weight: 700;
-  color: var(--ink);
-}
-
-.footer-links {
-  display: flex;
-  gap: 22px;
-}
-
-.footer-links a {
-  color: var(--muted);
-  text-decoration: none;
-  font-size: 14px;
-  transition: color 0.2s ease;
-}
-
-.footer-links a:hover {
-  color: var(--ink);
-}
-
-.footer-copy {
-  color: var(--muted);
-  font-size: 13px;
-}
-
-.mt-2 {
-  margin-top: 8px;
 }
 
 /* RESPONSIVE */
 @media (max-width: 960px) {
-  .nav-links,
-  .header-cta {
-    display: none;
-  }
-
-  .hamburger {
-    display: inline-flex;
-  }
-
   .hero {
     padding: 64px 0 88px;
   }
@@ -1400,16 +1090,6 @@ function scrollTo(hash: string) {
   .hero-visual {
     min-height: 420px;
     transform: scale(0.92);
-  }
-
-  .footer-inner {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .footer-links {
-    flex-wrap: wrap;
-    justify-content: center;
   }
 }
 </style>

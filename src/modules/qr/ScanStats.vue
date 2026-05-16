@@ -20,35 +20,66 @@ const browserItems = computed(() =>
 </script>
 
 <template>
-  <v-card>
-    <v-card-title class="d-flex align-center">
-      <span>Scan Statistics</span>
-      <v-spacer />
-      <v-btn icon="mdi-refresh" variant="text" size="small" @click="refetch()" />
-    </v-card-title>
-    <v-card-text>
-      <div v-if="isLoading" class="d-flex justify-center pa-4">
+  <section class="panel">
+    <div class="panel-head">
+      <div>
+        <h2 class="panel-head-title">Scan Statistics</h2>
+        <p class="panel-head-sub">Aggregate breakdown of recent scan activity.</p>
+      </div>
+      <button
+        type="button"
+        class="app-btn app-btn-ghost app-btn-icon"
+        aria-label="Refresh stats"
+        @click="refetch()"
+      >
+        <v-icon icon="mdi-refresh" size="18" />
+      </button>
+    </div>
+    <div class="panel-body">
+      <div v-if="isLoading" class="loading">
         <v-progress-circular indeterminate />
       </div>
       <template v-else-if="stats">
-        <div class="d-flex flex-wrap ga-6 mb-4">
-          <div>
-            <div class="text-caption">Total scans</div>
-            <div class="text-h5">{{ stats.total_scans }}</div>
+        <div class="totals">
+          <div class="app-stat">
+            <div class="app-stat-label">Total scans</div>
+            <div class="app-stat-value">{{ stats.total_scans }}</div>
           </div>
         </div>
 
-        <v-row>
-          <v-col cols="12" md="6">
-            <BreakdownTable title="Device breakdown" key-label="Device" :items="deviceItems" />
-          </v-col>
-          <v-col cols="12" md="6">
-            <BreakdownTable title="Browser breakdown" key-label="Browser" :items="browserItems" />
-          </v-col>
-        </v-row>
+        <div class="breakdowns">
+          <BreakdownTable title="Device breakdown" key-label="Device" :items="deviceItems" />
+          <BreakdownTable title="Browser breakdown" key-label="Browser" :items="browserItems" />
+        </div>
 
         <RecentScans :logs="stats.recent_logs" />
       </template>
-    </v-card-text>
-  </v-card>
+    </div>
+  </section>
 </template>
+
+<style scoped>
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: 24px 0;
+}
+
+.totals {
+  margin-bottom: 20px;
+  max-width: 240px;
+}
+
+.breakdowns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 720px) {
+  .breakdowns {
+    grid-template-columns: 1fr;
+  }
+}
+</style>

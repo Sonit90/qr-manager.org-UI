@@ -275,17 +275,17 @@ function formatDateTime(value?: string) {
     </template>
 
     <v-alert v-else type="error" class="not-found">QR not found</v-alert>
-  </div>
 
-  <ConfirmDialog
-    v-model:open="deleteOpen"
-    title="Delete QR code?"
-    :message="`This will permanently remove '${displayName}'. This action cannot be undone.`"
-    confirm-text="Delete"
-    danger
-    :loading="deleteMutation.isPending.value"
-    @confirm="confirmDelete"
-  />
+    <ConfirmDialog
+      v-model:open="deleteOpen"
+      title="Delete QR code?"
+      :message="`This will permanently remove '${displayName}'. This action cannot be undone.`"
+      confirm-text="Delete"
+      danger
+      :loading="deleteMutation.isPending.value"
+      @confirm="confirmDelete"
+    />
+  </div>
 </template>
 
 <style scoped>

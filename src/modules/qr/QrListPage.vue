@@ -273,24 +273,24 @@ function copyShortLink(qr: TypeQrQrCodeResponse) {
         </v-data-table>
       </div>
     </section>
+
+    <QrCreateDialog
+      v-model:open="createOpen"
+      :loading="createMutation.isPending.value"
+      @submit="onCreate"
+    />
+
+    <ConfirmDialog
+      :open="!!deleteTarget"
+      title="Delete QR code?"
+      :message="`This will permanently remove '${deleteTarget?.name || deleteTarget?.code}'. This action cannot be undone.`"
+      confirm-text="Delete"
+      danger
+      :loading="deleteMutation.isPending.value"
+      @update:open="(v) => !v && (deleteTarget = null)"
+      @confirm="confirmDelete"
+    />
   </div>
-
-  <QrCreateDialog
-    v-model:open="createOpen"
-    :loading="createMutation.isPending.value"
-    @submit="onCreate"
-  />
-
-  <ConfirmDialog
-    :open="!!deleteTarget"
-    title="Delete QR code?"
-    :message="`This will permanently remove '${deleteTarget?.name || deleteTarget?.code}'. This action cannot be undone.`"
-    confirm-text="Delete"
-    danger
-    :loading="deleteMutation.isPending.value"
-    @update:open="(v) => !v && (deleteTarget = null)"
-    @confirm="confirmDelete"
-  />
 </template>
 
 <style scoped>

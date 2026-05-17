@@ -12,6 +12,10 @@ import {
   generateShortPasswordCredentials,
 } from '@tests/__apiMocks__/login/generateLoginData.ts'
 import { mockUser } from '@tests/__apiMocks__/user/mockUser.ts'
+import { mockListQrs } from '@tests/__apiMocks__/qr/mockQr.ts'
+
+mockUser()
+mockListQrs([])
 
 describe('LoginPage Integration Tests', () => {
   test('should render login form with all required fields', async () => {

@@ -3,7 +3,7 @@ import { waitFor, within } from '@testing-library/vue'
 import { flushPromises } from '@vue/test-utils'
 import { ApiClientQr } from '@/api/qr/ApiClientQr.ts'
 import { mockUser } from '@tests/__apiMocks__/user/mockUser.ts'
-import { mockListQrs } from '@tests/__apiMocks__/qr/mockQr.ts'
+import { mockListQrs, mockGetQr, mockGetScanLogs } from '@tests/__apiMocks__/qr/mockQr.ts'
 import { generateQr } from '@tests/__apiMocks__/qr/generateQr.ts'
 import { mockWithDelay } from '@tests/helpers/mockWithDelay.ts'
 import type { TypeQrQrCodeResponse } from '@/api/__generated__/qr/data-contracts.ts'
@@ -104,6 +104,8 @@ describe('QrListPage Integration Tests', () => {
   test('should navigate to detail page when view icon is clicked', async () => {
     const qr = generateQr()
     mockListQrs([qr])
+    mockGetQr(qr)
+    mockGetScanLogs()
 
     const { view, user } = await visitRoute('/qrs')
 

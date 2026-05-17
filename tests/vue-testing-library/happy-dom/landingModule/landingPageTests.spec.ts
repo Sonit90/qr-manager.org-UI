@@ -1,10 +1,13 @@
 import { visitRoute } from '../../helpers/visitRoute.ts'
 import { useUserStore } from '@/stores/userStore.ts'
 import { faker } from '@faker-js/faker'
+import { mockUser } from '@tests/__apiMocks__/user/mockUser.ts'
 
 function generateAccessToken() {
   return faker.string.alphanumeric(32)
 }
+
+mockUser()
 
 describe('LandingPage Integration Tests', () => {
   test('should render hero headline and subheadline', async () => {

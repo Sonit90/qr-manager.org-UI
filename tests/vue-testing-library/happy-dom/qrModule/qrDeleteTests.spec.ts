@@ -79,6 +79,7 @@ describe('QR Delete Integration Tests', () => {
     const qr = generateQr()
     mockGetQr(qr)
     mockGetScanLogs()
+    mockListQrs([])
     const { mockedDelete } = mockDeleteQr()
 
     const { view, user } = await visitRoute(`/qrs/${qr.id}`)

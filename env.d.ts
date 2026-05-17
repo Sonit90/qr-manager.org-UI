@@ -1,2 +1,8 @@
 /// <reference types="vite/client" />
 declare const __BUILD_DATE__: string
+
+declare module '*.svg?component' {
+  import type { FunctionalComponent, SVGAttributes } from 'vue'
+  const component: FunctionalComponent<SVGAttributes>
+  export default component
+}

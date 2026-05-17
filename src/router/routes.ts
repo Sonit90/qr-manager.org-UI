@@ -64,6 +64,12 @@ export const routes = [
   },
 
   {
+    path: '/contact',
+    name: 'contact',
+    component: () => import('@/modules/contact/ContactPage.vue'),
+  },
+
+  {
     path: '/user',
     component: () => import('@/components/layout/AppLayout.vue'),
     children: [

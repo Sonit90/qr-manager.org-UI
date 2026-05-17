@@ -51,9 +51,14 @@ const handleResetPassword = async () => {
         />
       </div>
 
-      <v-btn type="submit" class="btn-primary" color="primary" :loading="isLoading" block>
+      <button
+        type="submit"
+        class="app-btn app-btn-primary app-btn-lg app-btn-block"
+        :disabled="isLoading"
+      >
+        <v-progress-circular v-if="isLoading" size="16" width="2" indeterminate />
         Send Reset Link
-      </v-btn>
+      </button>
     </v-form>
     <div v-else class="text-center py-4">
       <v-icon size="64" color="success" class="mb-4">mdi-check-circle</v-icon>

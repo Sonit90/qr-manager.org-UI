@@ -127,9 +127,14 @@ const confirmPasswordRules = computed(() => [
         @click:append-inner="showConfirmPassword = !showConfirmPassword"
       />
 
-      <v-btn type="submit" color="primary" block size="large" :loading="isLoading">
+      <button
+        type="submit"
+        class="app-btn app-btn-primary app-btn-lg app-btn-block"
+        :disabled="isLoading"
+      >
+        <v-progress-circular v-if="isLoading" size="16" width="2" indeterminate />
         Reset Password
-      </v-btn>
+      </button>
     </v-form>
     <GenericState v-else-if="stateProps" :error-message="errorMessage" v-bind="stateProps" />
   </AuthForm>

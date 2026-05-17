@@ -74,9 +74,14 @@ const handleLogin = async () => {
       <div class="mb-4 d-flex justify-end">
         <router-link to="/forgot-password" class="link-styled">Forgot password?</router-link>
       </div>
-      <v-btn type="submit" class="btn-primary" color="primary" :loading="isLoading" block>
+      <button
+        type="submit"
+        class="app-btn app-btn-primary app-btn-lg app-btn-block"
+        :disabled="isLoading"
+      >
+        <v-progress-circular v-if="isLoading" size="16" width="2" indeterminate />
         Sign In
-      </v-btn>
+      </button>
     </v-form>
     <template #append>
       <span class="mr-2">Don't have an account?</span>

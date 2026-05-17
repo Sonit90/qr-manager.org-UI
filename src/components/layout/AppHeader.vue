@@ -25,9 +25,9 @@ const { hasRole } = useUserRoles()
 const drawer = ref(false)
 
 const marketingLinks = [
-  { label: 'Features', href: '#features' },
-  { label: 'Pricing', href: '#pricing' },
-  { label: 'FAQ', href: '#faq' },
+  { label: 'Features', href: '/#features' },
+  { label: 'Pricing', href: '/#pricing' },
+  { label: 'FAQ', href: '/#faq' },
 ]
 
 const appLinks = computed(() => {
@@ -41,9 +41,7 @@ const appLinks = computed(() => {
   return links
 })
 
-const navLinks = computed(() =>
-  props.variant === 'marketing' ? marketingLinks : appLinks.value,
-)
+const navLinks = computed(() => (props.variant === 'marketing' ? marketingLinks : appLinks.value))
 
 function isAnchor(href: string) {
   return href.startsWith('#')

@@ -52,6 +52,18 @@ export const routes = [
   },
 
   {
+    path: '/privacy',
+    name: 'privacy',
+    component: () => import('@/modules/legal/PrivacyPolicyPage.vue'),
+  },
+
+  {
+    path: '/terms',
+    name: 'terms',
+    component: () => import('@/modules/legal/TermsOfServicePage.vue'),
+  },
+
+  {
     path: '/user',
     component: () => import('@/components/layout/AppLayout.vue'),
     children: [

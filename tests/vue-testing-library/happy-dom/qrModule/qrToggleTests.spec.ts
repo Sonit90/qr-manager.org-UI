@@ -54,6 +54,29 @@ describe('QR Toggle Enabled Integration Tests', () => {
     })
   })
 
+  test('should reflect new enabled state in list row after toggle', async () => {
+    const qr = generateQr({ enabled: true, name: 'Live QR' })
+    mockListQrs([qr])
+    mockToggleEnabled({
+      id: qr.id,
+      enabled: false,
+      updated_at: faker.date.recent().toISOString(),
+    })
+
+    const { view, user } = await visitRoute('/qrs')
+
+    await flushPromises()
+
+    const toggle = view.getByLabelText('Toggle Live QR') as HTMLInputElement
+    expect(toggle.checked).toBe(true)
+
+    await user.click(toggle)
+
+    await waitFor(() => {
+      expect(toggle.checked).toBe(false)
+    })
+  })
+
   test('should toggle enabled from detail page', async () => {
     const qr = generateQr({ enabled: true })
     mockGetQr(qr)

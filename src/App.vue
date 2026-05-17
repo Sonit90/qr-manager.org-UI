@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
-import { Notifications as NotificationComponent } from '@kyvg/vue3-notification'
+import AppNotifications from '@/components/layout/AppNotifications.vue'
 </script>
 
 <template>
   <v-app>
     <v-main>
       <RouterView />
-      <NotificationComponent />
+      <AppNotifications />
     </v-main>
   </v-app>
 </template>

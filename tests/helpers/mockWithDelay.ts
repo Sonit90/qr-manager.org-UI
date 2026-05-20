@@ -15,7 +15,7 @@ export function mockWithDelay<T>(value?: T, delay = 100, shouldReject = false) {
         if (shouldReject) {
           reject(value)
         } else {
-          resolve(value)
+          resolve(value as T)
         }
       }, delay)
     })

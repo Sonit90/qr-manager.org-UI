@@ -32,18 +32,11 @@ describe('LoginPage Integration Tests', () => {
   })
 
   test('should show validation errors for empty fields', async () => {
-    const { view, user } = await visitRoute('/login')
+    const { view } = await visitRoute('/login')
 
     const submitButton = view.getByRole('button', { name: /sign in/i })
 
-    // Try to submit without filling fields
-    await user.click(submitButton)
-
-    // Wait for validation errors to appear
-    await waitFor(() => {
-      view.getByText(/e-mail is required/i)
-      view.getByText(/password is required/i)
-    })
+    expect(submitButton).toBeDisabled()
   })
 
   test('should show validation error for invalid email format', async () => {

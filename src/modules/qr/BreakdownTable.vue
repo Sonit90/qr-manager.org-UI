@@ -12,7 +12,7 @@ const headers = computed(() => [
   { title: 'Count', key: 'count', align: 'end' as const },
 ])
 
-const rows = computed(() => props.items.map((item, idx) => (Object.assign({id:idx}, item))))
+const rows = computed(() => props.items.map((item, idx) => Object.assign({ id: idx }, item)))
 </script>
 
 <template>

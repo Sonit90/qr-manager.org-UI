@@ -71,7 +71,9 @@ describe('LandingPage Integration Tests', () => {
 
     const ctas = view.getAllByRole('link', { name: /create free qr code/i })
     expect(ctas.length).toBeGreaterThan(0)
-    ctas.forEach((cta) => expect(cta).toHaveAttribute('href', '/register'))
+    for (const cta of ctas) {
+      expect(cta).toHaveAttribute('href', '/register')
+    }
   })
 
   test('should render secondary CTA linking to how it works section', async () => {

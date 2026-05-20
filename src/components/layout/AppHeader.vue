@@ -184,6 +184,7 @@ const userInitial = computed(() => {
   color: var(--ink);
   text-decoration: none;
   font-size: 17px;
+  line-height: 1;
 }
 
 .logo-mark {

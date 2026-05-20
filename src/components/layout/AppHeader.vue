@@ -25,36 +25,23 @@ const { hasRole } = useUserRoles()
 const drawer = ref(false)
 
 const marketingLinks = [
-  { label: 'Features', href: '/#features' },
-  { label: 'Pricing', href: '/#pricing' },
-  { label: 'FAQ', href: '/#faq' },
+  { label: 'Features', to: '/#features' },
+  { label: 'Pricing', to: '/#pricing' },
+  { label: 'FAQ', to: '/#faq' },
 ]
 
 const appLinks = computed(() => {
   const links = [
-    { label: 'My QRs', href: '/qrs' },
-    { label: 'Profile', href: '/profile' },
+    { label: 'My QRs', to: '/qrs' },
+    { label: 'Profile', to: '/profile' },
   ]
   if (hasRole([TypeRoleV1.EnumAdmin])) {
-    links.push({ label: 'Users', href: '/admin/users' })
+    links.push({ label: 'Users', to: '/admin/users' })
   }
   return links
 })
 
 const navLinks = computed(() => (props.variant === 'marketing' ? marketingLinks : appLinks.value))
-
-function isAnchor(href: string) {
-  return href.startsWith('#')
-}
-
-function handleLinkClick(event: MouseEvent, href: string) {
-  drawer.value = false
-  if (isAnchor(href)) {
-    event.preventDefault()
-    const el = document.querySelector(href)
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }
-}
 
 async function logout() {
   drawer.value = false
@@ -76,32 +63,32 @@ const userInitial = computed(() => {
 <template>
   <header class="site-header">
     <div class="app-container header-inner">
-      <a href="/" class="logo" aria-label="QR Manager home">
+      <router-link to="/" class="logo" aria-label="QR Manager home">
         <span class="logo-mark">
           <v-icon icon="mdi-qrcode" size="22" />
         </span>
         <span class="logo-text">QR Manager</span>
-      </a>
+      </router-link>
 
       <nav class="nav-links" aria-label="Primary">
-        <a
+        <router-link
           v-for="link in navLinks"
-          :key="link.href"
-          :href="link.href"
-          @click="handleLinkClick($event, link.href)"
+          :key="link.to"
+          :to="link.to"
+          @click="drawer = false"
         >
           {{ link.label }}
-        </a>
+        </router-link>
       </nav>
 
       <div class="header-cta">
         <template v-if="variant === 'marketing'">
           <template v-if="isAuthenticated">
-            <a href="/qrs" class="app-btn app-btn-primary">Go to My QRs</a>
+            <router-link to="/qrs" class="app-btn app-btn-primary">Go to My QRs</router-link>
           </template>
           <template v-else>
-            <a href="/login" class="app-btn app-btn-ghost">Login</a>
-            <a href="/register" class="app-btn app-btn-primary">Register</a>
+            <router-link to="/login" class="app-btn app-btn-ghost">Login</router-link>
+            <router-link to="/register" class="app-btn app-btn-primary">Register</router-link>
           </template>
         </template>
 
@@ -139,22 +126,28 @@ const userInitial = computed(() => {
     </div>
 
     <div v-if="drawer" class="mobile-drawer">
-      <a
+      <router-link
         v-for="link in navLinks"
-        :key="link.href"
-        :href="link.href"
-        @click="handleLinkClick($event, link.href)"
+        :key="link.to"
+        :to="link.to"
+        @click="drawer = false"
       >
         {{ link.label }}
-      </a>
+      </router-link>
       <div class="drawer-cta">
         <template v-if="variant === 'marketing'">
           <template v-if="isAuthenticated">
-            <a href="/qrs" class="app-btn app-btn-primary app-btn-block">Go to My QRs</a>
+            <router-link to="/qrs" class="app-btn app-btn-primary app-btn-block" @click="drawer = false">
+              Go to My QRs
+            </router-link>
           </template>
           <template v-else>
-            <a href="/login" class="app-btn app-btn-ghost app-btn-block">Login</a>
-            <a href="/register" class="app-btn app-btn-primary app-btn-block">Register</a>
+            <router-link to="/login" class="app-btn app-btn-ghost app-btn-block" @click="drawer = false">
+              Login
+            </router-link>
+            <router-link to="/register" class="app-btn app-btn-primary app-btn-block" @click="drawer = false">
+              Register
+            </router-link>
           </template>
         </template>
         <template v-else>

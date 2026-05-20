@@ -76,15 +76,18 @@ function applyPreset(preset: Preset) {
 
 function selectFormat(format: Format) {
   form.format = format
+  if (format === 'svg') {
+    form.width = null
+    form.height = null
+  }
 }
 
 function close() {
-  if (!isExporting.value) {
-    form.format = 'svg'
-    form.width = null
-    form.height = null
-    emit('update:open', false)
-  }
+  if (isExporting.value) return
+  form.format = 'svg'
+  form.width = null
+  form.height = null
+  emit('update:open', false)
 }
 
 async function doExport() {

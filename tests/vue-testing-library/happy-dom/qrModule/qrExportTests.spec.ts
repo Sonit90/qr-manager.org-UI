@@ -127,6 +127,16 @@ describe('QR Export Modal Integration Tests', () => {
   })
 
   describe('format tab switching', () => {
+    test('switching to SVG after a PNG preset activates T-Shirt', async () => {
+      mockExportQr()
+      const { view, user } = await openExportModalFromDetailPage()
+
+      await user.click(view.getByRole('button', { name: /print/i }))
+      await user.click(view.getByRole('button', { name: 'SVG' }))
+
+      expect(view.getByRole('button', { name: /t-shirt/i }).className).toContain('preset-btn-active')
+    })
+
     test('switching format tab clears active preset', async () => {
       mockExportQr()
       const { view, user } = await openExportModalFromDetailPage()

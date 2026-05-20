@@ -44,7 +44,9 @@ function roleBadgeClass(role?: string) {
   >
     <template #item.email="{ item }">
       <div class="user-cell">
-        <span class="user-avatar">{{ (item.email || item.display_name || '?').charAt(0).toUpperCase() }}</span>
+        <span class="user-avatar">{{
+          (item.email || item.display_name || '?').charAt(0).toUpperCase()
+        }}</span>
         <span class="user-email">{{ item.email }}</span>
       </div>
     </template>

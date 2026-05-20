@@ -49,7 +49,9 @@ describe('QR Export Modal Integration Tests', () => {
       mockExportQr()
       const { view } = await openExportModalFromDetailPage()
 
-      expect(view.getByRole('button', { name: /t-shirt/i }).className).toContain('preset-btn-active')
+      expect(view.getByRole('button', { name: /t-shirt/i }).className).toContain(
+        'preset-btn-active',
+      )
     })
 
     test('SVG is active format on open', async () => {
@@ -76,7 +78,9 @@ describe('QR Export Modal Integration Tests', () => {
 
       await user.click(view.getByRole('button', { name: /\bweb\b/i }))
 
-      expect(view.getByRole('button', { name: /\bweb\b/i }).className).toContain('preset-btn-active')
+      expect(view.getByRole('button', { name: /\bweb\b/i }).className).toContain(
+        'preset-btn-active',
+      )
       expect(view.getByRole('button', { name: 'PNG' }).className).toContain('format-tab-active')
       expect((view.getByLabelText('Width (px)') as HTMLInputElement).value).toBe('512')
       expect((view.getByLabelText('Height (px)') as HTMLInputElement).value).toBe('512')
@@ -121,7 +125,9 @@ describe('QR Export Modal Integration Tests', () => {
       await user.click(view.getByRole('button', { name: /\bweb\b/i }))
       await user.click(view.getByRole('button', { name: /print/i }))
 
-      expect(view.getByRole('button', { name: /\bweb\b/i }).className).not.toContain('preset-btn-active')
+      expect(view.getByRole('button', { name: /\bweb\b/i }).className).not.toContain(
+        'preset-btn-active',
+      )
       expect(view.getByRole('button', { name: /print/i }).className).toContain('preset-btn-active')
     })
   })
@@ -134,7 +140,9 @@ describe('QR Export Modal Integration Tests', () => {
       await user.click(view.getByRole('button', { name: /print/i }))
       await user.click(view.getByRole('button', { name: 'SVG' }))
 
-      expect(view.getByRole('button', { name: /t-shirt/i }).className).toContain('preset-btn-active')
+      expect(view.getByRole('button', { name: /t-shirt/i }).className).toContain(
+        'preset-btn-active',
+      )
     })
 
     test('switching format tab clears active preset', async () => {

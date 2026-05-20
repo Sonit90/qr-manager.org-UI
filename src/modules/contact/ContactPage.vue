@@ -19,9 +19,7 @@ const nameRules = [isRequired('Name')]
 const emailRules = [isRequired('E-mail'), isValidEmail]
 const messageRules = [isRequired('Message'), hasMinLength(10)]
 
-const isFormFilled = computed(
-  () => !!form.name && !!form.email && form.message.length >= 10,
-)
+const isFormFilled = computed(() => !!form.name && !!form.email && form.message.length >= 10)
 
 async function handleSubmit() {
   if (!contactForm.value) return

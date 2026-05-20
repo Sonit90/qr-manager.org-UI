@@ -61,9 +61,7 @@ describe('QrCreateDialog Component Tests', () => {
     await waitFor(() => {
       expect(view.emitted('submit')).toBeTruthy()
     })
-    expect(view.emitted('submit')?.[0]).toEqual([
-      { target_url: 'https://example.com', name: null },
-    ])
+    expect(view.emitted('submit')?.[0]).toEqual([{ target_url: 'https://example.com', name: null }])
   })
 
   test('should emit update:open false when Cancel is clicked', async () => {

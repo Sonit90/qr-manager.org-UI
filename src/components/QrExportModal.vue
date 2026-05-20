@@ -51,8 +51,7 @@ const isSvg = computed(() => form.format === 'svg')
 const activePreset = computed(() => {
   return (
     PRESETS.find(
-      (p) =>
-        p.format === form.format && p.width === form.width && p.height === form.height,
+      (p) => p.format === form.format && p.width === form.width && p.height === form.height,
     )?.label ?? null
   )
 })
@@ -175,7 +174,12 @@ async function doExport() {
                   placeholder="1024"
                   min="150"
                   max="5000"
-                  @input="(e) => { const v = (e.target as HTMLInputElement).valueAsNumber; form.width = isNaN(v) ? null : v }"
+                  @input="
+                    (e) => {
+                      const v = (e.target as HTMLInputElement).valueAsNumber
+                      form.width = isNaN(v) ? null : v
+                    }
+                  "
                 />
               </div>
               <span class="dim-sep">×</span>
@@ -189,7 +193,12 @@ async function doExport() {
                   placeholder="1024"
                   min="150"
                   max="5000"
-                  @input="(e) => { const v = (e.target as HTMLInputElement).valueAsNumber; form.height = isNaN(v) ? null : v }"
+                  @input="
+                    (e) => {
+                      const v = (e.target as HTMLInputElement).valueAsNumber
+                      form.height = isNaN(v) ? null : v
+                    }
+                  "
                 />
               </div>
             </div>

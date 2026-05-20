@@ -71,12 +71,7 @@ const userInitial = computed(() => {
       </router-link>
 
       <nav class="nav-links" aria-label="Primary">
-        <router-link
-          v-for="link in navLinks"
-          :key="link.to"
-          :to="link.to"
-          @click="drawer = false"
-        >
+        <router-link v-for="link in navLinks" :key="link.to" :to="link.to" @click="drawer = false">
           {{ link.label }}
         </router-link>
       </nav>
@@ -126,26 +121,33 @@ const userInitial = computed(() => {
     </div>
 
     <div v-if="drawer" class="mobile-drawer">
-      <router-link
-        v-for="link in navLinks"
-        :key="link.to"
-        :to="link.to"
-        @click="drawer = false"
-      >
+      <router-link v-for="link in navLinks" :key="link.to" :to="link.to" @click="drawer = false">
         {{ link.label }}
       </router-link>
       <div class="drawer-cta">
         <template v-if="variant === 'marketing'">
           <template v-if="isAuthenticated">
-            <router-link to="/qrs" class="app-btn app-btn-primary app-btn-block" @click="drawer = false">
+            <router-link
+              to="/qrs"
+              class="app-btn app-btn-primary app-btn-block"
+              @click="drawer = false"
+            >
               Go to My QRs
             </router-link>
           </template>
           <template v-else>
-            <router-link to="/login" class="app-btn app-btn-ghost app-btn-block" @click="drawer = false">
+            <router-link
+              to="/login"
+              class="app-btn app-btn-ghost app-btn-block"
+              @click="drawer = false"
+            >
               Login
             </router-link>
-            <router-link to="/register" class="app-btn app-btn-primary app-btn-block" @click="drawer = false">
+            <router-link
+              to="/register"
+              class="app-btn app-btn-primary app-btn-block"
+              @click="drawer = false"
+            >
               Register
             </router-link>
           </template>

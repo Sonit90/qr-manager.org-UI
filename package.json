@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "type": "module",
+  "module": "index.ts",
   "scripts": {
     "dev": "run-s generate serve",
     "serve": "bunx --bun vite",
@@ -25,10 +26,9 @@
     "test": "run-p test:vitest test:bun",
     "test:watch": "vitest watch",
     "type-check": "vue-tsc --build",
-    "lint:oxlint": "oxlint --fix --fix-suggestions -c .oxlintrc.jsonc --tsconfig tsconfig.json",
-    "lint:eslint": "eslint . --fix",
-    "lint": "run-s lint:*",
-    "format": "prettier --write src/"
+    "lint": "oxlint --fix --fix-suggestions -c .oxlintrc.jsonc --tsconfig tsconfig.json",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check"
   },
   "dependencies": {
     "@faker-js/faker": "^9.9.0",
@@ -51,20 +51,14 @@
     "@types/jsdom": "^21.1.7",
     "@types/node": "^22.19.19",
     "@vitejs/plugin-vue": "^5.2.4",
-    "@vitest/eslint-plugin": "^1.3.4",
-    "@vue/eslint-config-prettier": "^10.2.0",
-    "@vue/eslint-config-typescript": "^14.6.0",
     "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "^0.7.0",
     "bun-types": "^1.2.19",
-    "eslint": "^9.32.0",
-    "eslint-plugin-oxlint": "^1.8.0",
-    "eslint-plugin-vue": "~10.2.0",
     "happy-dom": "20.8.9",
     "jsdom": "^26.1.0",
     "npm-run-all2": "^7.0.2",
+    "oxfmt": "^0.51.0",
     "oxlint": "^1.8.0",
-    "prettier": "3.5.3",
     "swagger-typescript-api": "~13.0.28",
     "typescript": "~5.8.3",
     "vite": "npm:rolldown-vite@latest",
@@ -72,6 +66,5 @@
     "vitest": "^3.2.4",
     "vue-tsc": "^2.2.12",
     "vuetify": "3.9.0"
-  },
-  "module": "index.ts"
+  }
 }

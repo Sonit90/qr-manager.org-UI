@@ -3,11 +3,7 @@ import { waitFor } from '@testing-library/vue'
 import { flushPromises } from '@vue/test-utils'
 import { faker } from '@faker-js/faker'
 import { mockUser } from '@tests/__apiMocks__/user/mockUser.ts'
-import {
-  mockGetQr,
-  mockGetScanLogs,
-  mockUpdateTarget,
-} from '@tests/__apiMocks__/qr/mockQr.ts'
+import { mockGetQr, mockGetScanLogs, mockUpdateTarget } from '@tests/__apiMocks__/qr/mockQr.ts'
 import { generateQr, generateScanStats } from '@tests/__apiMocks__/qr/generateQr.ts'
 
 mockUser()

@@ -20,6 +20,7 @@ VITE_API_URL=http://localhost:8000/api
 ```
 
 **Important Notes:**
+
 - All environment variables must be prefixed with `VITE_` to be accessible in the frontend
 - Variables are embedded during build time, not runtime
 - For production deployment, ensure the `.env` file is present in `/opt/front/` directory

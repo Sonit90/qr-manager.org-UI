@@ -84,7 +84,6 @@ function copyShort() {
   notify({ type: 'success', title: 'Copied' })
 }
 
-
 function formatDateTime(value?: string) {
   if (!value) return ''
   return new Date(value).toLocaleString()
@@ -270,11 +269,7 @@ function formatDateTime(value?: string) {
 
     <v-alert v-else type="error" class="not-found">QR not found</v-alert>
 
-    <QrExportModal
-      v-model:open="exportOpen"
-      :qr-id="id"
-      :qr-name="displayName"
-    />
+    <QrExportModal v-model:open="exportOpen" :qr-id="id" :qr-name="displayName" />
 
     <ConfirmDialog
       v-model:open="deleteOpen"

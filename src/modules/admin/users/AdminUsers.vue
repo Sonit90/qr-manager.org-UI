@@ -27,8 +27,8 @@ const filteredUsers = computed(() => {
 
 const totalUsers = computed(() => users.value.length)
 const activeUsers = computed(() => users.value.filter((u) => u.is_active).length)
-const adminUsers = computed(() =>
-  users.value.filter((u) => (u.role ?? '').toLowerCase() === 'admin').length,
+const adminUsers = computed(
+  () => users.value.filter((u) => (u.role ?? '').toLowerCase() === 'admin').length,
 )
 
 function onEdit(user: TypeUserV1) {
@@ -130,7 +130,9 @@ function onCancel() {
   background: var(--bg-soft);
   color: var(--ink);
   outline: none;
-  transition: border-color 0.2s ease, background 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
 }
 
 .search-input:focus {

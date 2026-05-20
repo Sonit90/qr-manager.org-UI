@@ -109,12 +109,7 @@ const roleItems = [
         </v-form>
       </div>
       <div class="app-dialog-actions">
-        <button
-          type="button"
-          class="app-btn app-btn-ghost"
-          :disabled="isLoading"
-          @click="onCancel"
-        >
+        <button type="button" class="app-btn app-btn-ghost" :disabled="isLoading" @click="onCancel">
           Cancel
         </button>
         <button

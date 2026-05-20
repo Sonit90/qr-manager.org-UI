@@ -91,12 +91,7 @@ function submit() {
         </v-form>
       </div>
       <div class="app-dialog-actions">
-        <button
-          type="button"
-          class="app-btn app-btn-ghost"
-          :disabled="loading"
-          @click="close"
-        >
+        <button type="button" class="app-btn app-btn-ghost" :disabled="loading" @click="close">
           Cancel
         </button>
         <button

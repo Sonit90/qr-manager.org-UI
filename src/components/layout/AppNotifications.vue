@@ -126,7 +126,9 @@ function variantClass(type?: NotificationType) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
   flex-shrink: 0;
 }
 

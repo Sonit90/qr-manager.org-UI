@@ -1,0 +1,6 @@
+{
+  "semi": false,
+  "singleQuote": true,
+  "printWidth": 100,
+  "ignorePatterns": ["src/api/v1/openapi.json", "src/api/__generated__/**"]
+}

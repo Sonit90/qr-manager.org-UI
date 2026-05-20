@@ -14,7 +14,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      
+
       - name: Determine deployment directory
         run: |
           # Try to use /opt/front first, fallback to home directory
@@ -26,18 +26,18 @@ jobs:
             echo "⚠️  Cannot access /opt, using $HOME/front as deployment directory"
           fi
           echo "DEPLOY_DIR=$DEPLOY_DIR" >> $GITHUB_ENV
-      
+
       - name: Create deployment structure
         run: |
           echo "📁 Creating deployment directory structure..."
           mkdir -p $DEPLOY_DIR/current
           mkdir -p $DEPLOY_DIR/releases
           echo "✅ Deployment structure created"
-      
+
       - name: Backup current deployment if exists
         run: |
           cd $DEPLOY_DIR
-          
+
           # Check if current deployment exists and is not empty
           if [ -d "current" ] && [ "$(ls -A current 2>/dev/null)" ]; then
             echo "📦 Backing up current deployment to releases..."
@@ -63,35 +63,35 @@ jobs:
           else
             echo "ℹ️  No current deployment found, skipping backup"
           fi
-      
+
       - name: Create new release directory
         run: |
           cd $DEPLOY_DIR
-          
+
           # Create timestamp for new release
           TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
           RELEASE_DIR="releases/release_$TIMESTAMP"
-          
+
           mkdir -p "$RELEASE_DIR"
           echo "RELEASE_DIR=$RELEASE_DIR" >> $GITHUB_ENV
           echo "✅ New release directory created: $RELEASE_DIR"
-      
+
       - name: Copy project to new release directory
         run: |
           cd $DEPLOY_DIR
           echo "📋 Copying project files to $RELEASE_DIR..."
           rsync -av --exclude='.git' --exclude='.github' --exclude='node_modules' --exclude='.venv' --exclude='current' --exclude='releases' $GITHUB_WORKSPACE/ $RELEASE_DIR/
           echo "✅ Project copied to $RELEASE_DIR"
-          
+
           # Ensure proper ownership for deployment
           echo "🔧 Setting proper ownership..."
           chown -R $(id -u):$(id -g) "$RELEASE_DIR"
           echo "✅ Ownership set correctly"
-      
+
       - name: Copy .env file to release directory
         run: |
           cd $DEPLOY_DIR
-          
+
           # Check if .env exists in root directory
           if [ -f ".env" ]; then
             echo "📋 Copying .env file to release directory..."
@@ -103,7 +103,7 @@ jobs:
             echo "VITE_API_URL=http://localhost:8000/api" >> "$RELEASE_DIR/.env"
             echo "✅ Default .env file created in $RELEASE_DIR"
           fi
-      
+
       - name: Verify .env file exists in release directory
         run: |
           cd $DEPLOY_DIR
@@ -112,7 +112,7 @@ jobs:
             exit 1
           fi
           echo "✅ .env file found in $RELEASE_DIR"
-      
+
       - name: Stop current services
         run: |
           cd $DEPLOY_DIR
@@ -127,17 +127,17 @@ jobs:
           else
             echo "ℹ️  No current services to stop"
           fi
-          
+
           # Additional cleanup: kill any processes using port 5195
           echo "🧹 Cleaning up port 5195..."
           docker ps -q --filter "publish=5195" | xargs -r docker kill || true
           docker ps -aq --filter "publish=5195" | xargs -r docker rm || true
           echo "✅ Port 5195 cleaned up"
-      
+
       - name: Clean up current directory
         run: |
           cd $DEPLOY_DIR
-          
+
           # Use Docker to clean up files as root, then change ownership
           echo "🧹 Cleaning up current directory..."
           if [ -d "current" ]; then
@@ -149,20 +149,20 @@ jobs:
             " || true
             echo "✅ Current directory cleaned up"
           fi
-      
+
       - name: Deploy new release
         run: |
           cd $DEPLOY_DIR
-          
+
           # Copy new release to current
           echo "📋 Deploying new release to current..."
           rsync -av --exclude='current' --exclude='backups' --exclude='releases' "$RELEASE_DIR/" current/
-          
+
           # Ensure all files have correct ownership
           echo "🔧 Fixing file ownership..."
           chown -R 1000:1000 current/
           echo "✅ File ownership fixed"
-          
+
           # Build and start services
           echo "🔨 Building Docker images..."
           cd current
@@ -172,15 +172,15 @@ jobs:
             echo "✅ Environment variables loaded from .env"
           fi
           docker compose -f docker-compose.yml --project-name frontend-production build
-          
+
           echo "🚀 Starting services..."
           docker compose -f docker-compose.yml --project-name frontend-production up -d
-          
+
           echo "✅ New release deployed successfully"
-          
+
           echo "📊 Checking service status..."
           docker compose -f docker-compose.yml --project-name frontend-production ps
-          
+
           echo "🔍 Health check..."
           sleep 30  # Wait for services to start
           if curl -f http://localhost:5195/health; then
@@ -188,7 +188,7 @@ jobs:
           else
             echo "⚠️  Health check failed - check logs with: cd $DEPLOY_DIR/current && docker compose -f docker-compose.yml --project-name frontend-production logs"
           fi
-      
+
       - name: Clean up old releases and backups
         run: |
           cd $DEPLOY_DIR
@@ -197,7 +197,7 @@ jobs:
           ls -t | tail -n +6 | xargs -r rm -rf
           cd ..
           echo "✅ Old releases and backups cleaned up"
-      
+
       - name: Deployment summary
         run: |
           cd $DEPLOY_DIR
@@ -212,4 +212,4 @@ jobs:
           echo "🔄 To rollback to previous version:"
           echo "1. Stop current services: cd $DEPLOY_DIR/current && docker compose down"
           echo "2. Restore from backup: rsync -av $DEPLOY_DIR/releases/backup_YYYYMMDD_HHMMSS/ $DEPLOY_DIR/current/"
-          echo "3. Start services: cd $DEPLOY_DIR/current && docker compose up -d" 
+          echo "3. Start services: cd $DEPLOY_DIR/current && docker compose up -d"

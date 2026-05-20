@@ -14,9 +14,7 @@
   "paths": {
     "/api/health": {
       "get": {
-        "tags": [
-          "Health"
-        ],
+        "tags": ["Health"],
         "operationId": "health",
         "responses": {
           "200": {
@@ -34,9 +32,7 @@
     },
     "/api/v1/contact": {
       "post": {
-        "tags": [
-          "Contact"
-        ],
+        "tags": ["Contact"],
         "operationId": "submit_contact",
         "requestBody": {
           "content": {
@@ -67,9 +63,7 @@
     },
     "/api/v1/qr": {
       "get": {
-        "tags": [
-          "QR"
-        ],
+        "tags": ["QR"],
         "operationId": "list_user_qrs",
         "responses": {
           "200": {
@@ -96,9 +90,7 @@
         ]
       },
       "post": {
-        "tags": [
-          "QR"
-        ],
+        "tags": ["QR"],
         "operationId": "create_qr",
         "requestBody": {
           "content": {
@@ -134,9 +126,7 @@
     },
     "/api/v1/qr/{id}": {
       "get": {
-        "tags": [
-          "QR"
-        ],
+        "tags": ["QR"],
         "operationId": "get_qr",
         "parameters": [
           {
@@ -178,9 +168,7 @@
         ]
       },
       "delete": {
-        "tags": [
-          "QR"
-        ],
+        "tags": ["QR"],
         "operationId": "delete_qr",
         "parameters": [
           {
@@ -217,9 +205,7 @@
     },
     "/api/v1/qr/{id}/enabled": {
       "patch": {
-        "tags": [
-          "QR"
-        ],
+        "tags": ["QR"],
         "operationId": "toggle_qr_enabled",
         "parameters": [
           {
@@ -273,9 +259,7 @@
     },
     "/api/v1/qr/{id}/export": {
       "get": {
-        "tags": [
-          "QR"
-        ],
+        "tags": ["QR"],
         "operationId": "export_qr",
         "parameters": [
           {
@@ -294,10 +278,7 @@
             "description": "Output format: `svg` (default), `png`, `jpeg`, `webp`",
             "required": false,
             "schema": {
-              "type": [
-                "string",
-                "null"
-              ]
+              "type": ["string", "null"]
             }
           },
           {
@@ -306,10 +287,7 @@
             "description": "Width in pixels, 150–5000 (raster formats only)",
             "required": false,
             "schema": {
-              "type": [
-                "integer",
-                "null"
-              ],
+              "type": ["integer", "null"],
               "format": "int32",
               "minimum": 0
             }
@@ -320,10 +298,7 @@
             "description": "Height in pixels, 150–5000 (raster formats only)",
             "required": false,
             "schema": {
-              "type": [
-                "integer",
-                "null"
-              ],
+              "type": ["integer", "null"],
               "format": "int32",
               "minimum": 0
             }
@@ -355,9 +330,7 @@
     },
     "/api/v1/qr/{id}/name": {
       "patch": {
-        "tags": [
-          "QR"
-        ],
+        "tags": ["QR"],
         "operationId": "update_name",
         "parameters": [
           {
@@ -411,9 +384,7 @@
     },
     "/api/v1/qr/{id}/scans": {
       "get": {
-        "tags": [
-          "Analytics"
-        ],
+        "tags": ["Analytics"],
         "operationId": "get_scan_logs",
         "parameters": [
           {
@@ -457,9 +428,7 @@
     },
     "/api/v1/qr/{id}/target": {
       "put": {
-        "tags": [
-          "QR"
-        ],
+        "tags": ["QR"],
         "operationId": "update_target_url",
         "parameters": [
           {
@@ -513,9 +482,7 @@
     },
     "/r/{qr_code}": {
       "get": {
-        "tags": [
-          "Public"
-        ],
+        "tags": ["Public"],
         "operationId": "redirect_qr",
         "parameters": [
           {
@@ -543,10 +510,7 @@
     "schemas": {
       "ContactMessageResponse": {
         "type": "object",
-        "required": [
-          "id",
-          "created_at"
-        ],
+        "required": ["id", "created_at"],
         "properties": {
           "created_at": {
             "type": "string",
@@ -560,17 +524,10 @@
       },
       "CreateContactMessageRequest": {
         "type": "object",
-        "required": [
-          "name",
-          "email",
-          "message"
-        ],
+        "required": ["name", "email", "message"],
         "properties": {
           "captcha_token": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "email": {
             "type": "string"
@@ -585,15 +542,10 @@
       },
       "CreateQrRequest": {
         "type": "object",
-        "required": [
-          "target_url"
-        ],
+        "required": ["target_url"],
         "properties": {
           "name": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "target_url": {
             "type": "string"
@@ -627,16 +579,10 @@
             "format": "uuid"
           },
           "image_url": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "name": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "scan_count": {
             "type": "integer",
@@ -653,27 +599,16 @@
       },
       "ScanLogResponse": {
         "type": "object",
-        "required": [
-          "timestamp"
-        ],
+        "required": ["timestamp"],
         "properties": {
           "browser": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "device_type": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "ip": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "timestamp": {
             "type": "string",
@@ -683,12 +618,7 @@
       },
       "ScanStatsResponse": {
         "type": "object",
-        "required": [
-          "total_scans",
-          "device_breakdown",
-          "browser_breakdown",
-          "recent_logs"
-        ],
+        "required": ["total_scans", "device_breakdown", "browser_breakdown", "recent_logs"],
         "properties": {
           "browser_breakdown": {
             "type": "object",
@@ -724,11 +654,7 @@
       },
       "TargetUrlResponse": {
         "type": "object",
-        "required": [
-          "id",
-          "url",
-          "created_at"
-        ],
+        "required": ["id", "url", "created_at"],
         "properties": {
           "created_at": {
             "type": "string",
@@ -745,9 +671,7 @@
       },
       "ToggleEnabledRequest": {
         "type": "object",
-        "required": [
-          "enabled"
-        ],
+        "required": ["enabled"],
         "properties": {
           "enabled": {
             "type": "boolean"
@@ -756,11 +680,7 @@
       },
       "ToggleEnabledResponse": {
         "type": "object",
-        "required": [
-          "id",
-          "enabled",
-          "updated_at"
-        ],
+        "required": ["id", "enabled", "updated_at"],
         "properties": {
           "enabled": {
             "type": "boolean"
@@ -777,9 +697,7 @@
       },
       "UpdateNameRequest": {
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "properties": {
           "name": {
             "type": "string"
@@ -788,11 +706,7 @@
       },
       "UpdateNameResponse": {
         "type": "object",
-        "required": [
-          "id",
-          "name",
-          "updated_at"
-        ],
+        "required": ["id", "name", "updated_at"],
         "properties": {
           "id": {
             "type": "string",
@@ -809,9 +723,7 @@
       },
       "UpdateTargetUrlRequest": {
         "type": "object",
-        "required": [
-          "url"
-        ],
+        "required": ["url"],
         "properties": {
           "url": {
             "type": "string"

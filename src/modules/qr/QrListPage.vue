@@ -122,11 +122,7 @@ function copyShortLink(qr: TypeQrQrCodeResponse) {
         >
           <v-icon icon="mdi-refresh" size="20" />
         </button>
-        <button
-          type="button"
-          class="app-btn app-btn-primary"
-          @click="createOpen = true"
-        >
+        <button type="button" class="app-btn app-btn-primary" @click="createOpen = true">
           <v-icon icon="mdi-plus" size="18" />
           New QR
         </button>
@@ -191,12 +187,7 @@ function copyShortLink(qr: TypeQrQrCodeResponse) {
             </div>
           </template>
           <template #item.target_url="{ item }">
-            <a
-              :href="item.target_url"
-              target="_blank"
-              rel="noopener"
-              class="cell-link"
-            >
+            <a :href="item.target_url" target="_blank" rel="noopener" class="cell-link">
               {{ item.target_url }}
             </a>
           </template>
@@ -271,11 +262,7 @@ function copyShortLink(qr: TypeQrQrCodeResponse) {
               </div>
               <h3 class="app-empty-title">No QR codes yet</h3>
               <p>Create your first QR code to start tracking scans.</p>
-              <button
-                type="button"
-                class="app-btn app-btn-primary mt-3"
-                @click="createOpen = true"
-              >
+              <button type="button" class="app-btn app-btn-primary mt-3" @click="createOpen = true">
                 <v-icon icon="mdi-plus" size="18" />
                 Create QR Code
               </button>
@@ -348,7 +335,9 @@ function copyShortLink(qr: TypeQrQrCodeResponse) {
   background: var(--bg-soft);
   color: var(--ink);
   outline: none;
-  transition: border-color 0.2s ease, background 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
 }
 
 .search-input:focus {
@@ -373,7 +362,9 @@ function copyShortLink(qr: TypeQrQrCodeResponse) {
   font-weight: 600;
   color: var(--muted);
   cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
 }
 
 .status-tab:hover {

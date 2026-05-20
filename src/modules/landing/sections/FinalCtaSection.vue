@@ -7,9 +7,7 @@ const userStore = useUserStore()
 const { isAuthenticated } = storeToRefs(userStore)
 
 const primaryCtaTo = computed(() => (isAuthenticated.value ? '/qrs' : '/register'))
-const finalCtaLabel = computed(() =>
-  isAuthenticated.value ? 'Go to My QRs' : 'Get Started Free',
-)
+const finalCtaLabel = computed(() => (isAuthenticated.value ? 'Go to My QRs' : 'Get Started Free'))
 </script>
 
 <template>

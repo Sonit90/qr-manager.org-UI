@@ -156,7 +156,7 @@ describe('ForgotPasswordRequestPage Integration Tests', () => {
 
   test('should show loading state when submitting form', async () => {
     // Use a delayed mock to observe loading state
-    const mockedRequest = mockWithDelay({}, 100)
+    const mockedRequest = mockWithDelay<void>(undefined, 100)
 
     vi.spyOn(ApiClientV1, 'forgotPassword').mockImplementation(mockedRequest)
 

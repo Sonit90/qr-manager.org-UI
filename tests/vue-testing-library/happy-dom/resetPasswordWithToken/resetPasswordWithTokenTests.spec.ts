@@ -144,7 +144,7 @@ describe('ResetPasswordWithToken Integration Tests', () => {
 
   test('should show loading state when submitting form', async () => {
     // Use a delayed mock to observe loading state
-    const mockedRequest = mockWithDelay({}, 100)
+    const mockedRequest = mockWithDelay<void>(undefined, 100)
 
     vi.spyOn(ApiClientV1, 'resetPassword').mockImplementation(mockedRequest)
 
@@ -214,13 +214,7 @@ describe('ResetPasswordWithToken Integration Tests', () => {
 
   test('should show loading icon when submitting form', async () => {
     // Test loading state
-    const mockedRequest = mockWithDelay(
-      {
-        message: 'Password has been reset successfully',
-        redirect_url: '/login',
-      },
-      100,
-    )
+    const mockedRequest = mockWithDelay<void>(undefined, 100)
     vi.spyOn(ApiClientV1, 'resetPassword').mockImplementation(mockedRequest)
 
     const token = generateValidResetToken()

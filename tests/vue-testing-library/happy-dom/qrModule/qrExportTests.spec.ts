@@ -1,0 +1,354 @@
+import { visitRoute } from '../../helpers/visitRoute.ts'
+import { waitFor } from '@testing-library/vue'
+import { flushPromises } from '@vue/test-utils'
+import { faker } from '@faker-js/faker'
+import { ApiClientQr } from '@/api/qr/ApiClientQr.ts'
+import { mockUser } from '@tests/__apiMocks__/user/mockUser.ts'
+import { mockGetQr, mockGetScanLogs, mockListQrs } from '@tests/__apiMocks__/qr/mockQr.ts'
+import { generateQr } from '@tests/__apiMocks__/qr/generateQr.ts'
+
+mockUser()
+
+function mockExportQr() {
+  const blob = new Blob(['content'], { type: 'image/svg+xml' })
+  const mockedExport = vi.fn().mockResolvedValue(blob)
+  vi.spyOn(ApiClientQr, 'exportQr').mockImplementation(mockedExport)
+  return { mockedExport }
+}
+
+async function openExportModalFromDetailPage(qr = generateQr()) {
+  mockGetQr(qr)
+  mockGetScanLogs()
+  const { view, user } = await visitRoute(`/qrs/${qr.id}`)
+  await flushPromises()
+  await user.click(view.getByRole('button', { name: /export/i }))
+  await waitFor(() => view.getByRole('button', { name: /download/i }))
+  return { view, user, qr }
+}
+
+describe('QR Export Modal Integration Tests', () => {
+  beforeEach(() => {
+    Object.defineProperty(URL, 'createObjectURL', {
+      value: vi.fn().mockReturnValue('blob:mock-url'),
+      writable: true,
+      configurable: true,
+    })
+    Object.defineProperty(URL, 'revokeObjectURL', {
+      value: vi.fn(),
+      writable: true,
+      configurable: true,
+    })
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  describe('default state', () => {
+    test('T-Shirt preset is active on open', async () => {
+      mockExportQr()
+      const { view } = await openExportModalFromDetailPage()
+
+      expect(view.getByRole('button', { name: /t-shirt/i }).className).toContain('preset-btn-active')
+    })
+
+    test('SVG is active format on open', async () => {
+      mockExportQr()
+      const { view } = await openExportModalFromDetailPage()
+
+      expect(view.getByRole('button', { name: 'SVG' }).className).toContain('format-tab-active')
+    })
+
+    test('SVG vector note shown instead of dimension inputs on open', async () => {
+      mockExportQr()
+      const { view } = await openExportModalFromDetailPage()
+
+      view.getByText(/svg is vector/i)
+      expect(view.queryByLabelText('Width (px)')).not.toBeInTheDocument()
+      expect(view.queryByLabelText('Height (px)')).not.toBeInTheDocument()
+    })
+  })
+
+  describe('preset selection', () => {
+    test('Web preset sets PNG format and 512x512 dimensions', async () => {
+      mockExportQr()
+      const { view, user } = await openExportModalFromDetailPage()
+
+      await user.click(view.getByRole('button', { name: /\bweb\b/i }))
+
+      expect(view.getByRole('button', { name: /\bweb\b/i }).className).toContain('preset-btn-active')
+      expect(view.getByRole('button', { name: 'PNG' }).className).toContain('format-tab-active')
+      expect((view.getByLabelText('Width (px)') as HTMLInputElement).value).toBe('512')
+      expect((view.getByLabelText('Height (px)') as HTMLInputElement).value).toBe('512')
+    })
+
+    test('Print preset sets PNG format and 2000x2000 dimensions', async () => {
+      mockExportQr()
+      const { view, user } = await openExportModalFromDetailPage()
+
+      await user.click(view.getByRole('button', { name: /print/i }))
+
+      expect(view.getByRole('button', { name: 'PNG' }).className).toContain('format-tab-active')
+      expect((view.getByLabelText('Width (px)') as HTMLInputElement).value).toBe('2000')
+      expect((view.getByLabelText('Height (px)') as HTMLInputElement).value).toBe('2000')
+    })
+
+    test('Poster preset sets PNG format and 4000x4000 dimensions', async () => {
+      mockExportQr()
+      const { view, user } = await openExportModalFromDetailPage()
+
+      await user.click(view.getByRole('button', { name: /poster/i }))
+
+      expect((view.getByLabelText('Width (px)') as HTMLInputElement).value).toBe('4000')
+      expect((view.getByLabelText('Height (px)') as HTMLInputElement).value).toBe('4000')
+    })
+
+    test('switching back to T-Shirt from Web sets SVG and hides dimensions', async () => {
+      mockExportQr()
+      const { view, user } = await openExportModalFromDetailPage()
+
+      await user.click(view.getByRole('button', { name: /\bweb\b/i }))
+      await user.click(view.getByRole('button', { name: /t-shirt/i }))
+
+      expect(view.getByRole('button', { name: 'SVG' }).className).toContain('format-tab-active')
+      expect(view.queryByLabelText('Width (px)')).not.toBeInTheDocument()
+    })
+
+    test('selecting a different preset clears the previous one', async () => {
+      mockExportQr()
+      const { view, user } = await openExportModalFromDetailPage()
+
+      await user.click(view.getByRole('button', { name: /\bweb\b/i }))
+      await user.click(view.getByRole('button', { name: /print/i }))
+
+      expect(view.getByRole('button', { name: /\bweb\b/i }).className).not.toContain('preset-btn-active')
+      expect(view.getByRole('button', { name: /print/i }).className).toContain('preset-btn-active')
+    })
+  })
+
+  describe('format tab switching', () => {
+    test('switching format tab clears active preset', async () => {
+      mockExportQr()
+      const { view, user } = await openExportModalFromDetailPage()
+
+      await user.click(view.getByRole('button', { name: 'PNG' }))
+
+      expect(view.getByRole('button', { name: /t-shirt/i }).className).not.toContain(
+        'preset-btn-active',
+      )
+    })
+
+    test('switching to PNG shows dimension inputs', async () => {
+      mockExportQr()
+      const { view, user } = await openExportModalFromDetailPage()
+
+      await user.click(view.getByRole('button', { name: 'PNG' }))
+
+      view.getByLabelText('Width (px)')
+      view.getByLabelText('Height (px)')
+    })
+
+    test('switching back to SVG hides dimension inputs', async () => {
+      mockExportQr()
+      const { view, user } = await openExportModalFromDetailPage()
+
+      await user.click(view.getByRole('button', { name: 'PNG' }))
+      await user.click(view.getByRole('button', { name: 'SVG' }))
+
+      expect(view.queryByLabelText('Width (px)')).not.toBeInTheDocument()
+    })
+  })
+
+  describe('dimension validation', () => {
+    test('shows error when width is below 150', async () => {
+      mockExportQr()
+      const { view, user } = await openExportModalFromDetailPage()
+
+      await user.click(view.getByRole('button', { name: 'PNG' }))
+      await user.type(view.getByLabelText('Width (px)'), '50')
+
+      view.getByText(/width must be 150/i)
+    })
+
+    test('shows error when width exceeds 5000', async () => {
+      mockExportQr()
+      const { view, user } = await openExportModalFromDetailPage()
+
+      await user.click(view.getByRole('button', { name: 'PNG' }))
+      await user.type(view.getByLabelText('Width (px)'), '9999')
+
+      view.getByText(/width must be 150/i)
+    })
+
+    test('shows error when height is below 150', async () => {
+      mockExportQr()
+      const { view, user } = await openExportModalFromDetailPage()
+
+      await user.click(view.getByRole('button', { name: 'PNG' }))
+      await user.type(view.getByLabelText('Height (px)'), '10')
+
+      view.getByText(/height must be 150/i)
+    })
+
+    test('download button is disabled when validation error present', async () => {
+      mockExportQr()
+      const { view, user } = await openExportModalFromDetailPage()
+
+      await user.click(view.getByRole('button', { name: 'PNG' }))
+      await user.type(view.getByLabelText('Width (px)'), '50')
+
+      expect(view.getByRole('button', { name: /download/i })).toBeDisabled()
+    })
+  })
+
+  describe('export API calls', () => {
+    test('calls exportQr with format=svg and no dimensions by default', async () => {
+      const { mockedExport } = mockExportQr()
+      const { view, user, qr } = await openExportModalFromDetailPage()
+
+      await user.click(view.getByRole('button', { name: /download/i }))
+      await flushPromises()
+
+      expect(mockedExport).toHaveBeenCalledWith(
+        { id: qr.id, format: 'svg', width: null, height: null },
+        { format: 'blob' },
+      )
+    })
+
+    test('calls exportQr with format=png and 512x512 for Web preset', async () => {
+      const { mockedExport } = mockExportQr()
+      const { view, user, qr } = await openExportModalFromDetailPage()
+
+      await user.click(view.getByRole('button', { name: /\bweb\b/i }))
+      await user.click(view.getByRole('button', { name: /download/i }))
+      await flushPromises()
+
+      expect(mockedExport).toHaveBeenCalledWith(
+        { id: qr.id, format: 'png', width: 512, height: 512 },
+        { format: 'blob' },
+      )
+    })
+
+    test('calls exportQr with format=png and 2000x2000 for Print preset', async () => {
+      const { mockedExport } = mockExportQr()
+      const { view, user, qr } = await openExportModalFromDetailPage()
+
+      await user.click(view.getByRole('button', { name: /print/i }))
+      await user.click(view.getByRole('button', { name: /download/i }))
+      await flushPromises()
+
+      expect(mockedExport).toHaveBeenCalledWith(
+        { id: qr.id, format: 'png', width: 2000, height: 2000 },
+        { format: 'blob' },
+      )
+    })
+
+    test('calls exportQr with format=png and 4000x4000 for Poster preset', async () => {
+      const { mockedExport } = mockExportQr()
+      const { view, user, qr } = await openExportModalFromDetailPage()
+
+      await user.click(view.getByRole('button', { name: /poster/i }))
+      await user.click(view.getByRole('button', { name: /download/i }))
+      await flushPromises()
+
+      expect(mockedExport).toHaveBeenCalledWith(
+        { id: qr.id, format: 'png', width: 4000, height: 4000 },
+        { format: 'blob' },
+      )
+    })
+
+    test('calls exportQr with format=svg for T-Shirt after switching from another preset', async () => {
+      const { mockedExport } = mockExportQr()
+      const { view, user, qr } = await openExportModalFromDetailPage()
+
+      await user.click(view.getByRole('button', { name: /\bweb\b/i }))
+      await user.click(view.getByRole('button', { name: /t-shirt/i }))
+      await user.click(view.getByRole('button', { name: /download/i }))
+      await flushPromises()
+
+      expect(mockedExport).toHaveBeenCalledWith(
+        { id: qr.id, format: 'svg', width: null, height: null },
+        { format: 'blob' },
+      )
+    })
+
+    test('calls exportQr with custom dimensions when manually entered', async () => {
+      const { mockedExport } = mockExportQr()
+      const width = faker.number.int({ min: 150, max: 5000 })
+      const height = faker.number.int({ min: 150, max: 5000 })
+      const { view, user, qr } = await openExportModalFromDetailPage()
+
+      await user.click(view.getByRole('button', { name: 'PNG' }))
+      await user.type(view.getByLabelText('Width (px)'), String(width))
+      await user.type(view.getByLabelText('Height (px)'), String(height))
+      await user.click(view.getByRole('button', { name: /download/i }))
+      await flushPromises()
+
+      expect(mockedExport).toHaveBeenCalledWith(
+        { id: qr.id, format: 'png', width, height },
+        { format: 'blob' },
+      )
+    })
+
+    test('calls exportQr with null dimensions when left blank', async () => {
+      const { mockedExport } = mockExportQr()
+      const { view, user, qr } = await openExportModalFromDetailPage()
+
+      await user.click(view.getByRole('button', { name: 'PNG' }))
+      await user.click(view.getByRole('button', { name: /download/i }))
+      await flushPromises()
+
+      expect(mockedExport).toHaveBeenCalledWith(
+        { id: qr.id, format: 'png', width: null, height: null },
+        { format: 'blob' },
+      )
+    })
+  })
+
+  describe('from list page', () => {
+    test('opens export modal when export button clicked', async () => {
+      const qr = generateQr()
+      mockListQrs([qr])
+      mockExportQr()
+
+      const { view, user } = await visitRoute('/qrs')
+      await flushPromises()
+
+      await user.click(view.getByTestId('qr-export'))
+
+      await waitFor(() => view.getByRole('button', { name: /download/i }))
+    })
+
+    test('calls exportQr with correct qr id from list page', async () => {
+      const qr = generateQr()
+      mockListQrs([qr])
+      const { mockedExport } = mockExportQr()
+
+      const { view, user } = await visitRoute('/qrs')
+      await flushPromises()
+
+      await user.click(view.getByTestId('qr-export'))
+      await waitFor(() => view.getByRole('button', { name: /download/i }))
+      await user.click(view.getByRole('button', { name: /download/i }))
+      await flushPromises()
+
+      expect(mockedExport).toHaveBeenCalledWith(
+        { id: qr.id, format: 'svg', width: null, height: null },
+        { format: 'blob' },
+      )
+    })
+  })
+
+  describe('dialog actions', () => {
+    test('cancel button closes modal', async () => {
+      mockExportQr()
+      const { view, user } = await openExportModalFromDetailPage()
+
+      await user.click(view.getByRole('button', { name: /cancel/i }))
+
+      await waitFor(() => {
+        expect(view.queryByRole('button', { name: /download/i })).not.toBeInTheDocument()
+      })
+    })
+  })
+})

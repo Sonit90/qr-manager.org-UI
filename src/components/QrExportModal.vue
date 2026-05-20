@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { ref, reactive, computed, watch } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import { handleApiError } from '@/api/helpers/handleApiError.ts'
+import { ApiClientQr } from '@/api/qr/ApiClientQr.ts'
+import { downloadBlob } from '@/helpers/downloadBlob.ts'
 
 const props = defineProps<{
   open: boolean
@@ -36,86 +38,69 @@ const FORMAT_OPTIONS: { value: Format; label: string }[] = [
   { value: 'webp', label: 'WebP' },
 ]
 
-const form = reactive<{ format: Format; width: string; height: string }>({
+const form = reactive<{ format: Format; width: number | null; height: number | null }>({
   format: 'svg',
-  width: '',
-  height: '',
+  width: null,
+  height: null,
 })
 
 const isExporting = ref(false)
-const activePreset = ref<string | null>('T-Shirt')
 
 const isSvg = computed(() => form.format === 'svg')
 
+const activePreset = computed(() => {
+  return (
+    PRESETS.find(
+      (p) =>
+        p.format === form.format && p.width === form.width && p.height === form.height,
+    )?.label ?? null
+  )
+})
+
 const dimError = computed(() => {
   if (isSvg.value) return ''
-  if (form.width) {
-    const w = Number(form.width)
-    if (w < 150 || w > 5000) return 'Width must be 150–5000 px'
-  }
-  if (form.height) {
-    const h = Number(form.height)
-    if (h < 150 || h > 5000) return 'Height must be 150–5000 px'
-  }
+  if (form.width !== null && (form.width < 150 || form.width > 5000))
+    return 'Width must be 150–5000 px'
+  if (form.height !== null && (form.height < 150 || form.height > 5000))
+    return 'Height must be 150–5000 px'
   return ''
 })
 
 const canExport = computed(() => !dimError.value && !isExporting.value)
 
-watch(
-  () => props.open,
-  (v) => {
-    if (v) {
-      form.format = 'svg'
-      form.width = ''
-      form.height = ''
-      activePreset.value = 'T-Shirt'
-    }
-  },
-)
-
 function applyPreset(preset: Preset) {
-  activePreset.value = preset.label
   form.format = preset.format
-  form.width = preset.width ? String(preset.width) : ''
-  form.height = preset.height ? String(preset.height) : ''
+  form.width = preset.width
+  form.height = preset.height
 }
 
-watch(
-  () => form.format,
-  () => {
-    activePreset.value = null
-  },
-)
+function selectFormat(format: Format) {
+  form.format = format
+}
 
 function close() {
-  if (!isExporting.value) emit('update:open', false)
+  if (!isExporting.value) {
+    form.format = 'svg'
+    form.width = null
+    form.height = null
+    emit('update:open', false)
+  }
 }
 
 async function doExport() {
   isExporting.value = true
   try {
-    const qs = new URLSearchParams({ format: form.format })
-    if (!isSvg.value && form.width) qs.set('width', form.width)
-    if (!isSvg.value && form.height) qs.set('height', form.height)
+    const blob = (await ApiClientQr.exportQr(
+      {
+        id: props.qrId,
+        format: form.format,
+        width: !isSvg.value ? form.width : null,
+        height: !isSvg.value ? form.height : null,
+      },
+      { format: 'blob' },
+    )) as unknown as Blob
 
-    const url = `${import.meta.env.VITE_QR_API_URL}/api/v1/qr/${props.qrId}/export?${qs}`
-    const token = localStorage.getItem('access_token')
-
-    const response = await fetch(url, {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-    })
-    if (!response.ok) throw new Error(`Export failed: ${response.statusText}`)
-
-    const blob = await response.blob()
-    const objectUrl = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = objectUrl
-    a.download = `${props.qrName || props.qrId}.${form.format}`
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(objectUrl)
+    downloadBlob(blob, `${props.qrName || props.qrId}.${form.format}`)
     close()
   } catch (e) {
     handleApiError(e, { title: 'Export QR' })
@@ -162,7 +147,7 @@ async function doExport() {
               type="button"
               class="format-tab"
               :class="{ 'format-tab-active': form.format === f.value }"
-              @click="form.format = f.value"
+              @click="selectFormat(f.value)"
             >
               {{ f.label }}
             </button>
@@ -181,12 +166,13 @@ async function doExport() {
                 <label class="dim-field-label" for="export-width">Width (px)</label>
                 <input
                   id="export-width"
-                  v-model="form.width"
                   type="number"
+                  :value="form.width ?? ''"
                   class="dim-input"
                   placeholder="1024"
                   min="150"
                   max="5000"
+                  @input="(e) => { const v = (e.target as HTMLInputElement).valueAsNumber; form.width = isNaN(v) ? null : v }"
                 />
               </div>
               <span class="dim-sep">×</span>
@@ -194,12 +180,13 @@ async function doExport() {
                 <label class="dim-field-label" for="export-height">Height (px)</label>
                 <input
                   id="export-height"
-                  v-model="form.height"
                   type="number"
+                  :value="form.height ?? ''"
                   class="dim-input"
                   placeholder="1024"
                   min="150"
                   max="5000"
+                  @input="(e) => { const v = (e.target as HTMLInputElement).valueAsNumber; form.height = isNaN(v) ? null : v }"
                 />
               </div>
             </div>
@@ -213,12 +200,7 @@ async function doExport() {
       </div>
 
       <div class="app-dialog-actions">
-        <button
-          type="button"
-          class="app-btn app-btn-ghost"
-          :disabled="isExporting"
-          @click="close"
-        >
+        <button type="button" class="app-btn app-btn-ghost" :disabled="isExporting" @click="close">
           Cancel
         </button>
         <button

@@ -11,6 +11,7 @@ import {
 } from '@/modules/qr/composables/useQrs.ts'
 import ScanStats from '@/modules/qr/ScanStats.vue'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
+import QrExportModal from '@/components/QrExportModal.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -25,6 +26,7 @@ const deleteMutation = useDeleteQr()
 const editing = ref(false)
 const targetDraft = ref('')
 const deleteOpen = ref(false)
+const exportOpen = ref(false)
 
 watch(
   qr,
@@ -82,13 +84,6 @@ function copyShort() {
   notify({ type: 'success', title: 'Copied' })
 }
 
-function downloadQr() {
-  if (!qr.value?.image_url) return
-  const a = document.createElement('a')
-  a.href = qr.value.image_url
-  a.download = `${qr.value.name || qr.value.code}.png`
-  a.click()
-}
 
 function formatDateTime(value?: string) {
   if (!value) return ''
@@ -152,12 +147,11 @@ function formatDateTime(value?: string) {
             <div class="qr-actions">
               <button
                 type="button"
-                class="app-btn app-btn-ghost app-btn-block"
-                :disabled="!qr.image_url"
-                @click="downloadQr"
+                class="app-btn app-btn-primary app-btn-block"
+                @click="exportOpen = true"
               >
                 <v-icon icon="mdi-download" size="16" />
-                Download PNG
+                Export
               </button>
             </div>
           </div>
@@ -275,6 +269,12 @@ function formatDateTime(value?: string) {
     </template>
 
     <v-alert v-else type="error" class="not-found">QR not found</v-alert>
+
+    <QrExportModal
+      v-model:open="exportOpen"
+      :qr-id="id"
+      :qr-name="displayName"
+    />
 
     <ConfirmDialog
       v-model:open="deleteOpen"

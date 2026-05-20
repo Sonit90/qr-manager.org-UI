@@ -11,6 +11,7 @@ import {
 } from '@/modules/qr/composables/useQrs.ts'
 import QrCreateDialog from '@/modules/qr/QrCreateDialog.vue'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
+import QrExportModal from '@/components/QrExportModal.vue'
 import type { TypeQrQrCodeResponse } from '@/api/__generated__/qr/data-contracts.ts'
 
 const router = useRouter()
@@ -25,6 +26,7 @@ const search = ref('')
 const statusFilter = ref<'all' | 'active' | 'disabled'>('all')
 
 const deleteTarget = ref<TypeQrQrCodeResponse | null>(null)
+const exportTarget = ref<TypeQrQrCodeResponse | null>(null)
 
 const filteredQrs = computed(() => {
   const all = qrs.value ?? []
@@ -236,6 +238,15 @@ function copyShortLink(qr: TypeQrQrCodeResponse) {
               <button
                 type="button"
                 class="app-btn app-btn-ghost app-btn-icon"
+                data-testid="qr-export"
+                aria-label="Export QR"
+                @click="exportTarget = item"
+              >
+                <v-icon icon="mdi-download" size="18" />
+              </button>
+              <button
+                type="button"
+                class="app-btn app-btn-ghost app-btn-icon"
                 data-testid="qr-view"
                 aria-label="View details"
                 @click="goDetail(item)"
@@ -278,6 +289,13 @@ function copyShortLink(qr: TypeQrQrCodeResponse) {
       v-model:open="createOpen"
       :loading="createMutation.isPending.value"
       @submit="onCreate"
+    />
+
+    <QrExportModal
+      :open="!!exportTarget"
+      :qr-id="exportTarget?.id ?? ''"
+      :qr-name="exportTarget?.name || exportTarget?.code || ''"
+      @update:open="(v) => !v && (exportTarget = null)"
     />
 
     <ConfirmDialog

@@ -271,6 +271,88 @@
         ]
       }
     },
+    "/api/v1/qr/{id}/export": {
+      "get": {
+        "tags": [
+          "QR"
+        ],
+        "operationId": "export_qr",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "QR code ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "description": "Output format: `svg` (default), `png`, `jpeg`, `webp`",
+            "required": false,
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          {
+            "name": "width",
+            "in": "query",
+            "description": "Width in pixels, 150–5000 (raster formats only)",
+            "required": false,
+            "schema": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "int32",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "height",
+            "in": "query",
+            "description": "Height in pixels, 150–5000 (raster formats only)",
+            "required": false,
+            "schema": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "int32",
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "QR code exported as image file"
+          },
+          "400": {
+            "description": "Invalid parameters"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
     "/api/v1/qr/{id}/name": {
       "patch": {
         "tags": [

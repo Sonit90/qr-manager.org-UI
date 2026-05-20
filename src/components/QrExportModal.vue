@@ -96,8 +96,8 @@ async function doExport() {
       {
         id: props.qrId,
         format: form.format,
-        width: !isSvg.value ? form.width : null,
-        height: !isSvg.value ? form.height : null,
+        width: isSvg.value ? null : form.width,
+        height: isSvg.value ? null : form.height,
       },
       { format: 'blob' },
     )) as unknown as Blob

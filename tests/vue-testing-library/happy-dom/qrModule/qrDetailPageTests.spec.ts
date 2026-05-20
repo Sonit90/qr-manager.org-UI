@@ -9,7 +9,7 @@ import { generateQr, generateScanStats } from '@tests/__apiMocks__/qr/generateQr
 mockUser()
 
 function setupClipboard() {
-  const writeText = vi.fn().mockResolvedValue(undefined)
+  const writeText = vi.fn()
   Object.defineProperty(navigator, 'clipboard', {
     value: { writeText },
     configurable: true,

@@ -30,12 +30,7 @@ watch(
 
 function rules(v: string) {
   if (!v) return 'Required'
-  try {
-    new URL(v)
-    return true
-  } catch {
-    return 'Must be a valid URL'
-  }
+  return URL.canParse(v) ? true : 'Must be a valid URL'
 }
 
 function close() {
@@ -45,7 +40,7 @@ function close() {
 function submit() {
   if (!formValid.value) return
   const trimmed = name.value.trim()
-  emit('submit', { target_url: targetUrl.value, name: trimmed ? trimmed : null })
+  emit('submit', { target_url: targetUrl.value, name: trimmed || null })
 }
 </script>
 

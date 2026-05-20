@@ -36,7 +36,8 @@ export const useUserStore = defineStore('user', () => {
   }
 
   async function refreshUser() {
-    const response = await ApiClientV1.refresh({ refresh_token: refresh_token.value! })
+    if (!refresh_token.value) throw new Error('No refresh token')
+    const response = await ApiClientV1.refresh({ refresh_token: refresh_token.value })
     access_token.value = response.access_token
     refresh_token.value = response.refresh_token
   }
@@ -47,7 +48,8 @@ export const useUserStore = defineStore('user', () => {
   }
 
   async function logout() {
-    await ApiClientV1.logout({ refresh_token: refresh_token.value! })
+    if (!refresh_token.value) throw new Error('No refresh token')
+    await ApiClientV1.logout({ refresh_token: refresh_token.value })
     clearTokens()
     queryClient.clear()
   }

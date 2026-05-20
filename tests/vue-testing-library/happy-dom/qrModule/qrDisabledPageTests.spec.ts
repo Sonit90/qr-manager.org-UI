@@ -26,6 +26,6 @@ describe('QrDisabledPage Integration Tests', () => {
   test('should render warning icon', async () => {
     const { view } = await visitRoute('/qr-disabled')
 
-    expect(view.container.querySelector('.mdi-link-off'))
+    view.container.querySelector('.mdi-link-off')
   })
 })

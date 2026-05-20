@@ -92,7 +92,7 @@ describe('LandingPage Integration Tests', () => {
 
     const authedCtas = view.getAllByRole('link', { name: /go to my qrs/i })
     expect(authedCtas.length).toBeGreaterThan(0)
-    authedCtas.forEach((cta) => expect(cta).toHaveAttribute('href', '/qrs'))
+    for (const cta of authedCtas) expect(cta).toHaveAttribute('href', '/qrs')
   })
 
   test('should not show Login or Register links when authenticated', async () => {

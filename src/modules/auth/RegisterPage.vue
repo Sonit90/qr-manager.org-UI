@@ -37,6 +37,14 @@ const confirmPasswordRules = computed(() => [
 const userStore = useUserStore()
 const { isLoading } = storeToRefs(userStore)
 
+const isFormFilled = computed(
+  () =>
+    !!form.email &&
+    form.password.length >= 8 &&
+    form.confirmPassword === form.password &&
+    consentAccepted.value,
+)
+
 const handleRegister = async () => {
   if (!registerForm.value) return
   const { valid } = await registerForm.value.validate()
@@ -135,7 +143,7 @@ const handleRegister = async () => {
       <button
         type="submit"
         class="app-btn app-btn-primary app-btn-lg app-btn-block"
-        :disabled="isLoading || !consentAccepted"
+        :disabled="isLoading || !isFormFilled"
       >
         <v-progress-circular v-if="isLoading" size="16" width="2" indeterminate />
         Create Account

@@ -130,6 +130,15 @@ html {
   color: var(--accent);
 }
 
+.app-btn:disabled,
+.app-btn[disabled] {
+  opacity: 0.42;
+  cursor: not-allowed;
+  pointer-events: none;
+  box-shadow: none;
+  transform: none;
+}
+
 /* PANELS / CARDS */
 .panel {
   background: #fff;

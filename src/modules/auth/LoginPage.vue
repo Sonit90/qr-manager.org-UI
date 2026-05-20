@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, type Ref } from 'vue'
+import { ref, reactive, computed, type Ref } from 'vue'
 import { useUserStore } from '@/stores/userStore.ts'
 import { storeToRefs } from 'pinia'
 import { hasMinLength, isRequired, isValidEmail } from '@/helpers/validations/validations.ts'
@@ -22,6 +22,8 @@ const emailRules = [isRequired('E-mail'), isValidEmail]
 const passwordRules = [isRequired('Password'), hasMinLength(8)]
 const userStore = useUserStore()
 const { isLoading } = storeToRefs(userStore)
+
+const isFormFilled = computed(() => !!form.email && !!form.password)
 
 const handleLogin = async () => {
   if (!loginForm.value) return
@@ -77,7 +79,7 @@ const handleLogin = async () => {
       <button
         type="submit"
         class="app-btn app-btn-primary app-btn-lg app-btn-block"
-        :disabled="isLoading"
+        :disabled="isLoading || !isFormFilled"
       >
         <v-progress-circular v-if="isLoading" size="16" width="2" indeterminate />
         Sign In

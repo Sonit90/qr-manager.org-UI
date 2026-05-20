@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, type Ref } from 'vue'
+import { ref, reactive, computed, type Ref } from 'vue'
 import LegalPage from '@/modules/legal/LegalPage.vue'
 import { ApiClientQr } from '@/api/qr/ApiClientQr.ts'
 import { isRequired, isValidEmail, hasMinLength } from '@/helpers/validations/validations.ts'
@@ -18,6 +18,10 @@ const form = reactive({
 const nameRules = [isRequired('Name')]
 const emailRules = [isRequired('E-mail'), isValidEmail]
 const messageRules = [isRequired('Message'), hasMinLength(10)]
+
+const isFormFilled = computed(
+  () => !!form.name && !!form.email && form.message.length >= 10,
+)
 
 async function handleSubmit() {
   if (!contactForm.value) return
@@ -88,7 +92,7 @@ async function handleSubmit() {
         <button
           type="submit"
           class="app-btn app-btn-primary app-btn-lg app-btn-block"
-          :disabled="isLoading"
+          :disabled="isLoading || !isFormFilled"
         >
           <v-progress-circular v-if="isLoading" size="16" width="2" indeterminate />
           Send Message

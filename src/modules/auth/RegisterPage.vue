@@ -16,6 +16,7 @@ const registerForm = ref<Ref | null>(null)
 const showPassword = ref(false)
 const showConfirmPassword = ref(false)
 const requestSent = ref(false)
+const consentAccepted = ref(false)
 
 const form = reactive({
   display_name: '',
@@ -109,10 +110,32 @@ const handleRegister = async () => {
         @click:append-inner="showConfirmPassword = !showConfirmPassword"
       />
 
+      <label class="consent-row">
+        <span class="consent-checkbox-wrap" :class="{ 'is-checked': consentAccepted }">
+          <input
+            v-model="consentAccepted"
+            type="checkbox"
+            class="consent-checkbox-input"
+            aria-required="true"
+          />
+          <v-icon v-if="consentAccepted" size="12" color="white">mdi-check</v-icon>
+        </span>
+        <span class="consent-text">
+          I agree to the
+          <router-link to="/terms" class="consent-link" target="_blank"
+            >Terms of Service</router-link
+          >
+          and
+          <router-link to="/privacy" class="consent-link" target="_blank"
+            >Privacy Policy</router-link
+          >
+        </span>
+      </label>
+
       <button
         type="submit"
         class="app-btn app-btn-primary app-btn-lg app-btn-block"
-        :disabled="isLoading"
+        :disabled="isLoading || !consentAccepted"
       >
         <v-progress-circular v-if="isLoading" size="16" width="2" indeterminate />
         Create Account
@@ -133,3 +156,58 @@ const handleRegister = async () => {
     </template>
   </AuthForm>
 </template>
+
+<style scoped>
+.consent-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+  margin-top: 4px;
+  margin-bottom: 8px;
+}
+
+.consent-checkbox-wrap {
+  position: relative;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  border: 2px solid var(--line-strong);
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.consent-checkbox-wrap.is-checked {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.consent-checkbox-input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  margin: 0;
+}
+
+.consent-text {
+  font-size: 13.5px;
+  color: var(--ink-2);
+  line-height: 1.5;
+}
+
+.consent-link {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+</style>

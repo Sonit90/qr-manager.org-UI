@@ -9,19 +9,19 @@ export function mockListUsers(count = 5) {
 }
 
 export function mockSetActive() {
-  const mockedSetActive = vi.fn().mockResolvedValue(undefined)
+  const mockedSetActive = vi.fn()
   vi.spyOn(ApiClientV1, 'setActive').mockImplementation(mockedSetActive)
   return { mockedSetActive }
 }
 
 export function mockSetRole() {
-  const mockedSetRole = vi.fn().mockResolvedValue(undefined)
+  const mockedSetRole = vi.fn()
   vi.spyOn(ApiClientV1, 'setRole').mockImplementation(mockedSetRole)
   return { mockedSetRole }
 }
 
 export function mockGrantPermission() {
-  const mockedGrantPermission = vi.fn().mockResolvedValue(undefined)
+  const mockedGrantPermission = vi.fn()
   vi.spyOn(ApiClientV1, 'grantPermission').mockImplementation(mockedGrantPermission)
   return { mockedGrantPermission }
 }

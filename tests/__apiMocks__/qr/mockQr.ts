@@ -34,7 +34,7 @@ export function mockCreateQr(qr?: TypeQrQrCodeResponse) {
 }
 
 export function mockDeleteQr() {
-  const mockedDelete = vi.fn().mockResolvedValue(undefined)
+  const mockedDelete = vi.fn()
   vi.spyOn(ApiClientQr, 'deleteQr').mockImplementation(mockedDelete)
   return { mockedDelete }
 }

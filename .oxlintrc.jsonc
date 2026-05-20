@@ -38,7 +38,6 @@
     "jest/no-standalone-expect": "off",
     "no-alert": "off",
     "jest/no-conditional-in-test": "off",
-    "vue/html-self-closing": "off",
   },
   "ignorePatterns": [
     "tests/vue-testing-library/jsdom/setup.ts",

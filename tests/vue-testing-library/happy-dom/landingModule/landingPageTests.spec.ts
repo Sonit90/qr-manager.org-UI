@@ -81,7 +81,7 @@ describe('LandingPage Integration Tests', () => {
 
     expect(view.getByRole('link', { name: /see how it works/i })).toHaveAttribute(
       'href',
-      '#how-it-works',
+      '/#how-it-works',
     )
   })
 

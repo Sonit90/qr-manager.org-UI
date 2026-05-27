@@ -25,13 +25,12 @@ jobs:
       - name: Login to GHCR
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
+      - name: Write build env
+        run: printf '%s' "${{ secrets.BUILD_ENV_FILE }}" > .env.production
+
       - name: Build image
         run: |
           docker build \
-            --build-arg VITE_API_URL="${{ secrets.VITE_API_URL }}" \
-            --build-arg VITE_APP_NAME="${{ secrets.VITE_APP_NAME }}" \
-            --build-arg VITE_APP_NAME="${{ secrets.VITE_COMPANY_NAME }}" \
-            --build-arg VITE_APP_NAME="${{ secrets.VITE_CONTACT_EMAIL }}" \
             -t "${{ env.IMAGE_LATEST }}" \
             -t "${{ env.IMAGE_SHA }}" .
 

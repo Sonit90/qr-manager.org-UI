@@ -5,6 +5,7 @@ yarn.lock
 .gitignore
 README.md
 .env
+!.env.production
 .nyc_output
 coverage
 .nyc_output

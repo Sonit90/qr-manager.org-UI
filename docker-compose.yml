@@ -2,12 +2,4 @@ services:
   frontend:
     image: ${IMAGE_NAME}
     ports:
-      - '${VITE_FRONTEND_PORT}:${VITE_FRONTEND_PORT}'
-    environment:
-      - NODE_ENV=production
-    networks:
-      - frontend-network
-
-networks:
-  frontend-network:
-    driver: bridge
+      - '${VITE_FRONTEND_PORT}:80'

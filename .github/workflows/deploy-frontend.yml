@@ -43,34 +43,35 @@ jobs:
     environment: Production(Hetzner)
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Set image name
         run: echo "IMAGE_NAME=ghcr.io/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]'):${{ github.sha }}" >> $GITHUB_ENV
 
-      - name: SSH deploy
-        uses: appleboy/ssh-action@v1.0.3
-        env:
-          IMAGE_NAME: ${{ env.IMAGE_NAME }}
+      - name: Write .env
+        run: |
+          printf "IMAGE_NAME=%s\nVITE_FRONTEND_PORT=%s\n" \
+            "${{ env.IMAGE_NAME }}" \
+            "${{ secrets.VITE_FRONTEND_PORT }}" > .env
+
+      - name: Copy files to server
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
+          source: "docker-compose.yml,.env"
+          target: "frontend"
 
-          envs: IMAGE_NAME
+      - name: SSH deploy
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
           script: |
-            REPO_DIR="$HOME/frontend"
-
-            if [ ! -d "$REPO_DIR/.git" ]; then
-              git clone -b main https://github.com/${{ github.repository }} "$REPO_DIR"
-            fi
-
-            cd "$REPO_DIR"
-            git fetch origin main
-            git checkout main
-            git reset --hard origin/main
-
-            printf "IMAGE_NAME=%s\nVITE_FRONTEND_PORT=%s\n" "${IMAGE_NAME}" "${{ secrets.VITE_FRONTEND_PORT }}" > .env
-
-            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-
+            cd "$HOME/frontend"
+            echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ secrets.GHCR_USER }} --password-stdin
             docker compose -f docker-compose.yml pull
             docker compose -f docker-compose.yml up -d --remove-orphans

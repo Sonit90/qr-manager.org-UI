@@ -28,11 +28,7 @@ jobs:
       - name: Write build env
         env:
           BUILD_ENV_FILE: ${{ secrets.BUILD_ENV_FILE }}
-        run: |
-          printf "${BUILD_ENV_FILE}" > .env.production
-          echo "lines written: $(wc -l < .env.production)"
-          echo "keys present:"
-          grep -oE '^[A-Z_]+' .env.production || echo "NONE"
+        run: printf "${BUILD_ENV_FILE}" > .env.production
 
       - name: Build image
         run: |

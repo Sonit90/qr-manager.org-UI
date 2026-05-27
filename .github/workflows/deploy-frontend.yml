@@ -26,7 +26,13 @@ jobs:
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Write build env
-        run: printf '%s' "${{ secrets.BUILD_ENV_FILE }}" > .env.production
+        env:
+          BUILD_ENV_FILE: ${{ secrets.BUILD_ENV_FILE }}
+        run: |
+          echo "$BUILD_ENV_FILE" > .env.production
+          echo "lines written: $(wc -l < .env.production)"
+          echo "keys present:"
+          grep -oE '^[A-Z_]+' .env.production || echo "NONE"
 
       - name: Build image
         run: |

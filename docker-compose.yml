@@ -1,16 +1,10 @@
 services:
   frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        - VITE_FRONTEND_PORT=${VITE_FRONTEND_PORT}
-        - VITE_API_URL=${VITE_API_URL}
+    image: ${IMAGE_NAME}
     ports:
-      - '5195:5195'
+      - '${VITE_FRONTEND_PORT}:${VITE_FRONTEND_PORT}'
     environment:
       - NODE_ENV=production
-    # user: "1000:1000"  # nginx user already has UID 1000
     networks:
       - frontend-network
 

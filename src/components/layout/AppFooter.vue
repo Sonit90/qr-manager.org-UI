@@ -12,9 +12,9 @@ const year = new Date().getFullYear()
         <span>QR Manager</span>
       </div>
       <nav class="footer-links" aria-label="Footer">
-        <a href="/privacy">Privacy Policy</a>
-        <a href="/terms">Terms of Service</a>
-        <a href="/contact">Contact</a>
+        <router-link to="/privacy">Privacy Policy</router-link>
+        <router-link to="/terms">Terms of Service</router-link>
+        <router-link to="/contact">Contact</router-link>
       </nav>
       <small class="footer-copy">&copy; {{ year }} QR Manager. All rights reserved.</small>
     </div>

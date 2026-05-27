@@ -97,7 +97,7 @@ const contactEmail = import.meta.env.VITE_CONTACT_EMAIL
       <p>
         <strong>By you:</strong> You may delete your account at any time through your account
         settings. Upon deletion, your QR codes will be permanently deactivated and your data will be
-        deleted per our <a href="/privacy">Privacy Policy</a>.
+        deleted per our <router-link to="/privacy">Privacy Policy</router-link>.
       </p>
       <p>
         <strong>By us:</strong> We may suspend or permanently terminate your account without prior

@@ -29,6 +29,7 @@ jobs:
         run: |
           docker build \
             --build-arg VITE_API_URL="${{ secrets.VITE_API_URL }}" \
+            --build-arg VITE_APP_NAME="${{ secrets.VITE_APP_NAME }}" \
             -t "${{ env.IMAGE_LATEST }}" \
             -t "${{ env.IMAGE_SHA }}" .
 

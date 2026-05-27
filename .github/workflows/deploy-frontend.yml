@@ -2,7 +2,7 @@ name: Deploy
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ['main']
 
 jobs:
   build-and-push:
@@ -30,6 +30,8 @@ jobs:
           docker build \
             --build-arg VITE_API_URL="${{ secrets.VITE_API_URL }}" \
             --build-arg VITE_APP_NAME="${{ secrets.VITE_APP_NAME }}" \
+            --build-arg VITE_APP_NAME="${{ secrets.VITE_COMPANY_NAME }}" \
+            --build-arg VITE_APP_NAME="${{ secrets.VITE_CONTACT_EMAIL }}" \
             -t "${{ env.IMAGE_LATEST }}" \
             -t "${{ env.IMAGE_SHA }}" .
 
@@ -62,8 +64,8 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
-          source: "docker-compose.yml,.env"
-          target: "frontend"
+          source: 'docker-compose.yml,.env'
+          target: 'frontend'
 
       - name: SSH deploy
         uses: appleboy/ssh-action@v1.0.3

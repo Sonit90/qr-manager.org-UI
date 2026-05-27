@@ -7,7 +7,7 @@ import { storeToRefs } from 'pinia'
 const consentAccepted = useStorage('consent_accepted', false)
 const userStore = useUserStore()
 const { isAuthenticated } = storeToRefs(userStore)
-const appName = import.meta.env.VITE_APP_NAME
+const appName = import.meta.env.VITE_APP_NAME || 'QR Manager'
 
 const visible = computed(() => !isAuthenticated.value && !consentAccepted.value)
 

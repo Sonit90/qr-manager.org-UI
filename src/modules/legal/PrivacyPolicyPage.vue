@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import LegalPage from '@/modules/legal/LegalPage.vue'
 
-const appName = import.meta.env.VITE_APP_NAME
-const companyName = import.meta.env.VITE_COMPANY_NAME
-const contactEmail = import.meta.env.VITE_CONTACT_EMAIL
+const appName = import.meta.env.VITE_APP_NAME || 'QR Platform'
+const companyName = import.meta.env.VITE_COMPANY_NAME || 'QR Platform'
+const contactEmail = import.meta.env.VITE_CONTACT_EMAIL || 'contact@example.com'
 </script>
 
 <template>

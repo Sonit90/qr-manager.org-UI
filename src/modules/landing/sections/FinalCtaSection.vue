@@ -15,10 +15,10 @@ const finalCtaLabel = computed(() => (isAuthenticated.value ? 'Go to My QRs' : '
     <div class="app-container final-inner">
       <h2 class="final-title">Start Creating Dynamic QR Codes Today</h2>
       <p class="final-sub">No signup friction. Build your first QR code in under a minute.</p>
-      <a :href="primaryCtaTo" class="app-btn app-btn-primary app-btn-lg">
+      <router-link :to="primaryCtaTo" class="app-btn app-btn-primary app-btn-lg">
         {{ finalCtaLabel }}
         <v-icon icon="mdi-arrow-right" size="18" />
-      </a>
+      </router-link>
     </div>
   </section>
 </template>

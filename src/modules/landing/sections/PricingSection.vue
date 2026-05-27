@@ -36,9 +36,9 @@ const primaryCtaLabel = computed(() =>
           <li><v-icon icon="mdi-check-circle" size="18" /> Scan analytics</li>
           <li><v-icon icon="mdi-check-circle" size="18" /> 99.99% redirect uptime</li>
         </ul>
-        <a :href="primaryCtaTo" class="app-btn app-btn-primary app-btn-lg app-btn-block">
+        <router-link :to="primaryCtaTo" class="app-btn app-btn-primary app-btn-lg app-btn-block">
           {{ primaryCtaLabel }}
-        </a>
+        </router-link>
       </div>
     </div>
   </section>

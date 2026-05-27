@@ -20,10 +20,10 @@ const qrId = computed(() => (route.query.qr_id as string | undefined) ?? '')
           <h1 class="disabled-title">QR Code Disabled</h1>
           <p class="disabled-sub">This QR code has been disabled by the owner.</p>
           <p v-if="qrId" class="disabled-id">QR ID: {{ qrId }}</p>
-          <a href="/" class="app-btn app-btn-primary app-btn-lg back-home">
+          <router-link to="/" class="app-btn app-btn-primary app-btn-lg back-home">
             <v-icon icon="mdi-arrow-left" size="16" />
             Back to home
-          </a>
+          </router-link>
         </div>
       </div>
     </main>

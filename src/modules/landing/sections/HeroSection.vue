@@ -12,11 +12,6 @@ const primaryCtaTo = computed(() => (isAuthenticated.value ? '/qrs' : '/register
 const primaryCtaLabel = computed(() =>
   isAuthenticated.value ? 'Go to My QRs' : 'Create Free QR Code',
 )
-
-function scrollTo(hash: string) {
-  const el = document.querySelector(hash)
-  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-}
 </script>
 
 <template>
@@ -40,17 +35,13 @@ function scrollTo(hash: string) {
           reactivate codes instantly, and manage unlimited QR codes from one dashboard.
         </p>
         <div class="hero-ctas">
-          <a :href="primaryCtaTo" class="app-btn app-btn-primary app-btn-lg">
+          <router-link :to="primaryCtaTo" class="app-btn app-btn-primary app-btn-lg">
             {{ primaryCtaLabel }}
             <v-icon icon="mdi-arrow-right" size="18" />
-          </a>
-          <a
-            href="#how-it-works"
-            class="app-btn app-btn-ghost app-btn-lg"
-            @click.prevent="scrollTo('#how-it-works')"
-          >
+          </router-link>
+          <router-link to="/#how-it-works" class="app-btn app-btn-ghost app-btn-lg">
             See How It Works
-          </a>
+          </router-link>
         </div>
         <div class="hero-trust">
           <div class="avatars">

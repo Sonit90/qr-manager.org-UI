@@ -113,12 +113,16 @@ const handleRegister = async () => {
         name="password"
         autocomplete="new-password"
         prepend-inner-icon="mdi-lock"
-        :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
         variant="outlined"
         color="primary"
         required
-        @click:append-inner="showPassword = !showPassword"
-      />
+      >
+        <template #append-inner>
+          <v-icon tabindex="-1" @click="showPassword = !showPassword">
+            {{ showPassword ? 'mdi-eye' : 'mdi-eye-off' }}
+          </v-icon>
+        </template>
+      </v-text-field>
 
       <v-text-field
         v-model.trim="form.confirmPassword"
@@ -128,12 +132,16 @@ const handleRegister = async () => {
         name="confirm-password"
         autocomplete="new-password"
         prepend-inner-icon="mdi-lock-check"
-        :append-inner-icon="showConfirmPassword ? 'mdi-eye' : 'mdi-eye-off'"
         variant="outlined"
         color="primary"
         required
-        @click:append-inner="showConfirmPassword = !showConfirmPassword"
-      />
+      >
+        <template #append-inner>
+          <v-icon tabindex="-1" @click="showConfirmPassword = !showConfirmPassword">
+            {{ showConfirmPassword ? 'mdi-eye' : 'mdi-eye-off' }}
+          </v-icon>
+        </template>
+      </v-text-field>
 
       <label class="consent-row">
         <span class="consent-checkbox-wrap" :class="{ 'is-checked': consentAccepted }">

@@ -104,13 +104,17 @@ async function submit() {
             label="Current password"
             autocomplete="current-password"
             prepend-inner-icon="mdi-lock"
-            :append-inner-icon="showCurrent ? 'mdi-eye' : 'mdi-eye-off'"
             variant="outlined"
             color="primary"
             hide-details="auto"
             required
-            @click:append-inner="showCurrent = !showCurrent"
-          />
+          >
+            <template #append-inner>
+              <v-icon tabindex="-1" @click="showCurrent = !showCurrent">
+                {{ showCurrent ? 'mdi-eye' : 'mdi-eye-off' }}
+              </v-icon>
+            </template>
+          </v-text-field>
           <v-text-field
             v-model="newPassword"
             :rules="newPasswordRules"
@@ -118,13 +122,17 @@ async function submit() {
             label="New password"
             autocomplete="new-password"
             prepend-inner-icon="mdi-lock-reset"
-            :append-inner-icon="showNew ? 'mdi-eye' : 'mdi-eye-off'"
             variant="outlined"
             color="primary"
             hide-details="auto"
             required
-            @click:append-inner="showNew = !showNew"
-          />
+          >
+            <template #append-inner>
+              <v-icon tabindex="-1" @click="showNew = !showNew">
+                {{ showNew ? 'mdi-eye' : 'mdi-eye-off' }}
+              </v-icon>
+            </template>
+          </v-text-field>
           <v-text-field
             v-model="confirmPassword"
             :rules="confirmPasswordRules"
@@ -132,13 +140,17 @@ async function submit() {
             label="Confirm new password"
             autocomplete="new-password"
             prepend-inner-icon="mdi-lock-check"
-            :append-inner-icon="showConfirm ? 'mdi-eye' : 'mdi-eye-off'"
             variant="outlined"
             color="primary"
             hide-details="auto"
             required
-            @click:append-inner="showConfirm = !showConfirm"
-          />
+          >
+            <template #append-inner>
+              <v-icon tabindex="-1" @click="showConfirm = !showConfirm">
+                {{ showConfirm ? 'mdi-eye' : 'mdi-eye-off' }}
+              </v-icon>
+            </template>
+          </v-text-field>
         </v-form>
       </div>
       <div class="app-dialog-actions">

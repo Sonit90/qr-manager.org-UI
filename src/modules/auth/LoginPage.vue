@@ -67,12 +67,16 @@ const handleLogin = async () => {
         autocomplete="current-password"
         name="password"
         prepend-inner-icon="mdi-lock"
-        :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
         variant="outlined"
         color="primary"
         required
-        @click:append-inner="showPassword = !showPassword"
-      />
+      >
+        <template #append-inner>
+          <v-icon tabindex="-1" @click="showPassword = !showPassword">
+            {{ showPassword ? 'mdi-eye' : 'mdi-eye-off' }}
+          </v-icon>
+        </template>
+      </v-text-field>
       <div class="mb-4 d-flex justify-end">
         <router-link to="/forgot-password" class="link-styled">Forgot password?</router-link>
       </div>

@@ -35,11 +35,11 @@ export const routes = [
         path: '/reset-password',
         component: () => import('@/modules/auth/forgot-password/ResetPasswordWithToken.vue'),
       },
+      {
+        path: '/activate',
+        component: () => import('@/modules/auth/activation/EmailActivation.vue'),
+      },
     ],
-  },
-  {
-    path: '/activate',
-    component: () => import('@/modules/auth/activation/EmailActivation.vue'),
   },
 
   {

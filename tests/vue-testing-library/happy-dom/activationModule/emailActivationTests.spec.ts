@@ -323,3 +323,78 @@ describe('EmailActivation — authenticated user', () => {
     })
   })
 })
+
+describe('EmailActivation — email link (URL params)', () => {
+  afterEach(() => {
+    localStorage.clear()
+  })
+
+  test('displays email from URL param when no localStorage email', async () => {
+    mockVerifyEmailCodeSuccess()
+    const email = generateVerificationEmail()
+    const code = generateValidCode()
+
+    const { view } = await visitRoute(`/activate?email=${encodeURIComponent(email)}&code=${code}`)
+
+    // Check email before auto-submit redirect completes
+    view.getByText(email)
+  })
+
+  test('auto-submits with email and code from URL params', async () => {
+    const { mockedVerify } = mockVerifyEmailCodeSuccess()
+    const email = generateVerificationEmail()
+    const code = generateValidCode()
+
+    await visitRoute(`/activate?email=${encodeURIComponent(email)}&code=${code}`)
+
+    await flushPromises()
+
+    await waitFor(() => {
+      expect(mockedVerify).toHaveBeenCalledWith({ email, code })
+    })
+  })
+
+  test('URL email takes priority over localStorage email', async () => {
+    const { mockedVerify } = mockVerifyEmailCodeSuccess()
+    const localEmail = generateVerificationEmail()
+    const urlEmail = generateVerificationEmail()
+    const code = generateValidCode()
+
+    localStorage.setItem(PENDING_EMAIL_KEY, localEmail)
+
+    await visitRoute(`/activate?email=${encodeURIComponent(urlEmail)}&code=${code}`)
+
+    await flushPromises()
+
+    await waitFor(() => {
+      expect(mockedVerify).toHaveBeenCalledWith({ email: urlEmail, code })
+    })
+  })
+
+  test('does not auto-submit when URL code is not 6 digits', async () => {
+    const { mockedVerify } = mockVerifyEmailCodeSuccess()
+    const email = generateVerificationEmail()
+
+    const { view } = await visitRoute(`/activate?email=${encodeURIComponent(email)}&code=123`)
+
+    await flushPromises()
+
+    expect(mockedVerify).not.toHaveBeenCalled()
+    const inputs = view.getAllByRole('textbox')
+    expect(inputs).toHaveLength(6)
+  })
+
+  test('shows error when URL code is invalid (400)', async () => {
+    mockVerifyEmailCodeInvalidCode()
+    const email = generateVerificationEmail()
+    const code = generateValidCode()
+
+    const { view } = await visitRoute(`/activate?email=${encodeURIComponent(email)}&code=${code}`)
+
+    await flushPromises()
+
+    await waitFor(() => {
+      view.getByText('Invalid or expired code. Please try again or request a new one.')
+    })
+  })
+})

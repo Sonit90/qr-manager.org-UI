@@ -4,14 +4,25 @@ import { useActivation } from '@/modules/auth/activation/useActivation.ts'
 import { ActivationStatus } from '@/modules/auth/activation/types.ts'
 import AuthForm from '@/modules/auth/components/AuthForm.vue'
 
-const { email, status, errorMessage, isLoading, isResending, resendSuccess, verifyCode, resendCode } =
-  useActivation()
+const {
+  email,
+  urlCode,
+  status,
+  errorMessage,
+  isLoading,
+  isResending,
+  resendSuccess,
+  verifyCode,
+  resendCode,
+} = useActivation()
 
 const digits = ref<string[]>(['', '', '', '', '', ''])
 const inputRefs = ref<HTMLInputElement[]>([])
 
 const code = computed(() => digits.value.join(''))
-const isComplete = computed(() => code.value.length === 6 && digits.value.every((d) => /\d/.test(d)))
+const isComplete = computed(
+  () => code.value.length === 6 && digits.value.every((d) => /\d/.test(d)),
+)
 
 function focusNext(index: number) {
   if (index < 5) {
@@ -67,103 +78,91 @@ async function handleSubmit() {
 }
 
 onMounted(() => {
-  inputRefs.value[0]?.focus()
+  if (urlCode.value && /^\d{6}$/.test(urlCode.value)) {
+    urlCode.value.split('').forEach((d, i) => {
+      digits.value[i] = d
+    })
+    handleSubmit()
+  } else {
+    inputRefs.value[0]?.focus()
+  }
 })
 </script>
 
 <template>
-  <div class="activation-container">
-    <div class="activation-card-wrap">
-      <AuthForm title="Verify Your Email" subtitle="Enter the 6-digit code sent to your email">
-        <div v-if="email" class="email-display">
-          <v-icon size="16" class="mr-1">mdi-email-outline</v-icon>
-          <span>{{ email }}</span>
-        </div>
-
-        <form class="otp-form" @submit.prevent="handleSubmit">
-          <div class="otp-inputs" aria-label="Verification code">
-            <input
-              v-for="(_, i) in digits"
-              :key="i"
-              :ref="(el) => { if (el) inputRefs[i] = el as HTMLInputElement }"
-              v-model="digits[i]"
-              type="text"
-              inputmode="numeric"
-              maxlength="1"
-              pattern="[0-9]"
-              autocomplete="one-time-code"
-              :aria-label="`Digit ${i + 1}`"
-              class="otp-input"
-              :class="{ 'otp-input--filled': digits[i] }"
-              @input="onInput(i, $event)"
-              @keydown="onKeydown(i, $event)"
-              @paste="onPaste"
-              @focus="onFocus(i)"
-            />
-          </div>
-
-          <transition name="fade">
-            <div v-if="errorMessage" class="otp-error" role="alert">
-              <v-icon size="16" class="mr-1">mdi-alert-circle-outline</v-icon>
-              {{ errorMessage }}
-            </div>
-          </transition>
-
-          <transition name="fade">
-            <div v-if="resendSuccess" class="otp-success-msg" role="status">
-              <v-icon size="16" class="mr-1">mdi-check-circle-outline</v-icon>
-              New code sent! Check your inbox.
-            </div>
-          </transition>
-
-          <button
-            type="submit"
-            class="app-btn app-btn-primary app-btn-lg app-btn-block"
-            :disabled="!isComplete || isLoading || status === ActivationStatus.RATE_LIMITED"
-          >
-            <v-progress-circular v-if="isLoading" size="16" width="2" indeterminate class="mr-2" />
-            {{ isLoading ? 'Verifying...' : 'Verify Email' }}
-          </button>
-        </form>
-
-        <div class="resend-row">
-          <span class="resend-label">Didn't receive a code?</span>
-          <button
-            type="button"
-            class="resend-btn"
-            :disabled="isResending"
-            @click="resendCode"
-          >
-            <v-progress-circular v-if="isResending" size="12" width="2" indeterminate class="mr-1" />
-            {{ isResending ? 'Sending...' : 'Resend code' }}
-          </button>
-        </div>
-      </AuthForm>
+  <AuthForm title="Verify Your Email" subtitle="Enter the 6-digit code sent to your email">
+    <div v-if="email" class="email-display">
+      <v-icon size="16" class="mr-1">mdi-email-outline</v-icon>
+      <span>{{ email }}</span>
     </div>
-  </div>
+
+    <form class="otp-form" @submit.prevent="handleSubmit">
+      <div class="otp-inputs" aria-label="Verification code">
+        <input
+          v-for="(_, i) in digits"
+          :key="i"
+          :ref="
+            (el) => {
+              if (el) inputRefs[i] = el as HTMLInputElement
+            }
+          "
+          v-model="digits[i]"
+          type="text"
+          inputmode="numeric"
+          maxlength="1"
+          pattern="[0-9]"
+          autocomplete="one-time-code"
+          :aria-label="`Digit ${i + 1}`"
+          class="otp-input"
+          :class="{ 'otp-input--filled': digits[i] }"
+          @input="onInput(i, $event)"
+          @keydown="onKeydown(i, $event)"
+          @paste="onPaste"
+          @focus="onFocus(i)"
+        />
+      </div>
+
+      <transition name="fade">
+        <div v-if="errorMessage" class="otp-error" role="alert">
+          <v-icon size="16" class="mr-1">mdi-alert-circle-outline</v-icon>
+          {{ errorMessage }}
+        </div>
+      </transition>
+
+      <transition name="fade">
+        <div v-if="resendSuccess" class="otp-success-msg" role="status">
+          <v-icon size="16" class="mr-1">mdi-check-circle-outline</v-icon>
+          New code sent! Check your inbox.
+        </div>
+      </transition>
+
+      <button
+        type="submit"
+        class="app-btn app-btn-primary app-btn-lg app-btn-block"
+        :disabled="!isComplete || isLoading || status === ActivationStatus.RATE_LIMITED"
+      >
+        <v-progress-circular v-if="isLoading" size="16" width="2" indeterminate class="mr-2" />
+        {{ isLoading ? 'Verifying...' : 'Verify Email' }}
+      </button>
+    </form>
+
+    <div class="resend-row">
+      <span class="resend-label">Didn't receive a code?</span>
+      <button type="button" class="resend-btn" :disabled="isResending" @click="resendCode">
+        <v-progress-circular
+          v-if="isResending"
+          size="12"
+          width="2"
+          indeterminate
+          class="mr-1"
+        />
+        {{ isResending ? 'Sending...' : 'Resend code' }}
+      </button>
+    </div>
+  </AuthForm>
 </template>
 
 <style scoped>
-.activation-container {
-  background-image: linear-gradient(to bottom right, #6366f1, #8b5cf6);
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-}
-
-.activation-card-wrap {
-  width: 100%;
-  max-width: 420px;
-  background: var(--bg, #fff);
-  border-radius: 12px;
-  box-shadow:
-    0 20px 60px rgba(0, 0, 0, 0.2),
-    0 4px 16px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-}
-
 .email-display {
   display: flex;
   align-items: center;

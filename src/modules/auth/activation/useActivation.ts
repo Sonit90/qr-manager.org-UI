@@ -1,36 +1,51 @@
 import { ref, computed } from 'vue'
 import { ApiClientV1 } from '@/api/v1/ApiClientV1.ts'
 import { useStorage } from '@vueuse/core'
+import { useUrlSearchParams } from '@vueuse/core'
 import { ActivationStatus } from '@/modules/auth/activation/types.ts'
 import { handleApiError } from '@/api/helpers/handleApiError.ts'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/userStore.ts'
 import { isAxiosError } from 'axios'
+import { queryClient } from '@/tanstack/queryClient.ts'
+import { fetchUserQuery } from '@/tanstack/useUser.ts'
 
 export const PENDING_EMAIL_KEY = 'pending_activation_email'
 
 export function useActivation() {
   const router = useRouter()
   const userStore = useUserStore()
+  const params = useUrlSearchParams('history')
 
   const storedEmail = useStorage<string>(PENDING_EMAIL_KEY, '')
+
+  const urlEmail = computed(() => (params.email as string) || '')
+  const urlCode = computed(() => (params.code as string) || '')
+
+  // URL param takes priority; sync to localStorage so resend works without URL
+  const email = computed(() => urlEmail.value || storedEmail.value)
+
   const status = ref<ActivationStatus>(ActivationStatus.IDLE)
   const errorMessage = ref('')
   const isLoading = ref(false)
   const isResending = ref(false)
   const resendSuccess = ref(false)
 
-  const email = computed(() => storedEmail.value)
+  function resolveEmail(): string {
+    return urlEmail.value || storedEmail.value
+  }
 
   async function verifyCode(code: string) {
-    if (!storedEmail.value) return
+    const resolvedEmail = resolveEmail()
+    if (!resolvedEmail) return
     try {
       isLoading.value = true
       errorMessage.value = ''
       status.value = ActivationStatus.LOADING
-      await ApiClientV1.verifyEmailCode({ email: storedEmail.value, code })
+      await ApiClientV1.verifyEmailCode({ email: resolvedEmail, code })
       status.value = ActivationStatus.SUCCESS
       storedEmail.value = ''
+      await queryClient.invalidateQueries({ queryKey: fetchUserQuery.queryKey })
       if (userStore.isAuthenticated) {
         await router.push('/qrs')
       } else {
@@ -52,12 +67,13 @@ export function useActivation() {
   }
 
   async function resendCode() {
-    if (!storedEmail.value) return
+    const resolvedEmail = resolveEmail()
+    if (!resolvedEmail) return
     try {
       isResending.value = true
       resendSuccess.value = false
       errorMessage.value = ''
-      await ApiClientV1.resendVerification({ email: storedEmail.value })
+      await ApiClientV1.resendVerification({ email: resolvedEmail })
       resendSuccess.value = true
       status.value = ActivationStatus.IDLE
     } catch (e) {
@@ -75,6 +91,7 @@ export function useActivation() {
 
   return {
     email,
+    urlCode,
     storedEmail,
     status,
     errorMessage,

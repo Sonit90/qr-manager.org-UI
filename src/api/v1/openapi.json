@@ -67,6 +67,47 @@
         ]
       }
     },
+    "/api/v1/admin/users/{id}": {
+      "delete": {
+        "tags": [
+          "admin"
+        ],
+        "operationId": "delete_user",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "User deleted"
+          },
+          "400": {
+            "description": "Cannot delete own account"
+          },
+          "401": {
+            "description": ""
+          },
+          "403": {
+            "description": ""
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ]
+      }
+    },
     "/api/v1/admin/users/{id}/active": {
       "patch": {
         "tags": [

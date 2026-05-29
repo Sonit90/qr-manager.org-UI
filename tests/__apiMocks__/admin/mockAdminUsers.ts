@@ -25,3 +25,9 @@ export function mockGrantPermission() {
   vi.spyOn(ApiClientV1, 'grantPermission').mockImplementation(mockedGrantPermission)
   return { mockedGrantPermission }
 }
+
+export function mockDeleteUser() {
+  const mockedDeleteUser = vi.fn().mockResolvedValue(undefined)
+  vi.spyOn(ApiClientV1, 'deleteUser').mockImplementation(mockedDeleteUser)
+  return { mockedDeleteUser }
+}

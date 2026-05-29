@@ -5,6 +5,7 @@ import {
   mockListUsers,
   mockSetActive,
   mockSetRole,
+  mockDeleteUser,
 } from '@tests/__apiMocks__/admin/mockAdminUsers.ts'
 import { mockUser } from '@tests/__apiMocks__/user/mockUser.ts'
 import { generateUser } from '@tests/__apiMocks__/user/generateUser.ts'
@@ -123,6 +124,112 @@ describe('AdminUsers Integration Tests', () => {
 
     await waitFor(() => {
       expect(view.queryByTestId('user-form')).not.toBeInTheDocument()
+    })
+  })
+
+  test('should open delete confirmation dialog when delete button is clicked', async () => {
+    const testUser = generateUser({ email: 'victim@example.com' })
+    vi.spyOn(ApiClientV1, 'listUsers').mockResolvedValue([testUser])
+    mockDeleteUser()
+
+    const { view, user } = await visitRoute('/admin/users')
+
+    await flushPromises()
+
+    await user.click(view.getByTitle('Delete'))
+
+    const dialog = view.getByTestId('delete-user-dialog')
+    within(dialog).getByText('victim@example.com')
+  })
+
+  test('should keep delete button disabled until "delete" is typed', async () => {
+    const testUser = generateUser()
+    vi.spyOn(ApiClientV1, 'listUsers').mockResolvedValue([testUser])
+    mockDeleteUser()
+
+    const { view, user } = await visitRoute('/admin/users')
+
+    await flushPromises()
+
+    await user.click(view.getByTitle('Delete'))
+
+    const deleteBtn = view.getByRole('button', { name: 'Delete User' })
+    expect(deleteBtn).toBeDisabled()
+
+    await user.type(view.getByLabelText('Type delete to confirm'), 'dele')
+    expect(deleteBtn).toBeDisabled()
+
+    await user.type(view.getByLabelText('Type delete to confirm'), 'te')
+    expect(deleteBtn).not.toBeDisabled()
+  })
+
+  test('should accept DELETE in uppercase', async () => {
+    const testUser = generateUser()
+    vi.spyOn(ApiClientV1, 'listUsers').mockResolvedValue([testUser])
+    mockDeleteUser()
+
+    const { view, user } = await visitRoute('/admin/users')
+
+    await flushPromises()
+
+    await user.click(view.getByTitle('Delete'))
+
+    await user.type(view.getByLabelText('Type delete to confirm'), 'DELETE')
+
+    expect(view.getByRole('button', { name: 'Delete User' })).not.toBeDisabled()
+  })
+
+  test('should call deleteUser API with correct id when confirmed', async () => {
+    const testUser = generateUser()
+    vi.spyOn(ApiClientV1, 'listUsers').mockResolvedValue([testUser])
+    const { mockedDeleteUser } = mockDeleteUser()
+
+    const { view, user } = await visitRoute('/admin/users')
+
+    await flushPromises()
+
+    await user.click(view.getByTitle('Delete'))
+    await user.type(view.getByLabelText('Type delete to confirm'), 'delete')
+    await user.click(view.getByRole('button', { name: 'Delete User' }))
+
+    await waitFor(() => {
+      expect(mockedDeleteUser).toHaveBeenCalledWith(testUser.id)
+    })
+  })
+
+  test('should close dialog after successful delete', async () => {
+    const testUser = generateUser()
+    vi.spyOn(ApiClientV1, 'listUsers').mockResolvedValue([testUser])
+    mockDeleteUser()
+
+    const { view, user } = await visitRoute('/admin/users')
+
+    await flushPromises()
+
+    await user.click(view.getByTitle('Delete'))
+    await user.type(view.getByLabelText('Type delete to confirm'), 'delete')
+    await user.click(view.getByRole('button', { name: 'Delete User' }))
+
+    await waitFor(() => {
+      expect(view.queryByTestId('delete-user-dialog')).not.toBeInTheDocument()
+    })
+  })
+
+  test('should close dialog when cancel is clicked', async () => {
+    const testUser = generateUser()
+    vi.spyOn(ApiClientV1, 'listUsers').mockResolvedValue([testUser])
+
+    const { view, user } = await visitRoute('/admin/users')
+
+    await flushPromises()
+
+    await user.click(view.getByTitle('Delete'))
+    view.getByTestId('delete-user-dialog')
+
+    await user.click(view.getByRole('button', { name: 'Cancel' }))
+
+    await waitFor(() => {
+      expect(view.queryByTestId('delete-user-dialog')).not.toBeInTheDocument()
     })
   })
 

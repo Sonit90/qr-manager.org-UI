@@ -9,6 +9,7 @@ defineProps<{
 
 const emit = defineEmits<{
   edit: [user: TypeUserV1]
+  delete: [user: TypeUserV1]
 }>()
 
 const headers = [
@@ -16,6 +17,7 @@ const headers = [
   { title: 'Display Name', key: 'display_name' },
   { title: 'Role', key: 'role' },
   { title: 'Is Active', key: 'is_active' },
+  { title: 'Email Verified', key: 'email_verified' },
   { title: 'Created At', key: 'created_at' },
   { title: 'Actions', key: 'actions', sortable: false, align: 'end' as const },
 ]
@@ -63,6 +65,10 @@ function roleBadgeClass(role?: string) {
       <BooleanIcon :value="item.is_active" />
     </template>
 
+    <template #item.email_verified="{ item }">
+      <BooleanIcon :value="item.email_verified" />
+    </template>
+
     <template #item.created_at="{ item }">
       <span class="cell-date">{{ new Date(item.created_at).toLocaleDateString() }}</span>
     </template>
@@ -76,6 +82,15 @@ function roleBadgeClass(role?: string) {
         @click="emit('edit', item)"
       >
         <v-icon icon="mdi-pencil" size="18" />
+      </button>
+      <button
+        type="button"
+        class="app-btn app-btn-ghost app-btn-icon app-btn-danger"
+        title="Delete"
+        aria-label="Delete user"
+        @click="emit('delete', item)"
+      >
+        <v-icon icon="mdi-delete" size="18" />
       </button>
     </template>
   </v-data-table>

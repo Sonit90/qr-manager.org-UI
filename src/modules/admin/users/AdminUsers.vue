@@ -4,8 +4,9 @@ import { useAdminUsers } from '@/modules/admin/users/composables/useAdminUsers.t
 import UsersTable from '@/modules/admin/users/UsersTable.vue'
 import UserForm from '@/modules/admin/users/UserForm.vue'
 import type { TypeUserV1 } from '@/api/__generated__/v1/data-contracts.ts'
+import { handleApiError } from '@/api/helpers/handleApiError.ts'
 
-const { users, loading, fetchUsers } = useAdminUsers()
+const { users, loading, fetchUsers, deleteUser } = useAdminUsers()
 
 fetchUsers()
 
@@ -39,6 +40,35 @@ function onEdit(user: TypeUserV1) {
 function onCancel() {
   isActive.value = false
   editingUser.value = undefined
+}
+
+const deletingUser = ref<TypeUserV1 | undefined>(undefined)
+const deleteConfirmText = ref('')
+const isDeleting = ref(false)
+
+const deleteConfirmed = computed(() => deleteConfirmText.value.toLowerCase() === 'delete')
+
+function onDeleteRequest(user: TypeUserV1) {
+  deletingUser.value = user
+  deleteConfirmText.value = ''
+}
+
+function onDeleteCancel() {
+  deletingUser.value = undefined
+  deleteConfirmText.value = ''
+}
+
+async function onDeleteConfirm() {
+  if (!deletingUser.value || !deleteConfirmed.value) return
+  isDeleting.value = true
+  try {
+    await deleteUser(deletingUser.value.id)
+    onDeleteCancel()
+  } catch (e) {
+    handleApiError(e, { title: 'Delete User' })
+  } finally {
+    isDeleting.value = false
+  }
 }
 </script>
 
@@ -81,7 +111,12 @@ function onCancel() {
         </div>
       </div>
       <div class="panel-body panel-body-flush">
-        <UsersTable :loading="loading" :users="filteredUsers" @edit="onEdit($event)" />
+        <UsersTable
+          :loading="loading"
+          :users="filteredUsers"
+          @edit="onEdit($event)"
+          @delete="onDeleteRequest($event)"
+        />
       </div>
     </section>
 
@@ -92,6 +127,60 @@ function onCancel() {
       @updated="onCancel()"
       @cancel="onCancel()"
     />
+
+    <v-dialog
+      v-if="!!deletingUser"
+      model-value
+      max-width="440"
+      class="app-dialog"
+      @update:model-value="onDeleteCancel"
+    >
+      <v-card data-testid="delete-user-dialog">
+        <div class="app-dialog-title">
+          <div>
+            <span class="app-eyebrow">Admin</span>
+            <h3>Delete User</h3>
+          </div>
+          <v-btn icon="mdi-close" variant="text" size="small" @click="onDeleteCancel" />
+        </div>
+        <div class="app-dialog-body">
+          <p class="delete-warning">
+            This will permanently delete <strong>{{ deletingUser?.email }}</strong>. This action
+            cannot be undone.
+          </p>
+          <label class="delete-confirm-label" for="delete-confirm-input">
+            Type <strong>delete</strong> to confirm
+          </label>
+          <input
+            id="delete-confirm-input"
+            v-model="deleteConfirmText"
+            type="text"
+            class="app-input delete-confirm-input"
+            autocomplete="off"
+            aria-label="Type delete to confirm"
+          />
+        </div>
+        <div class="app-dialog-actions">
+          <button
+            type="button"
+            class="app-btn app-btn-ghost"
+            :disabled="isDeleting"
+            @click="onDeleteCancel"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            class="app-btn app-btn-danger"
+            :disabled="!deleteConfirmed || isDeleting"
+            @click="onDeleteConfirm"
+          >
+            <v-progress-circular v-if="isDeleting" size="14" width="2" indeterminate />
+            Delete User
+          </button>
+        </div>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -144,5 +233,37 @@ function onCancel() {
   .stats-grid {
     grid-template-columns: 1fr;
   }
+}
+
+.delete-warning {
+  color: var(--ink);
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.delete-confirm-label {
+  display: block;
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.delete-confirm-input {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 9px 12px;
+  font-size: 14px;
+  background: var(--bg-soft);
+  color: var(--ink);
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.delete-confirm-input:focus {
+  background: #fff;
+  border-color: var(--accent);
 }
 </style>

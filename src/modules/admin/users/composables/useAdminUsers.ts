@@ -24,6 +24,12 @@ export function useAdminUsers() {
     }
   }
 
+  async function deleteUser(id: string) {
+    await ApiClientV1.deleteUser(id)
+    users.value = users.value.filter((u) => u.id !== id)
+    notify({ title: 'User deleted' })
+  }
+
   async function updateUser(
     original: TypeUserV1,
     changes: { role?: TypeRoleV1; active?: boolean },
@@ -48,6 +54,7 @@ export function useAdminUsers() {
   return {
     fetchUsers,
     updateUser,
+    deleteUser,
     loading,
     users,
   }

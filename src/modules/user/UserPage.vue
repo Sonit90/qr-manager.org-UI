@@ -122,32 +122,32 @@ function notImplemented(title: string) {
               Change password
             </button>
           </div>
-          <div class="security-row">
-            <div>
-              <div class="row-title">Two-factor authentication</div>
-              <div class="row-sub">Add an extra layer of protection at sign-in.</div>
-            </div>
-            <button
-              type="button"
-              class="app-btn app-btn-ghost"
-              @click="notImplemented('Enable 2FA')"
-            >
-              Enable 2FA
-            </button>
-          </div>
-          <div class="security-row">
-            <div>
-              <div class="row-title">Active sessions</div>
-              <div class="row-sub">Review and revoke devices currently signed in.</div>
-            </div>
-            <button
-              type="button"
-              class="app-btn app-btn-ghost"
-              @click="notImplemented('View sessions')"
-            >
-              View sessions
-            </button>
-          </div>
+          <!--          <div class="security-row">-->
+          <!--            <div>-->
+          <!--              <div class="row-title">Two-factor authentication</div>-->
+          <!--              <div class="row-sub">Add an extra layer of protection at sign-in.</div>-->
+          <!--            </div>-->
+          <!--            <button-->
+          <!--              type="button"-->
+          <!--              class="app-btn app-btn-ghost"-->
+          <!--              @click="notImplemented('Enable 2FA')"-->
+          <!--            >-->
+          <!--              Enable 2FA-->
+          <!--            </button>-->
+          <!--          </div>-->
+          <!--          <div class="security-row">-->
+          <!--            <div>-->
+          <!--              <div class="row-title">Active sessions</div>-->
+          <!--              <div class="row-sub">Review and revoke devices currently signed in.</div>-->
+          <!--            </div>-->
+          <!--            <button-->
+          <!--              type="button"-->
+          <!--              class="app-btn app-btn-ghost"-->
+          <!--              @click="notImplemented('View sessions')"-->
+          <!--            >-->
+          <!--              View sessions-->
+          <!--            </button>-->
+          <!--          </div>-->
         </div>
       </section>
 

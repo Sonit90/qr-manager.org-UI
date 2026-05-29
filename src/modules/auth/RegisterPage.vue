@@ -11,6 +11,8 @@ import {
 } from '@/helpers/validations/validations.ts'
 import AuthForm from '@/modules/auth/components/AuthForm.vue'
 import { handleApiError } from '@/api/helpers/handleApiError.ts'
+import TermsOfServiceContent from '@/modules/legal/TermsOfServiceContent.vue'
+import PrivacyPolicyContent from '@/modules/legal/PrivacyPolicyContent.vue'
 
 const registerForm = ref<Ref | null>(null)
 const showPassword = ref(false)
@@ -36,6 +38,16 @@ const confirmPasswordRules = computed(() => [
 
 const userStore = useUserStore()
 const { isLoading } = storeToRefs(userStore)
+
+const legalDialog = reactive({ open: false, type: 'terms' as 'terms' | 'privacy' })
+const legalDialogTitle = computed(() =>
+  legalDialog.type === 'terms' ? 'Terms of Service' : 'Privacy Policy',
+)
+
+function openLegal(type: 'terms' | 'privacy') {
+  legalDialog.type = type
+  legalDialog.open = true
+}
 
 const isFormFilled = computed(
   () =>
@@ -130,15 +142,31 @@ const handleRegister = async () => {
         </span>
         <span class="consent-text">
           I agree to the
-          <router-link to="/terms" class="consent-link" target="_blank"
-            >Terms of Service</router-link
+          <button type="button" class="consent-link" @click="openLegal('terms')"
+            >Terms of Service</button
           >
           and
-          <router-link to="/privacy" class="consent-link" target="_blank"
-            >Privacy Policy</router-link
+          <button type="button" class="consent-link" @click="openLegal('privacy')"
+            >Privacy Policy</button
           >
         </span>
       </label>
+
+      <v-dialog v-model="legalDialog.open" max-width="800" scrollable>
+        <v-card>
+          <v-card-title class="legal-dialog-title">
+            {{ legalDialogTitle }}
+            <v-btn icon size="small" variant="text" @click="legalDialog.open = false">
+              <v-icon>mdi-close</v-icon>
+            </v-btn>
+          </v-card-title>
+          <v-divider />
+          <v-card-text class="legal-dialog-body">
+            <TermsOfServiceContent v-if="legalDialog.type === 'terms'" />
+            <PrivacyPolicyContent v-else />
+          </v-card-text>
+        </v-card>
+      </v-dialog>
 
       <button
         type="submit"
@@ -214,8 +242,26 @@ const handleRegister = async () => {
 }
 
 .consent-link {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
   color: var(--accent);
   text-decoration: underline;
   text-underline-offset: 2px;
+}
+
+.legal-dialog-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 18px;
+  font-weight: 700;
+  padding: 16px 20px;
+}
+
+.legal-dialog-body {
+  padding: 24px 20px;
 }
 </style>

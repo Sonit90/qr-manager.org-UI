@@ -1,216 +1,325 @@
 import { visitRoute } from '../../helpers/visitRoute.ts'
 import { waitFor } from '@testing-library/vue'
-import { vi } from 'vitest'
-import {
-  mockActivationSuccess,
-  mockActivationError,
-  mockActivationInvalidTokenError,
-  mockActivationAlreadyActivatedError,
-  mockActivationNetworkError,
-} from '@tests/__apiMocks__/activation/mockActivation.ts'
-import {
-  generateValidActivationToken,
-  generateInvalidActivationToken,
-  generateActivationUrl,
-  generateActivationUrlWithoutToken,
-} from '@tests/__apiMocks__/activation/generateActivationData.ts'
 import { flushPromises } from '@vue/test-utils'
+import { faker } from '@faker-js/faker'
+import {
+  mockVerifyEmailCodeSuccess,
+  mockVerifyEmailCodeInvalidCode,
+  mockVerifyEmailCodeRateLimited,
+  mockVerifyEmailCodeNetworkError,
+  mockResendVerificationSuccess,
+  mockResendVerificationRateLimited,
+} from '@tests/__apiMocks__/activation/mockActivation.ts'
+import { generateVerificationEmail, generateValidCode } from '@tests/__apiMocks__/activation/generateActivationData.ts'
+import { PENDING_EMAIL_KEY } from '@/modules/auth/activation/useActivation.ts'
+import { mockUser } from '@tests/__apiMocks__/user/mockUser.ts'
+import { mockListQrs } from '@tests/__apiMocks__/qr/mockQr.ts'
 
-// Mock the API client
 vi.mock('@/api/v1/ApiClientV1.ts', () => ({
   ApiClientV1: {
-    verifyEmail: vi.fn(),
+    verifyEmailCode: vi.fn(),
+    resendVerification: vi.fn(),
+    me: vi.fn(),
   },
 }))
 
-describe('EmailActivation Integration Tests', () => {
-  test('should show loading state initially when token is present', async () => {
-    const token = generateValidActivationToken()
-    const activationUrl = generateActivationUrl(token)
+function generateAccessToken() {
+  return faker.string.alphanumeric(32)
+}
 
-    // Mock successful activation but don't resolve immediately
-    const { mockedActivation } = mockActivationSuccess()
+describe('EmailActivation — unauthenticated user', () => {
+  let email: string
 
-    const { view } = await visitRoute(activationUrl)
+  beforeEach(() => {
+    email = generateVerificationEmail()
+    localStorage.setItem(PENDING_EMAIL_KEY, email)
+  })
 
-    // Should show loading state initially
-    view.getByText('Activating your account...')
-    view.getByText('Please wait while we verify your activation link.')
+  afterEach(() => {
+    localStorage.clear()
+  })
 
-    // Wait for activation to complete
+  test('renders OTP input with 6 digit boxes', async () => {
+    mockVerifyEmailCodeSuccess()
+
+    const { view } = await visitRoute('/activate')
+
+    const inputs = view.getAllByRole('textbox')
+    expect(inputs).toHaveLength(6)
+  })
+
+  test('displays stored email', async () => {
+    mockVerifyEmailCodeSuccess()
+
+    const { view } = await visitRoute('/activate')
+
+    view.getByText(email)
+  })
+
+  test('submit button disabled until all 6 digits entered', async () => {
+    mockVerifyEmailCodeSuccess()
+
+    const { view, user } = await visitRoute('/activate')
+
+    const submitBtn = view.getByRole('button', { name: /verify email/i })
+    expect(submitBtn).toBeDisabled()
+
+    const inputs = view.getAllByRole('textbox')
+    await user.type(inputs[0], '1')
+    await user.type(inputs[1], '2')
+    await user.type(inputs[2], '3')
+
+    expect(submitBtn).toBeDisabled()
+  })
+
+  test('submit button enabled when all 6 digits filled', async () => {
+    mockVerifyEmailCodeSuccess()
+
+    const { view, user } = await visitRoute('/activate')
+
+    const inputs = view.getAllByRole('textbox')
+    for (let i = 0; i < 6; i++) {
+      await user.type(inputs[i], String(i + 1))
+    }
+
+    const submitBtn = view.getByRole('button', { name: /verify email/i })
+    expect(submitBtn).not.toBeDisabled()
+  })
+
+  test('paste fills all digits at once', async () => {
+    mockVerifyEmailCodeSuccess()
+    const code = generateValidCode()
+
+    const { view, user } = await visitRoute('/activate')
+
+    const inputs = view.getAllByRole('textbox')
+    await user.click(inputs[0])
+    await user.paste(code)
+
     await waitFor(() => {
-      expect(mockedActivation).toHaveBeenCalledWith({ token })
+      code.split('').forEach((digit, i) => {
+        expect((inputs[i] as HTMLInputElement).value).toBe(digit)
+      })
     })
   })
 
-  test('should show success state after successful activation', async () => {
-    const token = generateValidActivationToken()
-    const activationUrl = generateActivationUrl(token)
+  test('calls verifyEmailCode with email and code on submit', async () => {
+    const { mockedVerify } = mockVerifyEmailCodeSuccess()
+    const code = generateValidCode()
 
-    const { mockedActivation } = mockActivationSuccess()
+    const { view, user } = await visitRoute('/activate')
 
-    const { view } = await visitRoute(activationUrl)
+    const inputs = view.getAllByRole('textbox')
+    await user.click(inputs[0])
+    await user.paste(code)
 
-    // Wait for activation to complete
+    const submitBtn = view.getByRole('button', { name: /verify email/i })
+    await user.click(submitBtn)
+
     await waitFor(() => {
-      expect(mockedActivation).toHaveBeenCalledWith({ token })
-    })
-
-    await flushPromises()
-
-    expect(view.getByRole('link', { name: 'Sign in' })).toHaveAttribute('href', '/login')
-  })
-
-  test('should show error state when activation fails', async () => {
-    const token = generateValidActivationToken()
-    const activationUrl = generateActivationUrl(token)
-
-    const { mockedActivation } = mockActivationError()
-
-    const { view } = await visitRoute(activationUrl)
-
-    // Wait for activation to complete
-    await waitFor(() => {
-      expect(mockedActivation).toHaveBeenCalledWith({ token })
-    })
-
-    await flushPromises()
-
-    // Should show error state
-    view.getByText('Invalid Verification Link')
-    view.getByText(
-      'The verification link is invalid or has expired. Please request a new verification email.',
-    )
-  })
-
-  test('should show invalid link state when no token is provided', async () => {
-    const activationUrl = generateActivationUrlWithoutToken()
-
-    const { view } = await visitRoute(activationUrl)
-
-    await flushPromises()
-
-    // Should show an invalid link state
-    view.getByText('Invalid Verification Link')
-    view.getByText(
-      'The verification link is invalid or has expired. Please request a new verification email.',
-    )
-  })
-
-  test('should show error state when token is invalid', async () => {
-    const invalidToken = generateInvalidActivationToken()
-    const activationUrl = `/activate?token=${invalidToken}`
-
-    const { mockedActivation } = mockActivationInvalidTokenError()
-
-    const { view } = await visitRoute(activationUrl)
-
-    // Wait for activation to complete
-    await waitFor(() => {
-      expect(view.queryByText('Activating your account...')).not.toBeInTheDocument()
-    })
-
-    await flushPromises()
-
-    // Verify API was called with an invalid token
-    expect(mockedActivation).toHaveBeenCalledWith({ token: invalidToken })
-
-    // Should show error state for an invalid token
-    view.getByText('Invalid Verification Link')
-    view.getByText(
-      'The verification link is invalid or has expired. Please request a new verification email.',
-    )
-  })
-
-  test('should show error state when account is already activated', async () => {
-    const token = generateValidActivationToken()
-    const activationUrl = generateActivationUrl(token)
-
-    const { mockedActivation } = mockActivationAlreadyActivatedError()
-
-    const { view } = await visitRoute(activationUrl)
-
-    // Wait for activation to complete
-    await waitFor(() => {
-      expect(view.queryByText('Activating your account...')).not.toBeInTheDocument()
-    })
-
-    await flushPromises()
-
-    // Verify API was called
-    expect(mockedActivation).toHaveBeenCalledWith({ token })
-
-    // Should show the error state (current implementation doesn't distinguish between error types)
-    view.getByText('Invalid Verification Link')
-    view.getByText(
-      'The verification link is invalid or has expired. Please request a new verification email.',
-    )
-  })
-
-  test('should handle network error during activation', async () => {
-    const token = generateValidActivationToken()
-    const activationUrl = generateActivationUrl(token)
-
-    const { mockedActivation } = mockActivationNetworkError()
-
-    const { view } = await visitRoute(activationUrl)
-
-    // Wait for activation to complete
-    await waitFor(() => {
-      expect(mockedActivation).toHaveBeenCalledWith({ token })
-    })
-
-    await flushPromises()
-
-    // Should show error state
-    view.getByText('Invalid Verification Link')
-    view.getByText(
-      'The verification link is invalid or has expired. Please request a new verification email.',
-    )
-  })
-
-  test('should call API with correct token parameter', async () => {
-    const token = generateValidActivationToken()
-    const activationUrl = generateActivationUrl(token)
-
-    const { mockedActivation } = mockActivationSuccess()
-
-    await visitRoute(activationUrl)
-
-    // Wait for activation to be called
-    await waitFor(() => {
-      expect(mockedActivation).toHaveBeenCalledWith({ token })
-      expect(mockedActivation).toHaveBeenCalledTimes(1)
+      expect(mockedVerify).toHaveBeenCalledWith({ email, code })
     })
   })
 
-  test('should render correct icons for different states', async () => {
-    // Test success state icon
-    const token = generateValidActivationToken()
-    const activationUrl = generateActivationUrl(token)
+  test('redirects to /login after successful verification (unauthenticated)', async () => {
+    mockVerifyEmailCodeSuccess()
+    const code = generateValidCode()
 
-    const { mockedActivation } = mockActivationSuccess()
+    const { view, user } = await visitRoute('/activate')
 
-    const { view } = await visitRoute(activationUrl)
+    const inputs = view.getAllByRole('textbox')
+    await user.click(inputs[0])
+    await user.paste(code)
+
+    await user.click(view.getByRole('button', { name: /verify email/i }))
+
+    await flushPromises()
 
     await waitFor(() => {
-      expect(mockedActivation).toHaveBeenCalledWith({ token })
+      expect(window.location.pathname).toBe('/login')
     })
-
-    await flushPromises()
-
-    // Should have a success icon
-    expect(view.container.querySelector('.mdi-check-circle')).toBeTruthy()
   })
 
-  test('should render warning icon for invalid link state', async () => {
-    const activationUrl = generateActivationUrlWithoutToken()
+  test('shows error message for invalid/expired code (400)', async () => {
+    mockVerifyEmailCodeInvalidCode()
+    const code = generateValidCode()
 
-    const { view } = await visitRoute(activationUrl)
+    const { view, user } = await visitRoute('/activate')
+
+    const inputs = view.getAllByRole('textbox')
+    await user.click(inputs[0])
+    await user.paste(code)
+
+    await user.click(view.getByRole('button', { name: /verify email/i }))
 
     await flushPromises()
 
-    // Should have a warning icon
-    expect(view.container.querySelector('.mdi-link-off')).toBeTruthy()
+    await waitFor(() => {
+      view.getByText('Invalid or expired code. Please try again or request a new one.')
+    })
+  })
+
+  test('shows rate limit error message (429)', async () => {
+    mockVerifyEmailCodeRateLimited()
+    const code = generateValidCode()
+
+    const { view, user } = await visitRoute('/activate')
+
+    const inputs = view.getAllByRole('textbox')
+    await user.click(inputs[0])
+    await user.paste(code)
+
+    await user.click(view.getByRole('button', { name: /verify email/i }))
+
+    await flushPromises()
+
+    await waitFor(() => {
+      view.getByText('Too many attempts. Please wait and try again.')
+    })
+  })
+
+  test('submit button disabled when rate limited', async () => {
+    mockVerifyEmailCodeRateLimited()
+    const code = generateValidCode()
+
+    const { view, user } = await visitRoute('/activate')
+
+    const inputs = view.getAllByRole('textbox')
+    await user.click(inputs[0])
+    await user.paste(code)
+
+    await user.click(view.getByRole('button', { name: /verify email/i }))
+
+    await flushPromises()
+
+    await waitFor(() => {
+      expect(view.getByRole('button', { name: /verify email/i })).toBeDisabled()
+    })
+  })
+
+  test('shows error for network failure', async () => {
+    mockVerifyEmailCodeNetworkError()
+    const code = generateValidCode()
+
+    const { view, user } = await visitRoute('/activate')
+
+    const inputs = view.getAllByRole('textbox')
+    await user.click(inputs[0])
+    await user.paste(code)
+
+    await user.click(view.getByRole('button', { name: /verify email/i }))
+
+    await flushPromises()
+
+    await waitFor(() => {
+      view.getByText('Invalid or expired code. Please try again or request a new one.')
+    })
+  })
+
+  test('resend button calls resendVerification with email', async () => {
+    mockVerifyEmailCodeSuccess()
+    const { mockedResend } = mockResendVerificationSuccess()
+
+    const { view, user } = await visitRoute('/activate')
+
+    await user.click(view.getByRole('button', { name: /resend code/i }))
+
+    await waitFor(() => {
+      expect(mockedResend).toHaveBeenCalledWith({ email })
+    })
+  })
+
+  test('shows success message after resend', async () => {
+    mockVerifyEmailCodeSuccess()
+    mockResendVerificationSuccess()
+
+    const { view, user } = await visitRoute('/activate')
+
+    await user.click(view.getByRole('button', { name: /resend code/i }))
+
+    await flushPromises()
+
+    await waitFor(() => {
+      view.getByText(/new code sent/i)
+    })
+  })
+
+  test('shows error when resend is rate limited', async () => {
+    mockVerifyEmailCodeSuccess()
+    mockResendVerificationRateLimited()
+
+    const { view, user } = await visitRoute('/activate')
+
+    await user.click(view.getByRole('button', { name: /resend code/i }))
+
+    await flushPromises()
+
+    await waitFor(() => {
+      view.getByText('Too many resend attempts. Please wait before trying again.')
+    })
+  })
+})
+
+describe('EmailActivation — authenticated user', () => {
+  let email: string
+
+  mockUser()
+  mockListQrs([])
+
+  beforeEach(() => {
+    email = generateVerificationEmail()
+    localStorage.setItem(PENDING_EMAIL_KEY, email)
+    localStorage.setItem('access_token', JSON.stringify(generateAccessToken()))
+    localStorage.setItem('refresh_token', JSON.stringify(generateAccessToken()))
+  })
+
+  afterEach(() => {
+    localStorage.clear()
+  })
+
+  test('renders OTP form for authenticated user', async () => {
+    mockVerifyEmailCodeSuccess()
+
+    const { view } = await visitRoute('/activate')
+
+    const inputs = view.getAllByRole('textbox')
+    expect(inputs).toHaveLength(6)
+    view.getByText(email)
+  })
+
+  test('redirects to /qrs after successful verification (authenticated)', async () => {
+    mockVerifyEmailCodeSuccess()
+    const code = generateValidCode()
+
+    const { view, user } = await visitRoute('/activate')
+
+    const inputs = view.getAllByRole('textbox')
+    await user.click(inputs[0])
+    await user.paste(code)
+
+    await user.click(view.getByRole('button', { name: /verify email/i }))
+
+    await flushPromises()
+
+    await waitFor(() => {
+      expect(window.location.pathname).toBe('/qrs')
+    })
+  })
+
+  test('calls verifyEmailCode with correct email and code (authenticated)', async () => {
+    const { mockedVerify } = mockVerifyEmailCodeSuccess()
+    const code = generateValidCode()
+
+    const { view, user } = await visitRoute('/activate')
+
+    const inputs = view.getAllByRole('textbox')
+    await user.click(inputs[0])
+    await user.paste(code)
+
+    await user.click(view.getByRole('button', { name: /verify email/i }))
+
+    await waitFor(() => {
+      expect(mockedVerify).toHaveBeenCalledWith({ email, code })
+    })
   })
 })

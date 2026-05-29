@@ -40,9 +40,6 @@ export const routes = [
   {
     path: '/activate',
     component: () => import('@/modules/auth/activation/EmailActivation.vue'),
-    meta: {
-      disallowAuthenticated: true,
-    },
   },
 
   {

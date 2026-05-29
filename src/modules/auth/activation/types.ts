@@ -1,6 +1,8 @@
 export enum ActivationStatus {
+  IDLE = 'idle',
   LOADING = 'loading',
   SUCCESS = 'success',
   ERROR = 'error',
-  INVALID_LINK = 'invalid_link',
+  EXPIRED = 'expired',
+  RATE_LIMITED = 'rate_limited',
 }

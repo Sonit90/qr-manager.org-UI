@@ -2,87 +2,62 @@ import { vi } from 'vitest'
 import { ApiClientV1 } from '@/api/v1/ApiClientV1.ts'
 import { createAxiosError } from '../../helpers/createAxiosError.ts'
 
-/**
- * Mock successful activation
- */
-export function mockActivationSuccess() {
-  const mockedActivation = vi.fn().mockResolvedValue({})
-
-  vi.mocked(ApiClientV1.verifyEmail).mockImplementation(mockedActivation)
-
-  return { mockedActivation }
+export function mockVerifyEmailCodeSuccess() {
+  const mockedVerify = vi.fn().mockResolvedValue({ verified: true })
+  vi.mocked(ApiClientV1.verifyEmailCode).mockImplementation(mockedVerify)
+  return { mockedVerify }
 }
 
-/**
- * Mock activation error (generic error)
- */
-export function mockActivationError() {
-  const mockedActivation = vi.fn().mockRejectedValue(
-    createAxiosError('', {
-      data: {
-        message: 'Activation failed due to server error',
-      },
-      status: 500,
-      statusText: 'Internal Server Error',
-    }),
-  )
-
-  vi.mocked(ApiClientV1.verifyEmail).mockImplementation(mockedActivation)
-
-  return { mockedActivation }
-}
-
-/**
- * Mock activation error for invalid token (400)
- */
-export function mockActivationInvalidTokenError() {
-  const mockedActivation = vi.fn().mockRejectedValue(
+export function mockVerifyEmailCodeInvalidCode() {
+  const mockedVerify = vi.fn().mockRejectedValue(
     createAxiosError('', {
       status: 400,
       statusText: 'Bad Request',
-      data: {
-        message: 'Invalid or expired activation token',
-      },
+      data: { message: 'Invalid or expired code' },
     }),
   )
-
-  vi.mocked(ApiClientV1.verifyEmail).mockImplementation(mockedActivation)
-
-  return { mockedActivation }
+  vi.mocked(ApiClientV1.verifyEmailCode).mockImplementation(mockedVerify)
+  return { mockedVerify }
 }
 
-/**
- * Mock activation error for already activated account (409)
- */
-export function mockActivationAlreadyActivatedError() {
-  const mockedActivation = vi.fn().mockRejectedValue(
+export function mockVerifyEmailCodeRateLimited() {
+  const mockedVerify = vi.fn().mockRejectedValue(
     createAxiosError('', {
-      status: 409,
-      statusText: 'Conflict',
-      data: {
-        message: 'Account is already activated',
-      },
+      status: 429,
+      statusText: 'Too Many Requests',
+      data: { message: 'Too many attempts' },
     }),
   )
-
-  vi.mocked(ApiClientV1.verifyEmail).mockImplementation(mockedActivation)
-
-  return { mockedActivation }
+  vi.mocked(ApiClientV1.verifyEmailCode).mockImplementation(mockedVerify)
+  return { mockedVerify }
 }
 
-/**
- * Mock network error during activation
- */
-export function mockActivationNetworkError() {
-  const mockedActivation = vi.fn().mockRejectedValue(
+export function mockVerifyEmailCodeNetworkError() {
+  const mockedVerify = vi.fn().mockRejectedValue(
     createAxiosError('', {
       status: 0,
       statusText: 'Network Error',
       data: null,
     }),
   )
+  vi.mocked(ApiClientV1.verifyEmailCode).mockImplementation(mockedVerify)
+  return { mockedVerify }
+}
 
-  vi.mocked(ApiClientV1.verifyEmail).mockImplementation(mockedActivation)
+export function mockResendVerificationSuccess() {
+  const mockedResend = vi.fn().mockResolvedValue(undefined)
+  vi.mocked(ApiClientV1.resendVerification).mockImplementation(mockedResend)
+  return { mockedResend }
+}
 
-  return { mockedActivation }
+export function mockResendVerificationRateLimited() {
+  const mockedResend = vi.fn().mockRejectedValue(
+    createAxiosError('', {
+      status: 429,
+      statusText: 'Too Many Requests',
+      data: { message: 'Rate limited' },
+    }),
+  )
+  vi.mocked(ApiClientV1.resendVerification).mockImplementation(mockedResend)
+  return { mockedResend }
 }

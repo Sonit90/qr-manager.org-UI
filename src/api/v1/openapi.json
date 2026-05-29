@@ -458,19 +458,24 @@
           "auth"
         ],
         "operationId": "resend_verification",
-        "responses": {
-          "204": {
-            "description": "Verification email sent"
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResendVerificationReq"
+              }
+            }
           },
-          "401": {
-            "description": "Not authenticated"
-          }
+          "required": true
         },
-        "security": [
-          {
-            "bearer_auth": []
+        "responses": {
+          "200": {
+            "description": "Verification code sent if the account needs it"
+          },
+          "429": {
+            "description": "Rate limited"
           }
-        ]
+        }
       }
     },
     "/api/v1/auth/reset-password": {
@@ -499,29 +504,38 @@
         }
       }
     },
-    "/api/v1/auth/verify-email": {
-      "get": {
+    "/api/v1/auth/verify-email-code": {
+      "post": {
         "tags": [
           "auth"
         ],
-        "operationId": "verify_email",
-        "parameters": [
-          {
-            "name": "token",
-            "in": "query",
-            "description": "One-time verification token (URL-safe base64, 32 bytes)",
-            "required": true,
-            "schema": {
-              "type": "string"
+        "operationId": "verify_email_code",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyEmailCodeReq"
+              }
             }
-          }
-        ],
+          },
+          "required": true
+        },
         "responses": {
           "200": {
-            "description": "Email verified"
+            "description": "Email verified",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerifyEmailCodeResp"
+                }
+              }
+            }
           },
           "400": {
-            "description": "Token invalid or expired"
+            "description": "Invalid or expired code"
+          },
+          "429": {
+            "description": "Too many attempts"
           }
         }
       }
@@ -706,6 +720,17 @@
           }
         }
       },
+      "ResendVerificationReq": {
+        "type": "object",
+        "required": [
+          "email"
+        ],
+        "properties": {
+          "email": {
+            "type": "string"
+          }
+        }
+      },
       "ResetPasswordReq": {
         "type": "object",
         "required": [
@@ -814,6 +839,33 @@
           "updated_at": {
             "type": "string",
             "format": "date-time"
+          }
+        }
+      },
+      "VerifyEmailCodeReq": {
+        "type": "object",
+        "required": [
+          "email",
+          "code"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "6-digit numeric code from the verification email."
+          },
+          "email": {
+            "type": "string"
+          }
+        }
+      },
+      "VerifyEmailCodeResp": {
+        "type": "object",
+        "required": [
+          "verified"
+        ],
+        "properties": {
+          "verified": {
+            "type": "boolean"
           }
         }
       }

@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import { notify } from '@kyvg/vue3-notification'
+import { ref } from 'vue'
 import EditableUserField from '@/modules/user/EditableUserField.vue'
+import ChangePasswordDialog from '@/modules/user/ChangePasswordDialog.vue'
 import { formatDate } from '@/helpers/formatDate.ts'
 import { useUser } from '@/tanstack/useUser.ts'
 
 const { isLoading, data: user } = useUser()
+
+const changePasswordOpen = ref(false)
 
 function getRoleBadgeClass(role?: string) {
   switch ((role ?? '').toLowerCase()) {
@@ -24,10 +27,6 @@ const planFeatures = [
   'Scan analytics',
   '99.99% redirect uptime',
 ]
-
-function notImplemented(title: string) {
-  notify({ type: 'info', title, text: 'Coming soon.' })
-}
 </script>
 
 <template>
@@ -117,7 +116,7 @@ function notImplemented(title: string) {
             <button
               type="button"
               class="app-btn app-btn-ghost"
-              @click="notImplemented('Change password')"
+              @click="changePasswordOpen = true"
             >
               Change password
             </button>
@@ -173,6 +172,8 @@ function notImplemented(title: string) {
         </div>
       </section>
     </div>
+
+    <ChangePasswordDialog v-model:open="changePasswordOpen" />
   </div>
 </template>
 

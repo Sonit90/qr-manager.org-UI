@@ -243,6 +243,46 @@
         ]
       }
     },
+    "/api/v1/auth/change-password": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "operationId": "change_password",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordReq"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Password changed; existing sessions revoked"
+          },
+          "400": {
+            "description": "OAuth-only account or new password not different"
+          },
+          "401": {
+            "description": "Not authenticated or current password incorrect"
+          },
+          "403": {
+            "description": "Email not verified"
+          },
+          "422": {
+            "description": "New password too short"
+          }
+        },
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ]
+      }
+    },
     "/api/v1/auth/forgot-password": {
       "post": {
         "tags": [
@@ -605,6 +645,21 @@
   },
   "components": {
     "schemas": {
+      "ChangePasswordReq": {
+        "type": "object",
+        "required": [
+          "current_password",
+          "new_password"
+        ],
+        "properties": {
+          "current_password": {
+            "type": "string"
+          },
+          "new_password": {
+            "type": "string"
+          }
+        }
+      },
       "ForgotPasswordReq": {
         "type": "object",
         "required": [

@@ -8,8 +8,10 @@ import {
   useCreateQr,
   useDeleteQr,
   useToggleEnabled,
+  useUpdateTarget,
 } from '@/modules/qr/composables/useQrs.ts'
 import QrCreateDialog from '@/modules/qr/QrCreateDialog.vue'
+import QrEditTargetDialog from '@/modules/qr/QrEditTargetDialog.vue'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
 import QrExportModal from '@/components/QrExportModal.vue'
 import { formatDate } from '@/helpers/formatDate.ts'
@@ -20,8 +22,10 @@ const { data: qrs, isLoading, refetch } = useQrList()
 const createMutation = useCreateQr()
 const deleteMutation = useDeleteQr()
 const toggleMutation = useToggleEnabled()
+const updateTargetMutation = useUpdateTarget()
 
 const createOpen = ref(false)
+const editTarget = ref<TypeQrQrCodeResponse | null>(null)
 
 const search = ref('')
 const statusFilter = ref<'all' | 'active' | 'disabled'>('all')
@@ -79,6 +83,18 @@ async function onToggle(qr: TypeQrQrCodeResponse, enabled: boolean) {
     await toggleMutation.mutateAsync({ id: qr.id, data: { enabled } })
   } catch (e) {
     handleApiError(e, { title: 'Toggle QR' })
+  }
+}
+
+async function onUpdateTarget(payload: { url: string }) {
+  const target = editTarget.value
+  if (!target) return
+  try {
+    await updateTargetMutation.mutateAsync({ id: target.id, data: { url: payload.url } })
+    notify({ type: 'success', title: 'Target URL updated' })
+    editTarget.value = null
+  } catch (e) {
+    handleApiError(e, { title: 'Edit target URL' })
   }
 }
 
@@ -189,9 +205,20 @@ function copyShortLink(qr: TypeQrQrCodeResponse) {
             </div>
           </template>
           <template #item.target_url="{ item }">
-            <a :href="item.target_url" target="_blank" rel="noopener" class="cell-link">
-              {{ item.target_url }}
-            </a>
+            <div class="cell-target">
+              <a :href="item.target_url" target="_blank" rel="noopener" class="cell-link">
+                {{ item.target_url }}
+              </a>
+              <button
+                type="button"
+                class="app-btn app-btn-ghost app-btn-icon"
+                data-testid="qr-edit-target"
+                aria-label="Edit target URL"
+                @click="editTarget = item"
+              >
+                <v-icon icon="mdi-pencil" size="16" />
+              </button>
+            </div>
           </template>
           <template #item.scan_count="{ item }">
             <span class="cell-scans">{{ item.scan_count ?? 0 }}</span>
@@ -278,6 +305,14 @@ function copyShortLink(qr: TypeQrQrCodeResponse) {
       v-model:open="createOpen"
       :loading="createMutation.isPending.value"
       @submit="onCreate"
+    />
+
+    <QrEditTargetDialog
+      :open="!!editTarget"
+      :current-url="editTarget?.target_url"
+      :loading="updateTargetMutation.isPending.value"
+      @update:open="(v) => !v && (editTarget = null)"
+      @submit="onUpdateTarget"
     />
 
     <QrExportModal
@@ -412,6 +447,12 @@ function copyShortLink(qr: TypeQrQrCodeResponse) {
   font-size: 12px;
   color: var(--muted);
   font-family: 'SFMono-Regular', Menlo, Consolas, monospace;
+}
+
+.cell-target {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .cell-link {

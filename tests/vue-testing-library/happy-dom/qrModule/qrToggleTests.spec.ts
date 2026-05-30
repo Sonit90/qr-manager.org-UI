@@ -54,7 +54,7 @@ describe('QR Toggle Enabled Integration Tests', () => {
     })
   })
 
-  test('should reflect new enabled state in list row after toggle', async () => {
+  test('should reflect new enabled state in list row badge after toggle', async () => {
     const qr = generateQr({ enabled: true, name: 'Live QR' })
     mockListQrs([qr])
     mockToggleEnabled({
@@ -67,13 +67,12 @@ describe('QR Toggle Enabled Integration Tests', () => {
 
     await flushPromises()
 
-    const toggle = view.getByLabelText('Toggle Live QR') as HTMLInputElement
-    expect(toggle.checked).toBe(true)
+    expect(view.getByText('Active', { selector: '.app-badge' }))
 
-    await user.click(toggle)
+    await user.click(view.getByLabelText('Toggle Live QR'))
 
     await waitFor(() => {
-      expect(toggle.checked).toBe(false)
+      expect(view.getByText('Disabled', { selector: '.app-badge' }))
     })
   })
 

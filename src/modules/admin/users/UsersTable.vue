@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { TypeUserV1 } from '@/api/__generated__/v1/data-contracts.ts'
 import BooleanIcon from '@/components/BooleanIcon.vue'
+import { formatDate } from '@/helpers/formatDate.ts'
 
 defineProps<{
   loading: boolean
@@ -70,7 +71,7 @@ function roleBadgeClass(role?: string) {
     </template>
 
     <template #item.created_at="{ item }">
-      <span class="cell-date">{{ new Date(item.created_at).toLocaleDateString() }}</span>
+      <span class="cell-date">{{ formatDate(item.created_at) }}</span>
     </template>
 
     <template #item.actions="{ item }">

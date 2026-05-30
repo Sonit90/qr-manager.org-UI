@@ -3,8 +3,7 @@
   "include": [
     "vite.config.*",
     "vitest.config.*",
-    "src/api/v1/updateApiV1.ts",
-    "src/api/qr/updateApiQr.ts"
+    "src/api/fetchSchema.ts"
   ],
   "compilerOptions": {
     "noEmit": true,

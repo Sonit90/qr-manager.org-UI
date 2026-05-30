@@ -13,11 +13,8 @@ export function usePasswordReset() {
   const params = useUrlSearchParams('history')
 
   const form = ref<VForm | null>(null)
-  const valid = ref(false)
   const password = ref('')
   const confirmPassword = ref('')
-  const showPassword = ref(false)
-  const showConfirmPassword = ref(false)
   const router = useRouter()
 
   async function resetPassword() {
@@ -51,10 +48,7 @@ export function usePasswordReset() {
     isLoading,
     params,
     form,
-    valid,
     password,
     confirmPassword,
-    showPassword,
-    showConfirmPassword,
   }
 }

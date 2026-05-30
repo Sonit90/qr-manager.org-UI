@@ -5,6 +5,7 @@ import UsersTable from '@/modules/admin/users/UsersTable.vue'
 import UserForm from '@/modules/admin/users/UserForm.vue'
 import type { TypeUserV1 } from '@/api/__generated__/v1/data-contracts.ts'
 import { handleApiError } from '@/api/helpers/handleApiError.ts'
+import AppDialog from '@/components/AppDialog.vue'
 
 const { users, loading, fetchUsers, deleteUser } = useAdminUsers()
 
@@ -128,59 +129,51 @@ async function onDeleteConfirm() {
       @cancel="onCancel()"
     />
 
-    <v-dialog
+    <AppDialog
       v-if="!!deletingUser"
-      model-value
-      max-width="440"
-      class="app-dialog"
-      @update:model-value="onDeleteCancel"
+      :open="true"
+      eyebrow="Admin"
+      title="Delete User"
+      :max-width="440"
+      :responsive="false"
+      card-testid="delete-user-dialog"
+      @update:open="onDeleteCancel"
     >
-      <v-card data-testid="delete-user-dialog">
-        <div class="app-dialog-title">
-          <div>
-            <span class="app-eyebrow">Admin</span>
-            <h3>Delete User</h3>
-          </div>
-          <v-btn icon="mdi-close" variant="text" size="small" @click="onDeleteCancel" />
-        </div>
-        <div class="app-dialog-body">
-          <p class="delete-warning">
-            This will permanently delete <strong>{{ deletingUser?.email }}</strong>. This action
-            cannot be undone.
-          </p>
-          <label class="delete-confirm-label" for="delete-confirm-input">
-            Type <strong>delete</strong> to confirm
-          </label>
-          <input
-            id="delete-confirm-input"
-            v-model="deleteConfirmText"
-            type="text"
-            class="app-input delete-confirm-input"
-            autocomplete="off"
-            aria-label="Type delete to confirm"
-          />
-        </div>
-        <div class="app-dialog-actions">
-          <button
-            type="button"
-            class="app-btn app-btn-ghost"
-            :disabled="isDeleting"
-            @click="onDeleteCancel"
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            class="app-btn app-btn-danger"
-            :disabled="!deleteConfirmed || isDeleting"
-            @click="onDeleteConfirm"
-          >
-            <v-progress-circular v-if="isDeleting" size="14" width="2" indeterminate />
-            Delete User
-          </button>
-        </div>
-      </v-card>
-    </v-dialog>
+      <p class="delete-warning">
+        This will permanently delete <strong>{{ deletingUser?.email }}</strong>. This action cannot
+        be undone.
+      </p>
+      <label class="delete-confirm-label" for="delete-confirm-input">
+        Type <strong>delete</strong> to confirm
+      </label>
+      <input
+        id="delete-confirm-input"
+        v-model="deleteConfirmText"
+        type="text"
+        class="app-input delete-confirm-input"
+        autocomplete="off"
+        aria-label="Type delete to confirm"
+      />
+      <template #actions>
+        <button
+          type="button"
+          class="app-btn app-btn-ghost"
+          :disabled="isDeleting"
+          @click="onDeleteCancel"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="app-btn app-btn-danger"
+          :disabled="!deleteConfirmed || isDeleting"
+          @click="onDeleteConfirm"
+        >
+          <v-progress-circular v-if="isDeleting" size="14" width="2" indeterminate />
+          Delete User
+        </button>
+      </template>
+    </AppDialog>
   </div>
 </template>
 

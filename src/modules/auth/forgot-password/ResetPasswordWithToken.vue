@@ -4,6 +4,7 @@ import GenericState from '@/components/GenericState.vue'
 import { ResetPasswordStatus } from '@/modules/auth/forgot-password/types.ts'
 import { usePasswordReset } from '@/modules/auth/forgot-password/usePasswordReset.ts'
 import AuthForm from '@/modules/auth/components/AuthForm.vue'
+import PasswordField from '@/components/PasswordField.vue'
 import {
   hasMinLength,
   hasNumber,
@@ -19,11 +20,8 @@ const {
   resetPassword,
   params,
   form,
-  valid,
   password,
   confirmPassword,
-  showPassword,
-  showConfirmPassword,
 } = usePasswordReset()
 
 const componentMap: Record<
@@ -86,7 +84,6 @@ const confirmPasswordRules = computed(() => [
     <v-form
       v-if="resetStatus === ResetPasswordStatus.INITIAL"
       ref="form"
-      v-model="valid"
       data-testid="reset-password-form"
       @submit.prevent="resetPassword"
     >
@@ -97,34 +94,25 @@ const confirmPasswordRules = computed(() => [
         tabindex="-1"
         aria-hidden="true"
       />
-      <v-text-field
-        v-model.trim="password"
-        :type="showPassword ? 'text' : 'password'"
+      <PasswordField
+        v-model="password"
         :rules="passwordRules"
-        :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
         label="New Password"
         autocomplete="new-password"
         placeholder="Enter your new password"
-        required
-        variant="outlined"
         class="mb-4"
         name="password"
-        @click:append-inner="showPassword = !showPassword"
       />
 
-      <v-text-field
-        v-model.trim="confirmPassword"
-        :type="showConfirmPassword ? 'text' : 'password'"
+      <PasswordField
+        v-model="confirmPassword"
         :rules="confirmPasswordRules"
-        :append-inner-icon="showConfirmPassword ? 'mdi-eye' : 'mdi-eye-off'"
         label="Confirm Password"
         autocomplete="new-password"
         placeholder="Confirm your new password"
-        required
-        variant="outlined"
         class="mb-4"
         name="confirmPassword"
-        @click:append-inner="showConfirmPassword = !showConfirmPassword"
+        icon="mdi-lock-check"
       />
 
       <button

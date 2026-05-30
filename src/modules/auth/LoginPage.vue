@@ -4,13 +4,13 @@ import { useUserStore } from '@/stores/userStore.ts'
 import { storeToRefs } from 'pinia'
 import { hasMinLength, isRequired, isValidEmail } from '@/helpers/validations/validations.ts'
 import AuthForm from '@/modules/auth/components/AuthForm.vue'
+import PasswordField from '@/components/PasswordField.vue'
 import { useRouter } from 'vue-router'
 import { notify } from '@kyvg/vue3-notification'
 import { handleApiError } from '@/api/helpers/handleApiError.ts'
 
 const router = useRouter()
 const loginForm = ref<Ref | null>(null)
-const showPassword = ref(false)
 
 const form = reactive({
   email: '',
@@ -59,24 +59,13 @@ const handleLogin = async () => {
         required
       />
 
-      <v-text-field
-        v-model.trim="form.password"
+      <PasswordField
+        v-model="form.password"
         :rules="passwordRules"
-        :type="showPassword ? 'text' : 'password'"
         label="Password"
         autocomplete="current-password"
         name="password"
-        prepend-inner-icon="mdi-lock"
-        variant="outlined"
-        color="primary"
-        required
-      >
-        <template #append-inner>
-          <v-icon tabindex="-1" @click="showPassword = !showPassword">
-            {{ showPassword ? 'mdi-eye' : 'mdi-eye-off' }}
-          </v-icon>
-        </template>
-      </v-text-field>
+      />
       <div class="mb-4 d-flex justify-end">
         <router-link to="/forgot-password" class="link-styled">Forgot password?</router-link>
       </div>

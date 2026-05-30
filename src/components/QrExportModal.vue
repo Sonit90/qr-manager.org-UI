@@ -3,6 +3,7 @@ import { ref, reactive, computed } from 'vue'
 import { handleApiError } from '@/api/helpers/handleApiError.ts'
 import { ApiClientQr } from '@/api/qr/ApiClientQr.ts'
 import { downloadBlob } from '@/helpers/downloadBlob.ts'
+import AppDialog from '@/components/AppDialog.vue'
 
 const props = defineProps<{
   open: boolean
@@ -113,16 +114,14 @@ async function doExport() {
 </script>
 
 <template>
-  <v-dialog :model-value="open" max-width="460" class="app-dialog" @update:model-value="close">
-    <v-card class="export-card">
-      <div class="app-dialog-title">
-        <h3>Export QR Code</h3>
-        <button class="app-btn app-btn-ghost app-btn-icon" aria-label="Close" @click="close">
-          <v-icon icon="mdi-close" size="18" />
-        </button>
-      </div>
-
-      <div class="app-dialog-body export-body">
+  <AppDialog
+    :open="open"
+    title="Export QR Code"
+    :max-width="460"
+    :responsive="false"
+    @update:open="(v) => !v && close()"
+  >
+    <div class="export-body">
         <div class="export-section">
           <div class="export-label">Quick presets</div>
           <div class="presets-row">
@@ -211,23 +210,17 @@ async function doExport() {
         </div>
       </div>
 
-      <div class="app-dialog-actions">
-        <button type="button" class="app-btn app-btn-ghost" :disabled="isExporting" @click="close">
-          Cancel
-        </button>
-        <button
-          type="button"
-          class="app-btn app-btn-primary"
-          :disabled="!canExport"
-          @click="doExport"
-        >
-          <v-progress-circular v-if="isExporting" size="14" width="2" indeterminate />
-          <v-icon v-else icon="mdi-download" size="16" />
-          Download
-        </button>
-      </div>
-    </v-card>
-  </v-dialog>
+    <template #actions>
+      <button type="button" class="app-btn app-btn-ghost" :disabled="isExporting" @click="close">
+        Cancel
+      </button>
+      <button type="button" class="app-btn app-btn-primary" :disabled="!canExport" @click="doExport">
+        <v-progress-circular v-if="isExporting" size="14" width="2" indeterminate />
+        <v-icon v-else icon="mdi-download" size="16" />
+        Download
+      </button>
+    </template>
+  </AppDialog>
 </template>
 
 <style scoped>

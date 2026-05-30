@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { TypeQrScanLogResponse } from '@/api/__generated__/qr/data-contracts.ts'
+import { formatDateTime } from '@/helpers/formatDate.ts'
 
 const props = defineProps<{
   logs: TypeQrScanLogResponse[]
@@ -16,7 +17,7 @@ const headers = [
 const items = computed(() =>
   props.logs.map((log, idx) => ({
     id: idx,
-    time: new Date(log.timestamp).toLocaleString(),
+    time: formatDateTime(log.timestamp),
     ip: log.ip ?? '—',
     device: log.device_type ?? '—',
     browser: log.browser ?? '—',

@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import { useDisplay } from 'vuetify'
+import AppDialog from '@/components/AppDialog.vue'
 
-const { smAndDown } = useDisplay()
-
-const props = withDefaults(
+withDefaults(
   defineProps<{
     open: boolean
     title?: string
@@ -42,44 +40,35 @@ function onConfirm() {
 </script>
 
 <template>
-  <v-dialog
-    :model-value="props.open"
-    :max-width="smAndDown ? undefined : 440"
-    :fullscreen="smAndDown"
-    class="app-dialog"
-    @update:model-value="emit('update:open', $event)"
+  <AppDialog
+    :open="open"
+    :title="title"
+    :max-width="440"
+    @update:open="(v) => !v && onCancel()"
   >
-    <v-card>
-      <div class="app-dialog-title">
-        <h3>{{ title }}</h3>
-        <v-btn icon="mdi-close" variant="text" size="small" @click="onCancel" />
-      </div>
-      <div class="app-dialog-body">
-        <p class="confirm-message">{{ message }}</p>
-      </div>
-      <div class="app-dialog-actions">
-        <button
-          type="button"
-          class="app-btn app-btn-ghost"
-          data-testid="confirm-cancel"
-          :disabled="loading"
-          @click="onCancel"
-        >
-          {{ cancelText }}
-        </button>
-        <button
-          type="button"
-          class="app-btn"
-          :class="danger ? 'app-btn-danger' : 'app-btn-primary'"
-          data-testid="confirm-accept"
-          :disabled="loading"
-          @click="onConfirm"
-        >
-          {{ confirmText }}
-        </button>
-      </div>
-    </v-card>
-  </v-dialog>
+    <p class="confirm-message">{{ message }}</p>
+    <template #actions>
+      <button
+        type="button"
+        class="app-btn app-btn-ghost"
+        data-testid="confirm-cancel"
+        :disabled="loading"
+        @click="onCancel"
+      >
+        {{ cancelText }}
+      </button>
+      <button
+        type="button"
+        class="app-btn"
+        :class="danger ? 'app-btn-danger' : 'app-btn-primary'"
+        data-testid="confirm-accept"
+        :disabled="loading"
+        @click="onConfirm"
+      >
+        {{ confirmText }}
+      </button>
+    </template>
+  </AppDialog>
 </template>
 
 <style scoped>

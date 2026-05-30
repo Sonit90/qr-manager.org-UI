@@ -12,6 +12,7 @@ import {
 import QrCreateDialog from '@/modules/qr/QrCreateDialog.vue'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
 import QrExportModal from '@/components/QrExportModal.vue'
+import { formatDate } from '@/helpers/formatDate.ts'
 import type { TypeQrQrCodeResponse } from '@/api/__generated__/qr/data-contracts.ts'
 
 const router = useRouter()
@@ -166,6 +167,7 @@ function copyShortLink(qr: TypeQrQrCodeResponse) {
           density="comfortable"
           mobile-breakpoint="sm"
           disable-sort
+          hide-default-footer
           class="qrs-table"
         >
           <template #item.image_url="{ item }">
@@ -213,7 +215,7 @@ function copyShortLink(qr: TypeQrQrCodeResponse) {
             </div>
           </template>
           <template #item.created_at="{ item }">
-            <span class="cell-date">{{ new Date(item.created_at).toLocaleDateString() }}</span>
+            <span class="cell-date">{{ formatDate(item.created_at) }}</span>
           </template>
           <template #item.actions="{ item }">
             <div class="cell-actions">

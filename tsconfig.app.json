@@ -4,8 +4,7 @@
   "exclude": [
     "src/**/__tests__/*",
     "src/api/__generated__/",
-    "src/api/v1/updateApiV1.ts",
-    "src/api/qr/updateApiQr.ts"
+    "src/api/fetchSchema.ts"
   ],
   "compilerOptions": {
     "baseUrl": ".",

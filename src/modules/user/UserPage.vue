@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import EditableUserField from '@/modules/user/EditableUserField.vue'
 import ChangePasswordDialog from '@/modules/user/ChangePasswordDialog.vue'
-import { formatDate } from '@/helpers/formatDate.ts'
+import { formatDateTime } from '@/helpers/formatDate.ts'
 import { useUser } from '@/tanstack/useUser.ts'
 import { ApiClientV1 } from '@/api/v1/ApiClientV1.ts'
 import { handleApiError } from '@/api/helpers/handleApiError.ts'
@@ -122,12 +122,12 @@ const planFeatures = [
             <EditableUserField
               icon="mdi-calendar-plus"
               label="Member since"
-              :original-value="formatDate(user?.created_at)"
+              :original-value="formatDateTime(user?.created_at)"
             />
             <EditableUserField
               icon="mdi-calendar-edit"
               label="Last updated"
-              :original-value="formatDate(user?.updated_at)"
+              :original-value="formatDateTime(user?.updated_at)"
             />
           </v-list>
         </div>

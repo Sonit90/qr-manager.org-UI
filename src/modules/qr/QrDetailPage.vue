@@ -12,6 +12,7 @@ import {
 import ScanStats from '@/modules/qr/ScanStats.vue'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
 import QrExportModal from '@/components/QrExportModal.vue'
+import { formatDateTime } from '@/helpers/formatDate.ts'
 
 const route = useRoute()
 const router = useRouter()
@@ -82,11 +83,6 @@ async function confirmDelete() {
 function copyShort() {
   navigator.clipboard.writeText(shortLink.value)
   notify({ type: 'success', title: 'Copied' })
-}
-
-function formatDateTime(value?: string) {
-  if (!value) return ''
-  return new Date(value).toLocaleString()
 }
 </script>
 

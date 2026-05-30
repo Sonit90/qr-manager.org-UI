@@ -1,18 +1,17 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-import { useDisplay } from 'vuetify'
 import type { VForm } from 'vuetify/components'
 import { notify } from '@kyvg/vue3-notification'
 import { ApiClientV1 } from '@/api/v1/ApiClientV1.ts'
 import { handleApiError } from '@/api/helpers/handleApiError.ts'
+import PasswordField from '@/components/PasswordField.vue'
+import AppDialog from '@/components/AppDialog.vue'
 import {
   isRequired,
   hasMinLength,
   hasNumber,
   matchesPassword,
 } from '@/helpers/validations/validations.ts'
-
-const { smAndDown } = useDisplay()
 
 const props = defineProps<{
   open: boolean
@@ -24,9 +23,6 @@ const emit = defineEmits<{
 
 const form = ref<InstanceType<typeof VForm> | null>(null)
 const isLoading = ref(false)
-const showCurrent = ref(false)
-const showNew = ref(false)
-const showConfirm = ref(false)
 
 const currentPassword = ref('')
 const newPassword = ref('')
@@ -39,9 +35,6 @@ watch(
       currentPassword.value = ''
       newPassword.value = ''
       confirmPassword.value = ''
-      showCurrent.value = false
-      showNew.value = false
-      showConfirm.value = false
       form.value?.resetValidation()
     }
   },
@@ -80,95 +73,47 @@ async function submit() {
 </script>
 
 <template>
-  <v-dialog
-    :model-value="open"
-    :max-width="smAndDown ? undefined : 480"
-    :fullscreen="smAndDown"
-    class="app-dialog"
-    @update:model-value="emit('update:open', $event)"
+  <AppDialog
+    :open="open"
+    eyebrow="Security"
+    title="Change password"
+    @update:open="emit('update:open', $event)"
   >
-    <v-card>
-      <div class="app-dialog-title">
-        <div>
-          <span class="app-eyebrow">Security</span>
-          <h3>Change password</h3>
-        </div>
-        <v-btn icon="mdi-close" variant="text" size="small" @click="close" />
-      </div>
-      <div class="app-dialog-body">
-        <v-form ref="form" class="form-fields" @submit.prevent="submit">
-          <v-text-field
-            v-model="currentPassword"
-            :rules="currentPasswordRules"
-            :type="showCurrent ? 'text' : 'password'"
-            label="Current password"
-            autocomplete="current-password"
-            prepend-inner-icon="mdi-lock"
-            variant="outlined"
-            color="primary"
-            hide-details="auto"
-            required
-          >
-            <template #append-inner>
-              <v-icon tabindex="-1" @click="showCurrent = !showCurrent">
-                {{ showCurrent ? 'mdi-eye' : 'mdi-eye-off' }}
-              </v-icon>
-            </template>
-          </v-text-field>
-          <v-text-field
-            v-model="newPassword"
-            :rules="newPasswordRules"
-            :type="showNew ? 'text' : 'password'"
-            label="New password"
-            autocomplete="new-password"
-            prepend-inner-icon="mdi-lock-reset"
-            variant="outlined"
-            color="primary"
-            hide-details="auto"
-            required
-          >
-            <template #append-inner>
-              <v-icon tabindex="-1" @click="showNew = !showNew">
-                {{ showNew ? 'mdi-eye' : 'mdi-eye-off' }}
-              </v-icon>
-            </template>
-          </v-text-field>
-          <v-text-field
-            v-model="confirmPassword"
-            :rules="confirmPasswordRules"
-            :type="showConfirm ? 'text' : 'password'"
-            label="Confirm new password"
-            autocomplete="new-password"
-            prepend-inner-icon="mdi-lock-check"
-            variant="outlined"
-            color="primary"
-            hide-details="auto"
-            required
-          >
-            <template #append-inner>
-              <v-icon tabindex="-1" @click="showConfirm = !showConfirm">
-                {{ showConfirm ? 'mdi-eye' : 'mdi-eye-off' }}
-              </v-icon>
-            </template>
-          </v-text-field>
-        </v-form>
-      </div>
-      <div class="app-dialog-actions">
-        <button type="button" class="app-btn app-btn-ghost" :disabled="isLoading" @click="close">
-          Cancel
-        </button>
-        <button
-          type="button"
-          class="app-btn app-btn-primary"
-          :disabled="isLoading"
-          @click="submit"
-        >
-          <v-progress-circular v-if="isLoading" size="14" width="2" indeterminate />
-          Update password
-        </button>
-      </div>
-    </v-card>
-  </v-dialog>
+    <v-form ref="form" class="form-fields" @submit.prevent="submit">
+      <PasswordField
+        v-model="currentPassword"
+        :rules="currentPasswordRules"
+        label="Current password"
+        autocomplete="current-password"
+        hide-details="auto"
+      />
+      <PasswordField
+        v-model="newPassword"
+        :rules="newPasswordRules"
+        label="New password"
+        autocomplete="new-password"
+        icon="mdi-lock-reset"
+        hide-details="auto"
+      />
+      <PasswordField
+        v-model="confirmPassword"
+        :rules="confirmPasswordRules"
+        label="Confirm new password"
+        autocomplete="new-password"
+        icon="mdi-lock-check"
+        hide-details="auto"
+      />
+    </v-form>
+    <template #actions>
+      <button type="button" class="app-btn app-btn-ghost" :disabled="isLoading" @click="close">
+        Cancel
+      </button>
+      <button type="button" class="app-btn app-btn-primary" :disabled="isLoading" @click="submit">
+        <v-progress-circular v-if="isLoading" size="14" width="2" indeterminate />
+        Update password
+      </button>
+    </template>
+  </AppDialog>
 </template>
 
 <style scoped>

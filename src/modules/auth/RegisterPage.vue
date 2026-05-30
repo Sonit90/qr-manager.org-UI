@@ -10,6 +10,7 @@ import {
   matchesPassword,
 } from '@/helpers/validations/validations.ts'
 import AuthForm from '@/modules/auth/components/AuthForm.vue'
+import PasswordField from '@/components/PasswordField.vue'
 import { handleApiError } from '@/api/helpers/handleApiError.ts'
 import TermsOfServiceContent from '@/modules/legal/TermsOfServiceContent.vue'
 import PrivacyPolicyContent from '@/modules/legal/PrivacyPolicyContent.vue'
@@ -21,8 +22,6 @@ const router = useRouter()
 const storedEmail = useStorage<string>(PENDING_EMAIL_KEY, '')
 
 const registerForm = ref<Ref | null>(null)
-const showPassword = ref(false)
-const showConfirmPassword = ref(false)
 const consentAccepted = ref(false)
 
 const form = reactive({
@@ -105,43 +104,22 @@ const handleRegister = async () => {
         required
       />
 
-      <v-text-field
-        v-model.trim="form.password"
+      <PasswordField
+        v-model="form.password"
         :rules="passwordRules"
-        :type="showPassword ? 'text' : 'password'"
         label="Password"
         name="password"
         autocomplete="new-password"
-        prepend-inner-icon="mdi-lock"
-        variant="outlined"
-        color="primary"
-        required
-      >
-        <template #append-inner>
-          <v-icon tabindex="-1" @click="showPassword = !showPassword">
-            {{ showPassword ? 'mdi-eye' : 'mdi-eye-off' }}
-          </v-icon>
-        </template>
-      </v-text-field>
+      />
 
-      <v-text-field
-        v-model.trim="form.confirmPassword"
+      <PasswordField
+        v-model="form.confirmPassword"
         :rules="confirmPasswordRules"
-        :type="showConfirmPassword ? 'text' : 'password'"
         label="Confirm Password"
         name="confirm-password"
         autocomplete="new-password"
-        prepend-inner-icon="mdi-lock-check"
-        variant="outlined"
-        color="primary"
-        required
-      >
-        <template #append-inner>
-          <v-icon tabindex="-1" @click="showConfirmPassword = !showConfirmPassword">
-            {{ showConfirmPassword ? 'mdi-eye' : 'mdi-eye-off' }}
-          </v-icon>
-        </template>
-      </v-text-field>
+        icon="mdi-lock-check"
+      />
 
       <label class="consent-row">
         <span class="consent-checkbox-wrap" :class="{ 'is-checked': consentAccepted }">

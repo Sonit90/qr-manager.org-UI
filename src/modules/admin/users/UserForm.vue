@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import { ref, reactive, type Ref, watch } from 'vue'
-import { useDisplay } from 'vuetify'
 import { handleApiError } from '@/api/helpers/handleApiError.ts'
 import { TypeRoleV1, type TypeUserV1 } from '@/api/__generated__/v1/data-contracts.ts'
 import { useAdminUsers } from '@/modules/admin/users/composables/useAdminUsers.ts'
-
-const { smAndDown } = useDisplay()
+import AppDialog from '@/components/AppDialog.vue'
 
 const dialog = defineModel<boolean>('dialog')
 
@@ -70,22 +68,14 @@ const roleItems = [
 </script>
 
 <template>
-  <v-dialog
-    v-model="dialog"
-    :max-width="smAndDown ? undefined : 480"
-    :fullscreen="smAndDown"
-    class="app-dialog"
+  <AppDialog
+    :open="!!dialog"
+    eyebrow="Admin"
+    title="Edit User"
+    card-testid="user-form"
+    @update:open="dialog = $event"
   >
-    <v-card data-testid="user-form">
-      <div class="app-dialog-title">
-        <div>
-          <span class="app-eyebrow">Admin</span>
-          <h3>Edit User</h3>
-        </div>
-        <v-btn icon="mdi-close" variant="text" size="small" @click="dialog = false" />
-      </div>
-      <div class="app-dialog-body">
-        <div class="user-meta">
+    <div class="user-meta">
           <span class="user-avatar">
             {{ (user.email || user.display_name || '?').charAt(0).toUpperCase() }}
           </span>
@@ -107,23 +97,21 @@ const roleItems = [
           />
           <v-switch v-model="form.active" color="primary" label="Is Active" hide-details />
         </v-form>
-      </div>
-      <div class="app-dialog-actions">
-        <button type="button" class="app-btn app-btn-ghost" :disabled="isLoading" @click="onCancel">
-          Cancel
-        </button>
-        <button
-          type="button"
-          class="app-btn app-btn-primary"
-          :disabled="!isValid || isLoading"
-          @click="onSubmit"
-        >
-          <v-progress-circular v-if="isLoading" size="14" width="2" indeterminate />
-          Update User
-        </button>
-      </div>
-    </v-card>
-  </v-dialog>
+    <template #actions>
+      <button type="button" class="app-btn app-btn-ghost" :disabled="isLoading" @click="onCancel">
+        Cancel
+      </button>
+      <button
+        type="button"
+        class="app-btn app-btn-primary"
+        :disabled="!isValid || isLoading"
+        @click="onSubmit"
+      >
+        <v-progress-circular v-if="isLoading" size="14" width="2" indeterminate />
+        Update User
+      </button>
+    </template>
+  </AppDialog>
 </template>
 
 <style scoped>

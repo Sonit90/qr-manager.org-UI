@@ -78,7 +78,7 @@ describe('EmailActivation — unauthenticated user', () => {
     const { view, user } = await visitRoute('/activate')
 
     const inputs = view.getAllByRole('textbox')
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 6; i += 1) {
       await user.type(inputs[i], String(i + 1))
     }
 

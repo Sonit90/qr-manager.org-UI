@@ -1,13 +1,34 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import EditableUserField from '@/modules/user/EditableUserField.vue'
 import ChangePasswordDialog from '@/modules/user/ChangePasswordDialog.vue'
 import { formatDate } from '@/helpers/formatDate.ts'
 import { useUser } from '@/tanstack/useUser.ts'
+import { ApiClientV1 } from '@/api/v1/ApiClientV1.ts'
+import { handleApiError } from '@/api/helpers/handleApiError.ts'
+import { useStorage } from '@vueuse/core'
+import { PENDING_EMAIL_KEY } from '@/modules/auth/activation/useActivation.ts'
 
 const { isLoading, data: user } = useUser()
-
+const router = useRouter()
 const changePasswordOpen = ref(false)
+const isVerifying = ref(false)
+const storedEmail = useStorage<string>(PENDING_EMAIL_KEY, '')
+
+async function handleVerify() {
+  if (!user.value?.email) return
+  try {
+    isVerifying.value = true
+    await ApiClientV1.resendVerification({ email: user.value.email })
+    storedEmail.value = user.value.email
+    await router.push('/activate')
+  } catch (e) {
+    handleApiError(e, { title: 'Verification Error' })
+  } finally {
+    isVerifying.value = false
+  }
+}
 
 function getRoleBadgeClass(role?: string) {
   switch ((role ?? '').toLowerCase()) {
@@ -71,12 +92,24 @@ const planFeatures = [
               </span>
             </EditableUserField>
             <EditableUserField icon="mdi-email-check" label="Email verified">
-              <span
-                class="app-badge"
-                :class="user?.email_verified ? 'app-badge-success' : 'app-badge-warning'"
-              >
-                {{ user?.email_verified ? 'Verified' : 'Unverified' }}
-              </span>
+              <div class="verify-row">
+                <span
+                  class="app-badge"
+                  :class="user?.email_verified ? 'app-badge-success' : 'app-badge-warning'"
+                >
+                  {{ user?.email_verified ? 'Verified' : 'Unverified' }}
+                </span>
+                <button
+                  v-if="!user?.email_verified"
+                  type="button"
+                  class="app-btn app-btn-ghost verify-btn"
+                  :disabled="isVerifying"
+                  @click="handleVerify"
+                >
+                  <v-progress-circular v-if="isVerifying" indeterminate size="14" width="2" />
+                  <span v-else>Verify</span>
+                </button>
+              </div>
             </EditableUserField>
             <EditableUserField icon="mdi-account-check" label="Status">
               <span
@@ -227,6 +260,19 @@ const planFeatures = [
 
 .profile-list :deep(.v-list-item:last-child) {
   border-bottom: none;
+}
+
+.verify-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.verify-btn {
+  font-size: 12px;
+  padding: 2px 10px;
+  height: 26px;
+  min-width: unset;
 }
 
 .security-body {

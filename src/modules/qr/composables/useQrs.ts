@@ -69,9 +69,7 @@ export function useToggleEnabled() {
       )
       qc.setQueryData<TypeQrQrCodeResponse[]>(QRS_KEY, (prev) =>
         (prev ?? []).map((q) =>
-          q.id === vars.id
-            ? Object.assign(q, { enabled: res.enabled, updated_at: res.updated_at })
-            : q,
+          q.id === vars.id ? { ...q, enabled: res.enabled, updated_at: res.updated_at } : q,
         ),
       )
     },
@@ -88,7 +86,7 @@ export function useUpdateTarget() {
         prev ? { ...prev, target_url: res.url } : prev,
       )
       qc.setQueryData<TypeQrQrCodeResponse[]>(QRS_KEY, (prev) =>
-        (prev ?? []).map((q) => (q.id === vars.id ? Object.assign(q, { target_url: res.url }) : q)),
+        (prev ?? []).map((q) => (q.id === vars.id ? { ...q, target_url: res.url } : q)),
       )
     },
   })
